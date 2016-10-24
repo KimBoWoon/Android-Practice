@@ -27,7 +27,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:24.2.1'
     testCompile 'junit:junit:4.12'
     // Butter Knife
-    compile 'com.jakewharton:butterknife:8.4.0'
+    compile 'com.jakewharton:butterknife:7.0.1'
     // Android Query
     compile 'com.googlecode.android-query:android-query:0.25.9'
     // Mockito

@@ -6,7 +6,6 @@ package com.kimbowoon.android_practice;
 
 public interface MainContract {
     interface View {
-        void initView();
         void setText(String s);
     }
 
