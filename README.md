@@ -1,23 +1,26 @@
 # Android-Practice
 
-GDG¿¡¼­ °øºÎÇÑ°ÍÀ» Åä´ë·Î ¿¬½ÀÇÏ´Â °ø°£
+GDGì—ì„œ ê³µë¶€í•œê²ƒì„ í† ëŒ€ë¡œ ì—°ìŠµí•˜ëŠ” ê³µê°„
 
 ## Unit-Test
-* mockito¸¦ »ç¿ëÇØ Unit-TestintÀ» ÁøÇà
+* mockitoë¥¼ ì‚¬ìš©í•´ Unit-Testingì„ ì§„í–‰
 
 ## RXJAVA
-* ¾ÆÁ÷ ¸ð¸§
-* °øºÎÇØ¾ßÇÔ
+* ì•„ì§ ëª¨ë¦„
+* ê³µë¶€í•´ì•¼í•¨
 
 ## Layout
-* ConstraintLayout »ç¿ë¹ý ÀÍÈ÷±â
-* Layout ÃÖÀûÈ­ ÇÏ±â
+* ConstraintLayout ì‚¬ìš©ë²• ìµížˆê¸°
+* Layout ìµœì í™” í•˜ê¸°
 
 ## Activity Life Cycle
-* Á¤È®ÇÏ°Ô ÀÍÈ÷±â
+* ì •í™•í•˜ê²Œ ìµížˆê¸°
 
 ## MVP Pattern
-* PatternÀ» »ç¿ëÇØ ¾îÇÃ¸®ÄÉÀÌ¼Ç ±¸Çö
+* Patternì„ ì‚¬ìš©í•´ ì–´í”Œë¦¬ì¼€ì´ì…˜ êµ¬í˜„
 
 ## Application Optimize
-* ¹èÅÍ¸®, µ¥ÀÌÅÍ Åë½Å, ·¹ÀÌ¾Æ¿ô ·»´õ¸µ ÃÖÀûÈ­
+* ë°°í„°ë¦¬, ë°ì´í„° í†µì‹ , ë ˆì´ì•„ì›ƒ ë Œë”ë§ ìµœì í™”
+
+## JDK
+* JDKë¥¼ ì‚¬ìš©í•´ ì¤‘ìš” ë¡œì§ ì„±ëŠ¥ í–¥ìƒì‹œí‚¤ê¸°
