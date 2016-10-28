@@ -5,7 +5,7 @@
 * 자원 낭비를 피하기 위해
 * 사용자의 진행 상태를 기억하기 위해
 
-![ActivityLifeCycle](https://github.com/KimBoWoon/Android-Practice/Activity Life Cycle/basic-lifecycle.png)
+![ActivityLifeCycle](https://github.com/KimBoWoon/Android-Practice/blob/master/Activity%20Life%20Cycle/basic-lifecycle.png)
 
 ## onCreate()
 * Activity가 시작되어 화면을 구성하는 단계
