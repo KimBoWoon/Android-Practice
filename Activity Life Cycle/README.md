@@ -35,6 +35,8 @@
 * 시스템이 Activity를 소멸 시킬 때 실행
 * 마지막으로 리소스를 해제할 수 있는 기회
 
+![StatusSave](https://github.com/KimBoWoon/Android-Practice/blob/master/Activity%20Life%20Cycle/basic-lifecycle-savestate.png)
+
 ## onSaveInstanceState()
 * Activity 중지 작업을 시작할 때 호출
 * 현재 Activity에 상태 데이터를 저장할 수 있음
