@@ -1,4 +1,4 @@
-# Android-Practice
+﻿# Android-Practice
 
 GDG에서 공부한것을 토대로 연습하는 공간
 
@@ -14,10 +14,11 @@ GDG에서 공부한것을 토대로 연습하는 공간
 * Layout 최적화 하기
 
 ## Activity Life Cycle
-* 정확하게 익히기
+* [Activity Life Cycle](https://github.com/KimBoWoon/Android-Practice/tree/master/Activity%20Life%20Cycle)
 
 ## MVP Pattern
 * Pattern을 사용해 어플리케이션 구현
+* [MVP](https://github.com/KimBoWoon/Android-Practice/tree/master/MVP)
 
 ## Application Optimize
 * 배터리, 데이터 통신, 레이아웃 렌더링 최적화
