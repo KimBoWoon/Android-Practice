@@ -6,8 +6,7 @@ GDG에서 공부한것을 토대로 연습하는 공간
 * mockito를 사용해 Unit-Testing을 진행
 
 ## RXJAVA
-* 아직 모름
-* 공부해야함
+* 함수형 프로그래밍
 
 ## Layout
 * ConstraintLayout 사용법 익히기

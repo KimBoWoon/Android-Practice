@@ -22,7 +22,7 @@
 * 하나의 Controller는 여러개의 View를 가질 수 있음
 
 ## MVC 패턴을 사용할 경우
-View와 Model간의 의존성이 낮으면 낮을 수록 좋은 구성이며 View와 Model간 의존성을 완전히 없앨 수 없다는 한계를 가진다
+* View와 Model간의 의존성이 낮으면 낮을 수록 좋은 구성이며 View와 Model간 의존성을 완전히 없앨 수 없다는 한계를 가진다
 
 # MVP (Model-View-Presenter)
 * MVC에서 파생된 것으로 Model과 View간의 의존성 문제를 해결하기 위해 설계
@@ -53,7 +53,7 @@ View와 Model간의 의존성이 낮으면 낮을 수록 좋은 구성이며 Vie
 # MVVM (Model-View-ViewModel)
 * MVC에서 파생
 * Model과 View 사이의 의존성 뿐 만 아니라 View와 Controller간의 의존성도 고려함
-* 각 Later가 완전히 독립적으로 작성되고 테스트 될 수 있도록 설계된 Architecture Pattern
+* 각 Layer가 완전히 독립적으로 작성되고 테스트 될 수 있도록 설계된 Architecture Pattern
 
 ![MVVM](https://github.com/KimBoWoon/Android-Practice/blob/master/MVP/MVVM.png)
 
