@@ -6,6 +6,7 @@ import android.widget.TextView;
 import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
 
 import butterknife.Bind;
+import butterknife.ButterKnife;
 import rx.Observable;
 
 // RxAndroid는 메모리 누수가 있어서 ThirdParty Library를 사용해 메모리를 관리
@@ -26,6 +27,7 @@ public class MainActivity extends RxAppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
 
         Observable.just("Hello RxAndroid!!")
                 .compose(this.<String>bindToLifecycle())
