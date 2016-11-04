@@ -29,10 +29,46 @@ public class MainActivity extends RxAppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+        /**
+         * retrolambda를 사용
+         */
         Observable.just("Hello RxAndroid!!")
                 .compose(this.<String>bindToLifecycle())
                 .subscribe(s -> {
                     simpleTextView.setText(s);
                 });
+
+        /**
+         * RxAndroid 사용
+         * onCompleted() 이벤트가 성공적으로 호출 됨
+         * onError() 이벤트 처리중 오류가 발생
+         * onNext() 이벤트가 발생
+        Observable<String> simpleObservable =
+                Observable.create(new Observable.OnSubscribe<String>() {
+                    @Override
+                    public void call(Subscriber<? super String> subscriber) {
+                        subscriber.onNext("Hello RxAndroid !!");
+                        subscriber.onCompleted();
+                    }
+                }).compose(this.<String>bindToLifecycle());
+
+
+        simpleObservable.subscribe(new Subscriber<String>() {
+            @Override
+            public void onCompleted() {
+                Log.d(TAG, "complete!");
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Log.e(TAG, "error: " + e.getMessage());
+            }
+
+            @Override
+            public void onNext(String text) {
+                ((TextView) findViewById(R.id.textView)).setText(text);
+            }
+        });
+         */
     }
 }
