@@ -8,6 +8,7 @@ GDG에서 공부한것을 토대로 연습하는 공간
 ## RXJAVA
 * 함수형 프로그래밍
 * [RXJAVA](https://github.com/KimBoWoon/Android-Practice/tree/master/RXJAVA)
+
 ## Layout
 * ConstraintLayout 사용법 익히기
 * Layout 최적화 하기
