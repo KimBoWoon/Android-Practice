@@ -4,6 +4,7 @@ GDG에서 공부한것을 토대로 연습하는 공간
 
 ## Unit-Test
 * mockito를 사용해 Unit-Testing을 진행
+* Android Espresso를 사용해 UI Unit-Testing을 진행
 
 ## RXJAVA
 * 함수형 프로그래밍
