@@ -12,6 +12,7 @@ GDG에서 공부한것을 토대로 연습하는 공간
 
 ## Layout
 * ConstraintLayout 사용법 익히기
+* RecyclerView 사용법 익히기
 * Layout 최적화 하기
 
 ## Activity Life Cycle
