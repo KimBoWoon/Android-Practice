@@ -14,6 +14,7 @@ GDG에서 공부한것을 토대로 연습하는 공간
 * ConstraintLayout 사용법 익히기
 * RecyclerView 사용법 익히기
 * Layout 최적화 하기
+* [Layout](https://github.com/KimBoWoon/Android-Practice/tree/master/Layout-Practice)
 
 ## Activity Life Cycle
 * [Activity Life Cycle](https://github.com/KimBoWoon/Android-Practice/tree/master/Activity%20Life%20Cycle)
