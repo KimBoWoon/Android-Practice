@@ -8,7 +8,6 @@ import org.mockito.MockitoAnnotations;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * Created by 보운 on 2016-12-18.
@@ -29,13 +28,16 @@ public class MainPresenterTest {
 
     @Test
     public void sumButtonClick() throws Exception {
-        when(mp.getInteger(any(Integer.class), any(Integer.class))).thenReturn(any(Integer.class));
+//        when(mp.getInteger(any(Integer.class), any(Integer.class))).thenReturn(any(Integer.class));
+//        mp.getInteger(any(Integer.class), any(Integer.class));
         mp.sumButtonClick(any(Integer.class), any(Integer.class));
         verify(mp).sumButtonClick(any(Integer.class), any(Integer.class));
     }
 
     @Test
     public void getInteger() throws Exception {
-        when(mp.getInteger(any(Integer.class), any(Integer.class))).thenReturn(any(Integer.class));
+//        when(mp.getInteger(any(Integer.class), any(Integer.class))).thenReturn(any(Integer.class));
+        mp.getInteger(any(Integer.class), any(Integer.class));
+        verify(mp).getInteger(any(Integer.class), any(Integer.class));
     }
 }
