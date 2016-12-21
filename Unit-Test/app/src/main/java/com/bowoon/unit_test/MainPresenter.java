@@ -15,6 +15,10 @@ public class MainPresenter implements MainContract.UserAction {
 
     @Override
     public void sumButtonClick(int val1, int val2) {
-        mMainView.setText(String.valueOf(mMainModel.getSumData(val1, val2)));
+        mMainView.setText(String.valueOf(getInteger(val1, val2)));
+    }
+
+    public int getInteger(int val1, int val2) {
+        return mMainModel.getSumData(val1, val2);
     }
 }
