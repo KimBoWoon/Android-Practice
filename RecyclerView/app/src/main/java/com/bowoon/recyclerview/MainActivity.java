@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
         setContentView(R.layout.activity_main);
 
-        linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
@@ -37,6 +37,6 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < 6; i++)
             items.add(item[i]);
 
-        recyclerView.setAdapter(new com.bowoon.recyclerview.RecyclerAdapter(getApplicationContext(), items, R.layout.activity_main));
+        recyclerView.setAdapter(new com.bowoon.recyclerview.RecyclerAdapter(getApplicationContext(), items));
     }
 }
