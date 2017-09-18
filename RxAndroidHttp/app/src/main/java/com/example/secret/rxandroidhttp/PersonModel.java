@@ -3,7 +3,6 @@ package com.example.secret.rxandroidhttp;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import java.net.URL;
 import java.util.List;
 
 /**
@@ -49,35 +48,35 @@ class Name {
 class UserProfileImage {
     @SerializedName("large")
     @Expose
-    private URL large;
+    private String large;
     @SerializedName("medium")
     @Expose
-    private URL medium;
+    private String medium;
     @SerializedName("thumbnail")
     @Expose
-    private URL thumbnail;
+    private String thumbnail;
 
-    public URL getLarge() {
+    public String getLarge() {
         return large;
     }
 
-    public void setLarge(URL large) {
+    public void setLarge(String large) {
         this.large = large;
     }
 
-    public URL getMedium() {
+    public String getMedium() {
         return medium;
     }
 
-    public void setMedium(URL medium) {
+    public void setMedium(String medium) {
         this.medium = medium;
     }
 
-    public URL getThumbnail() {
+    public String getThumbnail() {
         return thumbnail;
     }
 
-    public void setThumbnail(URL thumbnail) {
+    public void setThumbnail(String thumbnail) {
         this.thumbnail = thumbnail;
     }
 }

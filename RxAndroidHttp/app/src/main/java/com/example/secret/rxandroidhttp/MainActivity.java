@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<PersonModel> call, Response<PersonModel> response) {
                 if (response.isSuccessful()) {
-                    Log.i("Success", String.valueOf(response.body()));
+                    Log.i("Success", response.toString());
                     PersonModel person = response.body();
                     recyclerView.setAdapter(new RecyclerAdapter(getApplicationContext(), response.body().getItems()));
                 }

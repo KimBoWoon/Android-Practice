@@ -9,6 +9,6 @@ import retrofit2.http.Query;
  */
 
 public interface APIInterface {
-    @GET("/api")
+    @GET("/api/")
     Call<PersonModel> getUsers(@Query("results") int results);
 }
