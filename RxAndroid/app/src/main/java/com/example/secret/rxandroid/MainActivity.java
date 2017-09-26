@@ -2,7 +2,6 @@ package com.example.secret.rxandroid;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -23,16 +22,11 @@ public class MainActivity extends AppCompatActivity {
         printText = (TextView) findViewById(R.id.main_text);
         printBtn = (Button) findViewById(R.id.main_btn);
 
-        printBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Observable.just(inputEdit.getText().toString())
-                        .map(Integer::parseInt)
-                        .filter(x -> 1 < x && x < 10)
-                        .flatMap(x -> Observable.range(1, 9), (x, row) -> x + " * " + row + " = " + (x * row))
-                        .map(row -> row + "\n")
-                        .subscribe(printText::append);
-            }
-        });
+        printBtn.setOnClickListener(view -> Observable.just(inputEdit.getText().toString())
+                .map(Integer::parseInt)
+                .filter(x -> 1 < x && x < 10)
+                .flatMap(x -> Observable.range(1, 9), (x, row) -> x + " * " + row + " = " + (x * row))
+                .map(row -> row + "\n")
+                .subscribe(printText::append));
     }
 }
