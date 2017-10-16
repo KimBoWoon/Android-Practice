@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Android-Tensorflow</string>
+    <string name="toggle_camera">toggle_camera</string>
+    <string name="detect_object">detect_object</string>
+    <string name="permission_camera_rationale">permissionCamera</string>
+    <string name="ok">ok</string>
+    <string name="low_storage_error">lowStorage</string>
+    <string name="no_camera_permission">noCameraPermission</string>
+</resources>
