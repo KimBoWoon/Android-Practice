@@ -2,9 +2,9 @@ package com.example.translationapplication.http;
 
 import android.content.Context;
 
-public interface ServiceInterface {
-    int add(int x, int y);
-    int mul(int x, int y);
+import com.example.translationapplication.VolleyCallback;
 
-    void request(Context context, String text);
+public interface ServiceInterface {
+    void request(Context context, final String text);
+    void request(Context context, final VolleyCallback callback, final String text);
 }

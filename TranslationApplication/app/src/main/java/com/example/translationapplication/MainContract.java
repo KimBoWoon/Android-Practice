@@ -7,8 +7,9 @@ package com.example.translationapplication;
 public interface MainContract {
     interface View {
         void initView();
+        void setText(String s);
     }
     interface UserAction {
-
+        void requestBtnClick(String s);
     }
 }

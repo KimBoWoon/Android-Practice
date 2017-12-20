@@ -2,6 +2,7 @@ package com.example.translationapplication;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.TextView;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -25,6 +26,11 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
 
     @OnClick(R.id.main_btn_request)
     public void requestBtnClick() {
-        mMainPresenter.requestPapago();
+        mMainPresenter.requestBtnClick("Hello");
+    }
+
+    public void setText(String s) {
+        TextView textView = (TextView) findViewById(R.id.main_text_result);
+        textView.setText(s);
     }
 }

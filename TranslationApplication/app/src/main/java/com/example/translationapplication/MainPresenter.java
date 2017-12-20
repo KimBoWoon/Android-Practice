@@ -12,10 +12,23 @@ public class MainPresenter implements MainContract.UserAction {
 
     public MainPresenter(MainContract.View view) {
         this.mMainView = view;
+        ServiceProvider.registerDefaultProvider(new ProviderImplement());
     }
 
-    public void requestPapago() {
-        ServiceProvider.registerDefaultProvider(new ProviderImplement());
-        ServiceProvider.newInstance().request(((MainActivity) mMainView).getApplicationContext(), "Apple");
+    private void requestPapago(String s) {
+        ServiceProvider.newInstance().request(
+                ((MainActivity) mMainView).getApplicationContext(),
+                new VolleyCallback() {
+                    @Override
+                    public void onSuccess(MainModel result) {
+                        mMainView.setText(result.getTranslatedText());
+                    }
+                },
+                s);
+    }
+
+    @Override
+    public void requestBtnClick(String s) {
+        requestPapago(s);
     }
 }
