@@ -2,6 +2,7 @@ package com.example.translationapplication;
 
 import com.example.translationapplication.http.ProviderImplement;
 import com.example.translationapplication.http.ServiceProvider;
+import com.example.translationapplication.http.VolleyCallback;
 
 /**
  * Created by 보운 on 2017-12-19.
@@ -22,6 +23,11 @@ public class MainPresenter implements MainContract.UserAction {
                     @Override
                     public void onSuccess(MainModel result) {
                         mMainView.setText(result.getTranslatedText());
+                    }
+
+                    @Override
+                    public void onFail() {
+                        mMainView.setText("Network Failed");
                     }
                 },
                 s);

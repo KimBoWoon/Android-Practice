@@ -12,46 +12,30 @@ package com.example.translationapplication.http;
 //}
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.util.LruCache;
 
 import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
 
 public class VolleyPractice {
-    private static VolleyPractice instance;
+    private static VolleyPractice INSTANCE;
     private RequestQueue rq;
-    private ImageLoader il;
-    private final LruCache<String, Bitmap> cache = new LruCache<String, Bitmap>(20);
 
-    private VolleyPractice(Context context) {
-        rq = Volley.newRequestQueue(context);
-        il = new ImageLoader(rq, new ImageLoader.ImageCache() {
-            @Override
-            public Bitmap getBitmap(String url) {
-                return cache.get(url);
-            }
+    private VolleyPractice() {
 
-            @Override
-            public void putBitmap(String url, Bitmap bitmap) {
-                cache.put(url, bitmap);
-            }
-        });
     }
 
-    public static VolleyPractice getInstance(Context context) {
-        if (instance == null) {
-            return new VolleyPractice(context);
+    private static class Singleton {
+        private static final VolleyPractice INSTANCE = new VolleyPractice();
+    }
+
+    public static VolleyPractice getInstance() {
+        return Singleton.INSTANCE;
+    }
+
+    public RequestQueue getRequestQueue(Context context) {
+        if (rq == null) {
+            rq = Volley.newRequestQueue(context);
         }
-        return instance;
-    }
-
-    public RequestQueue getRequestQueue() {
         return rq;
-    }
-
-    public ImageLoader getImageLoader() {
-        return il;
     }
 }
