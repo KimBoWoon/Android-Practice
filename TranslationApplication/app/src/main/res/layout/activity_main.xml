@@ -7,10 +7,16 @@
     tools:context="com.example.translationapplication.MainActivity">
 
     <Button
-        android:id="@+id/main_btn_request"
+        android:id="@+id/main_btn_smt_request"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="REQUEST" />
+        android:text="SMT REQUEST" />
+
+    <Button
+        android:id="@+id/main_btn_nmt_request"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="NMT REQUEST" />
 
     <TextView
         android:id="@+id/main_text_result"

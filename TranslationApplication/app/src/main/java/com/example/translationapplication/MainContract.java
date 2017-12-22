@@ -10,6 +10,6 @@ public interface MainContract {
         void setText(String s);
     }
     interface UserAction {
-        void requestBtnClick(String s);
+        void requestBtnClick(TranslationType transType, String s);
     }
 }

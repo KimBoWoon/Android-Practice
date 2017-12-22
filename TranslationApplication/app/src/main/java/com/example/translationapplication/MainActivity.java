@@ -3,6 +3,7 @@ package com.example.translationapplication;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -24,9 +25,16 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         this.mMainPresenter = new MainPresenter(this);
     }
 
-    @OnClick(R.id.main_btn_request)
-    public void requestBtnClick() {
-        mMainPresenter.requestBtnClick("Hello");
+    @OnClick(R.id.main_btn_smt_request)
+    public void requestSMTBtnClick() {
+        Toast.makeText(getApplicationContext(), "SMT", Toast.LENGTH_SHORT).show();
+        mMainPresenter.requestBtnClick(TranslationType.SMT, "Hello");
+    }
+
+    @OnClick(R.id.main_btn_nmt_request)
+    public void requestNMTBtnClick() {
+        Toast.makeText(getApplicationContext(), "NMT", Toast.LENGTH_SHORT).show();
+        mMainPresenter.requestBtnClick(TranslationType.NMT, "Hello");
     }
 
     public void setText(String s) {

@@ -3,6 +3,8 @@ package com.example.translationapplication;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import com.google.common.base.Objects;
+
 /**
  * Created by 보운 on 2017-12-19.
  */
@@ -51,30 +53,30 @@ public class MainModel {
         this.srcText = srcText;
     }
 
-//    public TransType getTransTypeEnum() {
-//        return TransType.valueOf(transType);
-//    }
-//
-//    public void setTransTypeEnum(TransType type) {
-//        this.transType = type.toString();
-//    }
+    public TranslationType getTransTypeEnum() {
+        return TranslationType.valueOf(transType);
+    }
 
-//    @Override
-//    public boolean equals(Object o) {
-//        if (this == o) {
-//            return true;
-//        }
-//        if (o == null || getClass() != o.getClass()) {
-//            return false;
-//        }
-//        MainModel transData = (MainModel) o;
-//        return Objects.equals(translatedText, transData.translatedText) &&
-//                Objects.equals(srcLangType, transData.srcLangType) &&
-//                Objects.equals(srcText, transData.srcText);
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        return Objects.hashCode(translatedText, srcLangType, srcText);
-//    }
+    public void setTransTypeEnum(TranslationType type) {
+        this.transType = type.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        MainModel transData = (MainModel) o;
+        return Objects.equal(translatedText, transData.translatedText) &&
+                Objects.equal(srcLangType, transData.srcLangType) &&
+                Objects.equal(srcText, transData.srcText);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(translatedText, srcLangType, srcText);
+    }
 }

@@ -16,9 +16,10 @@ public class MainPresenter implements MainContract.UserAction {
         ServiceProvider.registerDefaultProvider(new ProviderImplement());
     }
 
-    private void requestPapago(String s) {
+    private void requestPapago(TranslationType transType, String s) {
         ServiceProvider.newInstance().request(
                 ((MainActivity) mMainView).getApplicationContext(),
+                transType,
                 new VolleyCallback() {
                     @Override
                     public void onSuccess(MainModel result) {
@@ -34,7 +35,7 @@ public class MainPresenter implements MainContract.UserAction {
     }
 
     @Override
-    public void requestBtnClick(String s) {
-        requestPapago(s);
+    public void requestBtnClick(TranslationType transType, String s) {
+        requestPapago(transType, s);
     }
 }
