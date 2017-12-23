@@ -79,4 +79,9 @@ public class MainModel {
     public int hashCode() {
         return Objects.hashCode(translatedText, srcLangType, srcText);
     }
+
+    @Override
+    public String toString() {
+        return "translatedText : " + getTranslatedText();
+    }
 }
