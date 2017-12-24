@@ -1,4 +1,6 @@
-package com.example.translationapplication;
+package com.example.translationapplication.home;
+
+import com.example.translationapplication.util.TranslationType;
 
 /**
  * Created by 보운 on 2017-12-19.

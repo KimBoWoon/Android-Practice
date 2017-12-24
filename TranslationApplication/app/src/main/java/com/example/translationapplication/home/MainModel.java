@@ -1,5 +1,6 @@
-package com.example.translationapplication;
+package com.example.translationapplication.home;
 
+import com.example.translationapplication.util.TranslationType;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 

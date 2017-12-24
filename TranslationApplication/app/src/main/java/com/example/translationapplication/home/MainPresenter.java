@@ -1,8 +1,9 @@
-package com.example.translationapplication;
+package com.example.translationapplication.home;
 
 import com.example.translationapplication.http.ProviderImplement;
 import com.example.translationapplication.http.ServiceProvider;
 import com.example.translationapplication.http.VolleyCallback;
+import com.example.translationapplication.util.TranslationType;
 
 /**
  * Created by 보운 on 2017-12-19.
@@ -17,7 +18,7 @@ public class MainPresenter implements MainContract.UserAction {
     }
 
     private void requestPapago(TranslationType transType, String s) {
-        ServiceProvider.newInstance().request(
+        ServiceProvider.newInstance().requestPapagoAPI(
                 ((MainActivity) mMainView).getApplicationContext(),
                 transType,
                 new VolleyCallback() {

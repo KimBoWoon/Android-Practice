@@ -5,17 +5,10 @@ import android.net.Uri;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.example.translationapplication.MainModel;
-import com.example.translationapplication.TranslationType;
+import com.example.translationapplication.home.MainModel;
+import com.example.translationapplication.util.TranslationType;
 
 public class ServiceImplement implements ServiceInterface {
-    @Override
-    public void request(Context context, TranslationType transType, final VolleyCallback callback, final String text) {
-        String url = makeURL(transType);
-
-        requestPapagoAPI(context, callback, url, text);
-    }
-
     private String makeURL(TranslationType transType) {
         Uri.Builder uri = new Uri.Builder();
         uri.scheme("https");
@@ -35,7 +28,9 @@ public class ServiceImplement implements ServiceInterface {
         return uri.build().toString();
     }
 
-    private void requestPapagoAPI(Context context, final VolleyCallback callback, String url, final String text) {
+    public void requestPapagoAPI(Context context, TranslationType transType, final VolleyCallback callback, final String text) {
+        String url = makeURL(transType);
+
         VolleyCustomRequest<MainModel> request = new VolleyCustomRequest<>(
                 url,
                 MainModel.class,

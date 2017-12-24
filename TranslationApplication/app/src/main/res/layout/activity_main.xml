@@ -4,7 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.example.translationapplication.MainActivity">
+    tools:context="com.example.translationapplication.home.MainActivity">
+
+    <EditText
+        android:id="@+id/main_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text" />
 
     <Button
         android:id="@+id/main_btn_smt_request"
