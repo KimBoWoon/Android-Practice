@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">TranslationApplication</string>
+    <string name="permission_camera_rationale">permission_camera_rationale</string>
+    <string name="ok">OK</string>
+    <string name="low_storage_error">Error</string>
+    <string name="no_camera_permission">no_camera_permission</string>
 </resources>
