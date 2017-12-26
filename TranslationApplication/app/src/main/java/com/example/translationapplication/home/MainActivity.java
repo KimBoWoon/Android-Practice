@@ -85,7 +85,6 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
 
         autoFocus = true;
 
-//        카메라 퍼미션 체크
         int rc = ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
         if (rc == PackageManager.PERMISSION_GRANTED) {
             createCameraSource(autoFocus);
@@ -126,7 +125,6 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         textView.setText(s);
     }
 
-    //    퍼미션 허용하는거 자바코드에서의 허용
     private void requestCameraPermission() {
         Log.w(TAG, "Camera permission is not granted. Requesting permission");
 
@@ -168,8 +166,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         Context context = getApplicationContext();
 
         TextRecognizer textRecognizer = new TextRecognizer.Builder(context).build();
-//        이게 있어야 글자 찾음
-        textRecognizer.setProcessor(new OcrDetectorProcessor(mGraphicOverlay));
+        textRecognizer.setProcessor(new OcrDetectorProcessor(mGraphicOverlay, getApplicationContext()));
 
         if (!textRecognizer.isOperational()) {
             Log.w(TAG, "Detector dependencies are not yet available.");
