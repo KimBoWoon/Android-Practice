@@ -8,7 +8,6 @@ import com.example.translationapplication.home.MainModel;
 import com.example.translationapplication.http.ServiceProvider;
 import com.example.translationapplication.http.VolleyCallback;
 import com.example.translationapplication.util.TranslationType;
-import com.google.android.gms.internal.zzdke;
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.text.TextBlock;
 
@@ -42,6 +41,7 @@ public class OcrDetectorProcessor implements Detector.Processor<TextBlock> {
         mGraphicOverlay.clear();
         SparseArray<TextBlock> items = detections.getDetectedItems();
         for (int i = 0; i < items.size(); ++i) {
+            final CustomTextBlock customTextblock = new CustomTextBlock(items.get(i));
             ServiceProvider.newInstance().requestPapagoAPI(
                     context,
                     TranslationType.SMT,
@@ -49,6 +49,7 @@ public class OcrDetectorProcessor implements Detector.Processor<TextBlock> {
                         @Override
                         public void onSuccess(MainModel result) {
                             Toast.makeText(context, result.toString(), Toast.LENGTH_SHORT).show();
+                            customTextblock.setTranslatedText(result.getTranslatedText());
                         }
 
                         @Override
@@ -57,8 +58,8 @@ public class OcrDetectorProcessor implements Detector.Processor<TextBlock> {
                         }
                     },
                     items.get(i).getValue());
-            TextBlock item = items.valueAt(i);
-            OcrGraphic graphic = new OcrGraphic(mGraphicOverlay, item);
+//            TextBlock item = items.valueAt(i);
+            OcrGraphic graphic = new OcrGraphic(mGraphicOverlay, customTextblock);
             mGraphicOverlay.add(graphic);
         }
     }

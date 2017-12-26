@@ -23,11 +23,35 @@ public class OcrGraphic extends GraphicOverlay.Graphic {
     private static Paint sRectPaint;
     private static Paint sTextPaint;
     private final TextBlock mText;
+    private final CustomTextBlock mCustomTextBlock;
 
     OcrGraphic(GraphicOverlay overlay, TextBlock text) {
         super(overlay);
 
         mText = text;
+        mCustomTextBlock = null;
+
+        if (sRectPaint == null) {
+            sRectPaint = new Paint();
+            sRectPaint.setColor(TEXT_COLOR);
+            sRectPaint.setStyle(Paint.Style.STROKE);
+            sRectPaint.setStrokeWidth(4.0f);
+        }
+
+        if (sTextPaint == null) {
+            sTextPaint = new Paint();
+            sTextPaint.setColor(TEXT_COLOR);
+            sTextPaint.setTextSize(54.0f);
+        }
+        // Redraw the overlay, as this graphic has been added.
+        postInvalidate();
+    }
+
+    public OcrGraphic(GraphicOverlay overlay, CustomTextBlock text) {
+        super(overlay);
+
+        mText = null;
+        mCustomTextBlock = text;
 
         if (sRectPaint == null) {
             sRectPaint = new Paint();
@@ -83,7 +107,8 @@ public class OcrGraphic extends GraphicOverlay.Graphic {
      */
     @Override
     public void draw(Canvas canvas) {
-        TextBlock text = mText;
+//        TextBlock text = mText;
+        CustomTextBlock text = mCustomTextBlock;
         if (text == null) {
             return;
         }
