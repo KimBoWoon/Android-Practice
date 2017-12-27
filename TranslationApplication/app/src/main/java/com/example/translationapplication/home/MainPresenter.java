@@ -1,8 +1,9 @@
 package com.example.translationapplication.home;
 
+import com.example.translationapplication.http.HttpServiceProvider;
 import com.example.translationapplication.http.ProviderImplement;
-import com.example.translationapplication.http.ServiceProvider;
 import com.example.translationapplication.http.VolleyCallback;
+import com.example.translationapplication.util.DataManager;
 import com.example.translationapplication.util.TranslationType;
 
 /**
@@ -14,16 +15,16 @@ public class MainPresenter implements MainContract.UserAction {
 
     public MainPresenter(MainContract.View view) {
         this.mMainView = view;
-        ServiceProvider.registerDefaultProvider(new ProviderImplement());
+        HttpServiceProvider.registerDefaultProvider(new ProviderImplement());
     }
 
     private void requestPapago(TranslationType transType, String s) {
-        ServiceProvider.newInstance().requestPapagoAPI(
+        HttpServiceProvider.newInstance().requestPapagoAPI(
                 ((MainActivity) mMainView).getApplicationContext(),
                 transType,
                 new VolleyCallback() {
                     @Override
-                    public void onSuccess(MainModel result) {
+                    public void onSuccess(TranslatedModel result) {
                         mMainView.setText(result.getTranslatedText());
                     }
 
@@ -38,5 +39,14 @@ public class MainPresenter implements MainContract.UserAction {
     @Override
     public void requestBtnClick(TranslationType transType, String s) {
         requestPapago(transType, s);
+    }
+
+    @Override
+    public void toggle() {
+        if (DataManager.getInstance().getType() == TranslationType.SMT) {
+            DataManager.getInstance().setType(TranslationType.NMT);
+        } else if (DataManager.getInstance().getType() == TranslationType.NMT) {
+            DataManager.getInstance().setType(TranslationType.SMT);
+        }
     }
 }

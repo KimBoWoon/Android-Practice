@@ -13,16 +13,16 @@
         android:inputType="text" />
 
     <Button
-        android:id="@+id/main_btn_smt_request"
+        android:id="@+id/main_btn_toggle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="SMT REQUEST" />
+        android:text="TOGGLE" />
 
     <Button
-        android:id="@+id/main_btn_nmt_request"
+        android:id="@+id/main_btn_request"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="NMT REQUEST" />
+        android:text="REQUEST" />
 
     <TextView
         android:id="@+id/main_text_result"

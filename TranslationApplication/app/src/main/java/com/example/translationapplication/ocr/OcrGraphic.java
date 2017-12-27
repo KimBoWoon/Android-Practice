@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 
+import com.example.translationapplication.util.CustomTextBlock;
 import com.google.android.gms.vision.text.Text;
 import com.google.android.gms.vision.text.TextBlock;
 
@@ -126,7 +127,9 @@ public class OcrGraphic extends GraphicOverlay.Graphic {
         for (Text currentText : textComponents) {
             float left = translateX(currentText.getBoundingBox().left);
             float bottom = translateY(currentText.getBoundingBox().bottom);
-            canvas.drawText(currentText.getValue(), left, bottom, sTextPaint);
+//            canvas.drawText(currentText.getValue(), left, bottom, sTextPaint);
+            // TODO 수정 필요
+            canvas.drawText(text.getTranslatedText(), left, bottom, sTextPaint);
         }
     }
 }

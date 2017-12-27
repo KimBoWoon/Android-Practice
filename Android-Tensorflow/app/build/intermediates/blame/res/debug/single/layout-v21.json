@@ -1,0 +1,18 @@
+[
+    {
+        "merged": "D:\\GitHub\\Android-Practice\\Android-Tensorflow\\app\\build\\intermediates\\res\\merged\\debug\\layout-v21\\notification_action.xml",
+        "source": "C:\\Users\\보운\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-26.0.0-alpha1.aar\\239f34a379ec4d02a36edb93d8afa418\\res\\layout-v21\\notification_action.xml"
+    },
+    {
+        "merged": "D:\\GitHub\\Android-Practice\\Android-Tensorflow\\app\\build\\intermediates\\res\\merged\\debug\\layout-v21\\notification_template_custom_big.xml",
+        "source": "C:\\Users\\보운\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-26.0.0-alpha1.aar\\239f34a379ec4d02a36edb93d8afa418\\res\\layout-v21\\notification_template_custom_big.xml"
+    },
+    {
+        "merged": "D:\\GitHub\\Android-Practice\\Android-Tensorflow\\app\\build\\intermediates\\res\\merged\\debug\\layout-v21\\notification_action_tombstone.xml",
+        "source": "C:\\Users\\보운\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-26.0.0-alpha1.aar\\239f34a379ec4d02a36edb93d8afa418\\res\\layout-v21\\notification_action_tombstone.xml"
+    },
+    {
+        "merged": "D:\\GitHub\\Android-Practice\\Android-Tensorflow\\app\\build\\intermediates\\res\\merged\\debug\\layout-v21\\notification_template_icon_group.xml",
+        "source": "C:\\Users\\보운\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-26.0.0-alpha1.aar\\239f34a379ec4d02a36edb93d8afa418\\res\\layout-v21\\notification_template_icon_group.xml"
+    }
+]

@@ -31,6 +31,7 @@ import com.example.translationapplication.camera.CameraSourcePreview;
 import com.example.translationapplication.ocr.GraphicOverlay;
 import com.example.translationapplication.ocr.OcrDetectorProcessor;
 import com.example.translationapplication.ocr.OcrGraphic;
+import com.example.translationapplication.util.DataManager;
 import com.example.translationapplication.util.TranslationType;
 import com.example.translationapplication.util.ValuableChecker;
 import com.google.android.gms.common.ConnectionResult;
@@ -100,24 +101,24 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
                 .show();
     }
 
-    @OnClick(R.id.main_btn_smt_request)
+    @OnClick(R.id.main_btn_toggle)
+    public void toggleBtnClick() {
+        if (ValuableChecker.valueNull(translationText.getText().toString())) {
+            Toast.makeText(getApplicationContext(), "값을 제대로 입력하세요", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Toast.makeText(getApplicationContext(), "SMT", Toast.LENGTH_SHORT).show();
+        mMainPresenter.toggle();
+    }
+
+    @OnClick(R.id.main_btn_request)
     public void requestSMTBtnClick() {
         if (ValuableChecker.valueNull(translationText.getText().toString())) {
             Toast.makeText(getApplicationContext(), "값을 제대로 입력하세요", Toast.LENGTH_SHORT).show();
             return;
         }
         Toast.makeText(getApplicationContext(), "SMT", Toast.LENGTH_SHORT).show();
-        mMainPresenter.requestBtnClick(TranslationType.SMT, translationText.getText().toString());
-    }
-
-    @OnClick(R.id.main_btn_nmt_request)
-    public void requestNMTBtnClick() {
-        if (ValuableChecker.valueNull(translationText.getText().toString())) {
-            Toast.makeText(getApplicationContext(), "값을 제대로 입력하세요", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        Toast.makeText(getApplicationContext(), "NMT", Toast.LENGTH_SHORT).show();
-        mMainPresenter.requestBtnClick(TranslationType.NMT, translationText.getText().toString());
+        mMainPresenter.requestBtnClick(DataManager.getInstance().getType(), translationText.getText().toString());
     }
 
     public void setText(String s) {

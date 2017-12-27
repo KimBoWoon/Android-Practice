@@ -1,0 +1,219 @@
+-- Merging decision tree log ---
+manifest
+ADDED from D:\GitHub\Android-Practice\Android-Tensorflow\app\src\main\AndroidManifest.xml:2:1-24:12
+INJECTED from D:\GitHub\Android-Practice\Android-Tensorflow\app\src\main\AndroidManifest.xml:2:1-24:12
+INJECTED from D:\GitHub\Android-Practice\Android-Tensorflow\app\src\main\AndroidManifest.xml:2:1-24:12
+INJECTED from D:\GitHub\Android-Practice\Android-Tensorflow\app\src\main\AndroidManifest.xml:2:1-24:12
+MERGED from [com.android.support:design:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\design-26.0.0-alpha1.aar\998b377a0ceaac2db18c3785c5d767e9\AndroidManifest.xml:17:1-31:12
+MERGED from [com.android.support:appcompat-v7:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\appcompat-v7-26.0.0-alpha1.aar\239f34a379ec4d02a36edb93d8afa418\AndroidManifest.xml:17:1-31:12
+MERGED from [com.android.support.constraint:constraint-layout:1.0.2] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\constraint-layout-1.0.2.aar\592242addd5bfddb4f6d49a787d48753\AndroidManifest.xml:2:1-11:12
+MERGED from [com.github.google:cameraview:d0b508a5ea] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\cameraview-d0b508a5ea.aar\1880cd799217193a4027896dbd861eb4\AndroidManifest.xml:14:1-30:12
+MERGED from [com.google.android.gms:play-services-vision:10.0.1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\play-services-vision-10.0.1.aar\e94a04059757af35f2d10865f868e6df\AndroidManifest.xml:2:1-5:12
+MERGED from [com.android.support:animated-vector-drawable:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\animated-vector-drawable-26.0.0-alpha1.aar\89b1f16b06ee8c5ffc601780b22f416b\AndroidManifest.xml:17:1-28:12
+MERGED from [com.android.support:support-vector-drawable:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\support-vector-drawable-26.0.0-alpha1.aar\2f272fcc1f2dcd5a01df69086036aa24\AndroidManifest.xml:17:1-28:12
+MERGED from [com.android.support:recyclerview-v7:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\recyclerview-v7-26.0.0-alpha1.aar\4c32c6f686eb5078e8910c61c05acd19\AndroidManifest.xml:17:1-26:12
+MERGED from [com.android.support:transition:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\transition-26.0.0-alpha1.aar\3c2c0b1350e41653e11d8d21fe65ab9b\AndroidManifest.xml:17:1-28:12
+MERGED from [com.google.android.gms:play-services-base:10.0.1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\play-services-base-10.0.1.aar\027c878e17ff77e1958f648e0eede696\AndroidManifest.xml:16:1-21:12
+MERGED from [com.google.android.gms:play-services-tasks:10.0.1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\play-services-tasks-10.0.1.aar\ca435c37653c776d3bfe8e33997cf20e\AndroidManifest.xml:2:1-5:12
+MERGED from [com.google.android.gms:play-services-basement:10.0.1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\play-services-basement-10.0.1.aar\6600d424c892b51efeb9255f3d471fea\AndroidManifest.xml:16:1-23:12
+MERGED from [com.android.support:support-v4:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\support-v4-26.0.0-alpha1.aar\99c34e9d9852e07747b46e8fdd479add\AndroidManifest.xml:17:1-31:12
+MERGED from [com.android.support:support-fragment:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\support-fragment-26.0.0-alpha1.aar\4996e676b41bbc7c44b7a5b6db257530\AndroidManifest.xml:17:1-31:12
+MERGED from [com.android.support:support-core-ui:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\support-core-ui-26.0.0-alpha1.aar\859525c05275698ee665d8f7a38696a4\AndroidManifest.xml:17:1-31:12
+MERGED from [com.android.support:support-media-compat:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\support-media-compat-26.0.0-alpha1.aar\db46d8789bf811efd2d8e7d883bad722\AndroidManifest.xml:17:1-31:12
+MERGED from [com.android.support:support-core-utils:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\support-core-utils-26.0.0-alpha1.aar\124fde29ba58f9d655dc8af90db06258\AndroidManifest.xml:17:1-31:12
+MERGED from [com.android.support:support-compat:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\support-compat-26.0.0-alpha1.aar\f847f376b7947d651e7db75ba632b261\AndroidManifest.xml:17:1-31:12
+INJECTED from D:\GitHub\Android-Practice\Android-Tensorflow\app\src\main\AndroidManifest.xml:2:1-24:12
+INJECTED from D:\GitHub\Android-Practice\Android-Tensorflow\app\src\main\AndroidManifest.xml:2:1-24:12
+INJECTED from D:\GitHub\Android-Practice\Android-Tensorflow\app\src\main\AndroidManifest.xml:2:1-24:12
+	package
+		ADDED from D:\GitHub\Android-Practice\Android-Tensorflow\app\src\main\AndroidManifest.xml:3:5-57
+		INJECTED from D:\GitHub\Android-Practice\Android-Tensorflow\app\src\main\AndroidManifest.xml
+		INJECTED from D:\GitHub\Android-Practice\Android-Tensorflow\app\src\main\AndroidManifest.xml
+	android:versionName
+		INJECTED from D:\GitHub\Android-Practice\Android-Tensorflow\app\src\main\AndroidManifest.xml
+		ADDED from D:\GitHub\Android-Practice\Android-Tensorflow\app\src\main\AndroidManifest.xml:2:1-24:12
+		INJECTED from D:\GitHub\Android-Practice\Android-Tensorflow\app\src\main\AndroidManifest.xml
+	android:versionCode
+		INJECTED from D:\GitHub\Android-Practice\Android-Tensorflow\app\src\main\AndroidManifest.xml
+		ADDED from D:\GitHub\Android-Practice\Android-Tensorflow\app\src\main\AndroidManifest.xml:2:1-24:12
+		INJECTED from D:\GitHub\Android-Practice\Android-Tensorflow\app\src\main\AndroidManifest.xml
+	xmlns:android
+		ADDED from D:\GitHub\Android-Practice\Android-Tensorflow\app\src\main\AndroidManifest.xml:2:11-69
+uses-feature#android.hardware.camera
+ADDED from D:\GitHub\Android-Practice\Android-Tensorflow\app\src\main\AndroidManifest.xml:5:5-60
+MERGED from [com.github.google:cameraview:d0b508a5ea] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\cameraview-d0b508a5ea.aar\1880cd799217193a4027896dbd861eb4\AndroidManifest.xml:23:5-60
+MERGED from [com.github.google:cameraview:d0b508a5ea] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\cameraview-d0b508a5ea.aar\1880cd799217193a4027896dbd861eb4\AndroidManifest.xml:23:5-60
+	android:name
+		ADDED from D:\GitHub\Android-Practice\Android-Tensorflow\app\src\main\AndroidManifest.xml:5:19-57
+uses-permission#android.permission.CAMERA
+ADDED from D:\GitHub\Android-Practice\Android-Tensorflow\app\src\main\AndroidManifest.xml:6:5-65
+MERGED from [com.github.google:cameraview:d0b508a5ea] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\cameraview-d0b508a5ea.aar\1880cd799217193a4027896dbd861eb4\AndroidManifest.xml:21:5-65
+MERGED from [com.github.google:cameraview:d0b508a5ea] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\cameraview-d0b508a5ea.aar\1880cd799217193a4027896dbd861eb4\AndroidManifest.xml:21:5-65
+	android:name
+		ADDED from D:\GitHub\Android-Practice\Android-Tensorflow\app\src\main\AndroidManifest.xml:6:22-62
+uses-permission#android.hardware.camera.autofocus
+ADDED from D:\GitHub\Android-Practice\Android-Tensorflow\app\src\main\AndroidManifest.xml:7:5-73
+	android:name
+		ADDED from D:\GitHub\Android-Practice\Android-Tensorflow\app\src\main\AndroidManifest.xml:7:22-70
+application
+ADDED from D:\GitHub\Android-Practice\Android-Tensorflow\app\src\main\AndroidManifest.xml:8:5-22:19
+MERGED from [com.android.support:design:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\design-26.0.0-alpha1.aar\998b377a0ceaac2db18c3785c5d767e9\AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:design:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\design-26.0.0-alpha1.aar\998b377a0ceaac2db18c3785c5d767e9\AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:appcompat-v7:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\appcompat-v7-26.0.0-alpha1.aar\239f34a379ec4d02a36edb93d8afa418\AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:appcompat-v7:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\appcompat-v7-26.0.0-alpha1.aar\239f34a379ec4d02a36edb93d8afa418\AndroidManifest.xml:29:5-20
+MERGED from [com.android.support.constraint:constraint-layout:1.0.2] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\constraint-layout-1.0.2.aar\592242addd5bfddb4f6d49a787d48753\AndroidManifest.xml:9:5-20
+MERGED from [com.android.support.constraint:constraint-layout:1.0.2] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\constraint-layout-1.0.2.aar\592242addd5bfddb4f6d49a787d48753\AndroidManifest.xml:9:5-20
+MERGED from [com.github.google:cameraview:d0b508a5ea] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\cameraview-d0b508a5ea.aar\1880cd799217193a4027896dbd861eb4\AndroidManifest.xml:28:5-20
+MERGED from [com.github.google:cameraview:d0b508a5ea] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\cameraview-d0b508a5ea.aar\1880cd799217193a4027896dbd861eb4\AndroidManifest.xml:28:5-20
+MERGED from [com.google.android.gms:play-services-vision:10.0.1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\play-services-vision-10.0.1.aar\e94a04059757af35f2d10865f868e6df\AndroidManifest.xml:4:5-19
+MERGED from [com.google.android.gms:play-services-vision:10.0.1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\play-services-vision-10.0.1.aar\e94a04059757af35f2d10865f868e6df\AndroidManifest.xml:4:5-19
+MERGED from [com.android.support:animated-vector-drawable:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\animated-vector-drawable-26.0.0-alpha1.aar\89b1f16b06ee8c5ffc601780b22f416b\AndroidManifest.xml:26:5-20
+MERGED from [com.android.support:animated-vector-drawable:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\animated-vector-drawable-26.0.0-alpha1.aar\89b1f16b06ee8c5ffc601780b22f416b\AndroidManifest.xml:26:5-20
+MERGED from [com.android.support:support-vector-drawable:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\support-vector-drawable-26.0.0-alpha1.aar\2f272fcc1f2dcd5a01df69086036aa24\AndroidManifest.xml:26:5-20
+MERGED from [com.android.support:support-vector-drawable:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\support-vector-drawable-26.0.0-alpha1.aar\2f272fcc1f2dcd5a01df69086036aa24\AndroidManifest.xml:26:5-20
+MERGED from [com.android.support:transition:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\transition-26.0.0-alpha1.aar\3c2c0b1350e41653e11d8d21fe65ab9b\AndroidManifest.xml:26:5-20
+MERGED from [com.android.support:transition:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\transition-26.0.0-alpha1.aar\3c2c0b1350e41653e11d8d21fe65ab9b\AndroidManifest.xml:26:5-20
+MERGED from [com.google.android.gms:play-services-base:10.0.1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\play-services-base-10.0.1.aar\027c878e17ff77e1958f648e0eede696\AndroidManifest.xml:18:5-20:19
+MERGED from [com.google.android.gms:play-services-base:10.0.1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\play-services-base-10.0.1.aar\027c878e17ff77e1958f648e0eede696\AndroidManifest.xml:18:5-20:19
+MERGED from [com.google.android.gms:play-services-tasks:10.0.1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\play-services-tasks-10.0.1.aar\ca435c37653c776d3bfe8e33997cf20e\AndroidManifest.xml:4:5-19
+MERGED from [com.google.android.gms:play-services-tasks:10.0.1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\play-services-tasks-10.0.1.aar\ca435c37653c776d3bfe8e33997cf20e\AndroidManifest.xml:4:5-19
+MERGED from [com.google.android.gms:play-services-basement:10.0.1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\play-services-basement-10.0.1.aar\6600d424c892b51efeb9255f3d471fea\AndroidManifest.xml:19:5-21:19
+MERGED from [com.google.android.gms:play-services-basement:10.0.1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\play-services-basement-10.0.1.aar\6600d424c892b51efeb9255f3d471fea\AndroidManifest.xml:19:5-21:19
+MERGED from [com.android.support:support-v4:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\support-v4-26.0.0-alpha1.aar\99c34e9d9852e07747b46e8fdd479add\AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:support-v4:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\support-v4-26.0.0-alpha1.aar\99c34e9d9852e07747b46e8fdd479add\AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:support-fragment:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\support-fragment-26.0.0-alpha1.aar\4996e676b41bbc7c44b7a5b6db257530\AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:support-fragment:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\support-fragment-26.0.0-alpha1.aar\4996e676b41bbc7c44b7a5b6db257530\AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:support-core-ui:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\support-core-ui-26.0.0-alpha1.aar\859525c05275698ee665d8f7a38696a4\AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:support-core-ui:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\support-core-ui-26.0.0-alpha1.aar\859525c05275698ee665d8f7a38696a4\AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:support-media-compat:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\support-media-compat-26.0.0-alpha1.aar\db46d8789bf811efd2d8e7d883bad722\AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:support-media-compat:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\support-media-compat-26.0.0-alpha1.aar\db46d8789bf811efd2d8e7d883bad722\AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:support-core-utils:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\support-core-utils-26.0.0-alpha1.aar\124fde29ba58f9d655dc8af90db06258\AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:support-core-utils:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\support-core-utils-26.0.0-alpha1.aar\124fde29ba58f9d655dc8af90db06258\AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:support-compat:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\support-compat-26.0.0-alpha1.aar\f847f376b7947d651e7db75ba632b261\AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:support-compat:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\support-compat-26.0.0-alpha1.aar\f847f376b7947d651e7db75ba632b261\AndroidManifest.xml:29:5-20
+	android:supportsRtl
+		ADDED from D:\GitHub\Android-Practice\Android-Tensorflow\app\src\main\AndroidManifest.xml:13:9-35
+	android:label
+		ADDED from D:\GitHub\Android-Practice\Android-Tensorflow\app\src\main\AndroidManifest.xml:11:9-41
+	android:roundIcon
+		ADDED from D:\GitHub\Android-Practice\Android-Tensorflow\app\src\main\AndroidManifest.xml:12:9-54
+	android:icon
+		ADDED from D:\GitHub\Android-Practice\Android-Tensorflow\app\src\main\AndroidManifest.xml:10:9-43
+	android:allowBackup
+		ADDED from D:\GitHub\Android-Practice\Android-Tensorflow\app\src\main\AndroidManifest.xml:9:9-35
+	android:theme
+		ADDED from D:\GitHub\Android-Practice\Android-Tensorflow\app\src\main\AndroidManifest.xml:14:9-40
+activity#com.practice.tensorflow.android_tensorflow.MainActivity
+ADDED from D:\GitHub\Android-Practice\Android-Tensorflow\app\src\main\AndroidManifest.xml:15:9-21:20
+	android:name
+		ADDED from D:\GitHub\Android-Practice\Android-Tensorflow\app\src\main\AndroidManifest.xml:15:19-47
+intent-filter#android.intent.action.MAIN+android.intent.category.LAUNCHER
+ADDED from D:\GitHub\Android-Practice\Android-Tensorflow\app\src\main\AndroidManifest.xml:16:13-20:29
+action#android.intent.action.MAIN
+ADDED from D:\GitHub\Android-Practice\Android-Tensorflow\app\src\main\AndroidManifest.xml:17:17-69
+	android:name
+		ADDED from D:\GitHub\Android-Practice\Android-Tensorflow\app\src\main\AndroidManifest.xml:17:25-66
+category#android.intent.category.LAUNCHER
+ADDED from D:\GitHub\Android-Practice\Android-Tensorflow\app\src\main\AndroidManifest.xml:19:17-77
+	android:name
+		ADDED from D:\GitHub\Android-Practice\Android-Tensorflow\app\src\main\AndroidManifest.xml:19:27-74
+uses-sdk
+INJECTED from D:\GitHub\Android-Practice\Android-Tensorflow\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from D:\GitHub\Android-Practice\Android-Tensorflow\app\src\main\AndroidManifest.xml
+INJECTED from D:\GitHub\Android-Practice\Android-Tensorflow\app\src\main\AndroidManifest.xml
+MERGED from [com.android.support:design:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\design-26.0.0-alpha1.aar\998b377a0ceaac2db18c3785c5d767e9\AndroidManifest.xml:21:5-23:62
+MERGED from [com.android.support:design:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\design-26.0.0-alpha1.aar\998b377a0ceaac2db18c3785c5d767e9\AndroidManifest.xml:21:5-23:62
+MERGED from [com.android.support:appcompat-v7:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\appcompat-v7-26.0.0-alpha1.aar\239f34a379ec4d02a36edb93d8afa418\AndroidManifest.xml:21:5-23:78
+MERGED from [com.android.support:appcompat-v7:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\appcompat-v7-26.0.0-alpha1.aar\239f34a379ec4d02a36edb93d8afa418\AndroidManifest.xml:21:5-23:78
+MERGED from [com.android.support.constraint:constraint-layout:1.0.2] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\constraint-layout-1.0.2.aar\592242addd5bfddb4f6d49a787d48753\AndroidManifest.xml:5:5-7:41
+MERGED from [com.android.support.constraint:constraint-layout:1.0.2] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\constraint-layout-1.0.2.aar\592242addd5bfddb4f6d49a787d48753\AndroidManifest.xml:5:5-7:41
+MERGED from [com.github.google:cameraview:d0b508a5ea] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\cameraview-d0b508a5ea.aar\1880cd799217193a4027896dbd861eb4\AndroidManifest.xml:17:5-19:41
+MERGED from [com.github.google:cameraview:d0b508a5ea] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\cameraview-d0b508a5ea.aar\1880cd799217193a4027896dbd861eb4\AndroidManifest.xml:17:5-19:41
+MERGED from [com.google.android.gms:play-services-vision:10.0.1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\play-services-vision-10.0.1.aar\e94a04059757af35f2d10865f868e6df\AndroidManifest.xml:3:5-42
+MERGED from [com.google.android.gms:play-services-vision:10.0.1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\play-services-vision-10.0.1.aar\e94a04059757af35f2d10865f868e6df\AndroidManifest.xml:3:5-42
+MERGED from [com.android.support:animated-vector-drawable:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\animated-vector-drawable-26.0.0-alpha1.aar\89b1f16b06ee8c5ffc601780b22f416b\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:animated-vector-drawable:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\animated-vector-drawable-26.0.0-alpha1.aar\89b1f16b06ee8c5ffc601780b22f416b\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-vector-drawable:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\support-vector-drawable-26.0.0-alpha1.aar\2f272fcc1f2dcd5a01df69086036aa24\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-vector-drawable:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\support-vector-drawable-26.0.0-alpha1.aar\2f272fcc1f2dcd5a01df69086036aa24\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:recyclerview-v7:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\recyclerview-v7-26.0.0-alpha1.aar\4c32c6f686eb5078e8910c61c05acd19\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:recyclerview-v7:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\recyclerview-v7-26.0.0-alpha1.aar\4c32c6f686eb5078e8910c61c05acd19\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:transition:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\transition-26.0.0-alpha1.aar\3c2c0b1350e41653e11d8d21fe65ab9b\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:transition:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\transition-26.0.0-alpha1.aar\3c2c0b1350e41653e11d8d21fe65ab9b\AndroidManifest.xml:20:5-44
+MERGED from [com.google.android.gms:play-services-base:10.0.1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\play-services-base-10.0.1.aar\027c878e17ff77e1958f648e0eede696\AndroidManifest.xml:17:5-42
+MERGED from [com.google.android.gms:play-services-base:10.0.1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\play-services-base-10.0.1.aar\027c878e17ff77e1958f648e0eede696\AndroidManifest.xml:17:5-42
+MERGED from [com.google.android.gms:play-services-tasks:10.0.1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\play-services-tasks-10.0.1.aar\ca435c37653c776d3bfe8e33997cf20e\AndroidManifest.xml:3:5-42
+MERGED from [com.google.android.gms:play-services-tasks:10.0.1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\play-services-tasks-10.0.1.aar\ca435c37653c776d3bfe8e33997cf20e\AndroidManifest.xml:3:5-42
+MERGED from [com.google.android.gms:play-services-basement:10.0.1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\play-services-basement-10.0.1.aar\6600d424c892b51efeb9255f3d471fea\AndroidManifest.xml:17:5-42
+MERGED from [com.google.android.gms:play-services-basement:10.0.1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\play-services-basement-10.0.1.aar\6600d424c892b51efeb9255f3d471fea\AndroidManifest.xml:17:5-42
+MERGED from [com.android.support:support-v4:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\support-v4-26.0.0-alpha1.aar\99c34e9d9852e07747b46e8fdd479add\AndroidManifest.xml:21:5-23:54
+MERGED from [com.android.support:support-v4:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\support-v4-26.0.0-alpha1.aar\99c34e9d9852e07747b46e8fdd479add\AndroidManifest.xml:21:5-23:54
+MERGED from [com.android.support:support-fragment:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\support-fragment-26.0.0-alpha1.aar\4996e676b41bbc7c44b7a5b6db257530\AndroidManifest.xml:21:5-23:60
+MERGED from [com.android.support:support-fragment:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\support-fragment-26.0.0-alpha1.aar\4996e676b41bbc7c44b7a5b6db257530\AndroidManifest.xml:21:5-23:60
+MERGED from [com.android.support:support-core-ui:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\support-core-ui-26.0.0-alpha1.aar\859525c05275698ee665d8f7a38696a4\AndroidManifest.xml:21:5-23:58
+MERGED from [com.android.support:support-core-ui:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\support-core-ui-26.0.0-alpha1.aar\859525c05275698ee665d8f7a38696a4\AndroidManifest.xml:21:5-23:58
+MERGED from [com.android.support:support-media-compat:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\support-media-compat-26.0.0-alpha1.aar\db46d8789bf811efd2d8e7d883bad722\AndroidManifest.xml:21:5-23:63
+MERGED from [com.android.support:support-media-compat:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\support-media-compat-26.0.0-alpha1.aar\db46d8789bf811efd2d8e7d883bad722\AndroidManifest.xml:21:5-23:63
+MERGED from [com.android.support:support-core-utils:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\support-core-utils-26.0.0-alpha1.aar\124fde29ba58f9d655dc8af90db06258\AndroidManifest.xml:21:5-23:61
+MERGED from [com.android.support:support-core-utils:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\support-core-utils-26.0.0-alpha1.aar\124fde29ba58f9d655dc8af90db06258\AndroidManifest.xml:21:5-23:61
+MERGED from [com.android.support:support-compat:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\support-compat-26.0.0-alpha1.aar\f847f376b7947d651e7db75ba632b261\AndroidManifest.xml:21:5-23:58
+MERGED from [com.android.support:support-compat:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\support-compat-26.0.0-alpha1.aar\f847f376b7947d651e7db75ba632b261\AndroidManifest.xml:21:5-23:58
+INJECTED from D:\GitHub\Android-Practice\Android-Tensorflow\app\src\main\AndroidManifest.xml
+INJECTED from D:\GitHub\Android-Practice\Android-Tensorflow\app\src\main\AndroidManifest.xml
+	tools:overrideLibrary
+		ADDED from [com.android.support:design:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\design-26.0.0-alpha1.aar\998b377a0ceaac2db18c3785c5d767e9\AndroidManifest.xml:23:9-59
+	android:targetSdkVersion
+		INJECTED from D:\GitHub\Android-Practice\Android-Tensorflow\app\src\main\AndroidManifest.xml
+		ADDED from D:\GitHub\Android-Practice\Android-Tensorflow\app\src\main\AndroidManifest.xml
+		INJECTED from D:\GitHub\Android-Practice\Android-Tensorflow\app\src\main\AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from D:\GitHub\Android-Practice\Android-Tensorflow\app\src\main\AndroidManifest.xml
+		ADDED from D:\GitHub\Android-Practice\Android-Tensorflow\app\src\main\AndroidManifest.xml
+		INJECTED from D:\GitHub\Android-Practice\Android-Tensorflow\app\src\main\AndroidManifest.xml
+meta-data#android.support.VERSION
+ADDED from [com.android.support:design:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\design-26.0.0-alpha1.aar\998b377a0ceaac2db18c3785c5d767e9\AndroidManifest.xml:25:5-27:41
+MERGED from [com.android.support:appcompat-v7:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\appcompat-v7-26.0.0-alpha1.aar\239f34a379ec4d02a36edb93d8afa418\AndroidManifest.xml:25:5-27:41
+MERGED from [com.android.support:appcompat-v7:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\appcompat-v7-26.0.0-alpha1.aar\239f34a379ec4d02a36edb93d8afa418\AndroidManifest.xml:25:5-27:41
+MERGED from [com.android.support:animated-vector-drawable:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\animated-vector-drawable-26.0.0-alpha1.aar\89b1f16b06ee8c5ffc601780b22f416b\AndroidManifest.xml:22:5-24:41
+MERGED from [com.android.support:animated-vector-drawable:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\animated-vector-drawable-26.0.0-alpha1.aar\89b1f16b06ee8c5ffc601780b22f416b\AndroidManifest.xml:22:5-24:41
+MERGED from [com.android.support:support-vector-drawable:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\support-vector-drawable-26.0.0-alpha1.aar\2f272fcc1f2dcd5a01df69086036aa24\AndroidManifest.xml:22:5-24:41
+MERGED from [com.android.support:support-vector-drawable:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\support-vector-drawable-26.0.0-alpha1.aar\2f272fcc1f2dcd5a01df69086036aa24\AndroidManifest.xml:22:5-24:41
+MERGED from [com.android.support:recyclerview-v7:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\recyclerview-v7-26.0.0-alpha1.aar\4c32c6f686eb5078e8910c61c05acd19\AndroidManifest.xml:22:5-24:41
+MERGED from [com.android.support:recyclerview-v7:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\recyclerview-v7-26.0.0-alpha1.aar\4c32c6f686eb5078e8910c61c05acd19\AndroidManifest.xml:22:5-24:41
+MERGED from [com.android.support:transition:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\transition-26.0.0-alpha1.aar\3c2c0b1350e41653e11d8d21fe65ab9b\AndroidManifest.xml:22:5-24:41
+MERGED from [com.android.support:transition:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\transition-26.0.0-alpha1.aar\3c2c0b1350e41653e11d8d21fe65ab9b\AndroidManifest.xml:22:5-24:41
+MERGED from [com.android.support:support-v4:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\support-v4-26.0.0-alpha1.aar\99c34e9d9852e07747b46e8fdd479add\AndroidManifest.xml:25:5-27:41
+MERGED from [com.android.support:support-v4:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\support-v4-26.0.0-alpha1.aar\99c34e9d9852e07747b46e8fdd479add\AndroidManifest.xml:25:5-27:41
+MERGED from [com.android.support:support-fragment:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\support-fragment-26.0.0-alpha1.aar\4996e676b41bbc7c44b7a5b6db257530\AndroidManifest.xml:25:5-27:41
+MERGED from [com.android.support:support-fragment:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\support-fragment-26.0.0-alpha1.aar\4996e676b41bbc7c44b7a5b6db257530\AndroidManifest.xml:25:5-27:41
+MERGED from [com.android.support:support-core-ui:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\support-core-ui-26.0.0-alpha1.aar\859525c05275698ee665d8f7a38696a4\AndroidManifest.xml:25:5-27:41
+MERGED from [com.android.support:support-core-ui:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\support-core-ui-26.0.0-alpha1.aar\859525c05275698ee665d8f7a38696a4\AndroidManifest.xml:25:5-27:41
+MERGED from [com.android.support:support-media-compat:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\support-media-compat-26.0.0-alpha1.aar\db46d8789bf811efd2d8e7d883bad722\AndroidManifest.xml:25:5-27:41
+MERGED from [com.android.support:support-media-compat:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\support-media-compat-26.0.0-alpha1.aar\db46d8789bf811efd2d8e7d883bad722\AndroidManifest.xml:25:5-27:41
+MERGED from [com.android.support:support-core-utils:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\support-core-utils-26.0.0-alpha1.aar\124fde29ba58f9d655dc8af90db06258\AndroidManifest.xml:25:5-27:41
+MERGED from [com.android.support:support-core-utils:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\support-core-utils-26.0.0-alpha1.aar\124fde29ba58f9d655dc8af90db06258\AndroidManifest.xml:25:5-27:41
+MERGED from [com.android.support:support-compat:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\support-compat-26.0.0-alpha1.aar\f847f376b7947d651e7db75ba632b261\AndroidManifest.xml:25:5-27:41
+MERGED from [com.android.support:support-compat:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\support-compat-26.0.0-alpha1.aar\f847f376b7947d651e7db75ba632b261\AndroidManifest.xml:25:5-27:41
+	android:value
+		ADDED from [com.android.support:design:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\design-26.0.0-alpha1.aar\998b377a0ceaac2db18c3785c5d767e9\AndroidManifest.xml:27:9-38
+	android:name
+		ADDED from [com.android.support:design:26.0.0-alpha1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\design-26.0.0-alpha1.aar\998b377a0ceaac2db18c3785c5d767e9\AndroidManifest.xml:26:9-47
+uses-feature#android.hardware.camera.autofocus
+ADDED from [com.github.google:cameraview:d0b508a5ea] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\cameraview-d0b508a5ea.aar\1880cd799217193a4027896dbd861eb4\AndroidManifest.xml:24:5-26:36
+	android:required
+		ADDED from [com.github.google:cameraview:d0b508a5ea] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\cameraview-d0b508a5ea.aar\1880cd799217193a4027896dbd861eb4\AndroidManifest.xml:26:9-33
+	android:name
+		ADDED from [com.github.google:cameraview:d0b508a5ea] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\cameraview-d0b508a5ea.aar\1880cd799217193a4027896dbd861eb4\AndroidManifest.xml:25:9-57
+activity#com.google.android.gms.common.api.GoogleApiActivity
+ADDED from [com.google.android.gms:play-services-base:10.0.1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\play-services-base-10.0.1.aar\027c878e17ff77e1958f648e0eede696\AndroidManifest.xml:19:9-172
+	android:exported
+		ADDED from [com.google.android.gms:play-services-base:10.0.1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\play-services-base-10.0.1.aar\027c878e17ff77e1958f648e0eede696\AndroidManifest.xml:19:146-170
+	android:theme
+		ADDED from [com.google.android.gms:play-services-base:10.0.1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\play-services-base-10.0.1.aar\027c878e17ff77e1958f648e0eede696\AndroidManifest.xml:19:86-145
+	android:name
+		ADDED from [com.google.android.gms:play-services-base:10.0.1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\play-services-base-10.0.1.aar\027c878e17ff77e1958f648e0eede696\AndroidManifest.xml:19:19-85
+meta-data#com.google.android.gms.version
+ADDED from [com.google.android.gms:play-services-basement:10.0.1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\play-services-basement-10.0.1.aar\6600d424c892b51efeb9255f3d471fea\AndroidManifest.xml:20:9-121
+	android:value
+		ADDED from [com.google.android.gms:play-services-basement:10.0.1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\play-services-basement-10.0.1.aar\6600d424c892b51efeb9255f3d471fea\AndroidManifest.xml:20:66-119
+	android:name
+		ADDED from [com.google.android.gms:play-services-basement:10.0.1] C:\Users\焊款\.gradle\caches\transforms-1\files-1.1\play-services-basement-10.0.1.aar\6600d424c892b51efeb9255f3d471fea\AndroidManifest.xml:20:20-65

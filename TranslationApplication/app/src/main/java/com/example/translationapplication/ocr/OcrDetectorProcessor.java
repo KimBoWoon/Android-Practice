@@ -4,9 +4,10 @@ import android.content.Context;
 import android.util.SparseArray;
 import android.widget.Toast;
 
-import com.example.translationapplication.home.MainModel;
-import com.example.translationapplication.http.ServiceProvider;
+import com.example.translationapplication.home.TranslatedModel;
+import com.example.translationapplication.http.HttpServiceProvider;
 import com.example.translationapplication.http.VolleyCallback;
+import com.example.translationapplication.util.CustomTextBlock;
 import com.example.translationapplication.util.TranslationType;
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.text.TextBlock;
@@ -42,12 +43,12 @@ public class OcrDetectorProcessor implements Detector.Processor<TextBlock> {
         SparseArray<TextBlock> items = detections.getDetectedItems();
         for (int i = 0; i < items.size(); ++i) {
             final CustomTextBlock customTextblock = new CustomTextBlock(items.get(i));
-            ServiceProvider.newInstance().requestPapagoAPI(
+            HttpServiceProvider.newInstance().requestPapagoAPI(
                     context,
                     TranslationType.SMT,
                     new VolleyCallback() {
                         @Override
-                        public void onSuccess(MainModel result) {
+                        public void onSuccess(TranslatedModel result) {
                             Toast.makeText(context, result.toString(), Toast.LENGTH_SHORT).show();
                             customTextblock.setTranslatedText(result.getTranslatedText());
                         }

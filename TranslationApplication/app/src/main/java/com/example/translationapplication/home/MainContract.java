@@ -13,5 +13,6 @@ public interface MainContract {
     }
     interface UserAction {
         void requestBtnClick(TranslationType transType, String s);
+        void toggle();
     }
 }
