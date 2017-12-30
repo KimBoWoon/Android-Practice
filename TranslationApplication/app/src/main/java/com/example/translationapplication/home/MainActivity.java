@@ -113,7 +113,6 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
             Toast.makeText(getApplicationContext(), "값을 제대로 입력하세요", Toast.LENGTH_SHORT).show();
             return;
         }
-        Toast.makeText(getApplicationContext(), "SMT", Toast.LENGTH_SHORT).show();
         mMainPresenter.requestBtnClick(translationText.getText().toString());
     }
 

@@ -6,6 +6,8 @@ package com.example.translationapplication.util;
 
 public class DataManager {
     private TranslationType type = TranslationType.SMT;
+    private String source = "en";
+    private String target = "ko";
 
     private static class Singleton {
         private static final DataManager INSTANCE = new DataManager();
@@ -21,5 +23,21 @@ public class DataManager {
 
     public void setType(TranslationType type) {
         this.type = type;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public String getTarget() {
+        return target;
+    }
+
+    public void setTarget(String target) {
+        this.target = target;
     }
 }
