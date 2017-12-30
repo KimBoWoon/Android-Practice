@@ -103,11 +103,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
 
     @OnClick(R.id.main_btn_toggle)
     public void toggleBtnClick() {
-        if (ValuableChecker.valueNull(translationText.getText().toString())) {
-            Toast.makeText(getApplicationContext(), "값을 제대로 입력하세요", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        Toast.makeText(getApplicationContext(), "SMT", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), String.valueOf(DataManager.getInstance().getType()), Toast.LENGTH_SHORT).show();
         mMainPresenter.toggle();
     }
 
@@ -118,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
             return;
         }
         Toast.makeText(getApplicationContext(), "SMT", Toast.LENGTH_SHORT).show();
-        mMainPresenter.requestBtnClick(DataManager.getInstance().getType(), translationText.getText().toString());
+        mMainPresenter.requestBtnClick(translationText.getText().toString());
     }
 
     public void setText(String s) {

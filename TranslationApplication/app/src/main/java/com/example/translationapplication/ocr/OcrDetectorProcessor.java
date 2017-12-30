@@ -44,8 +44,6 @@ public class OcrDetectorProcessor implements Detector.Processor<TextBlock> {
         for (int i = 0; i < items.size(); ++i) {
             final CustomTextBlock customTextblock = new CustomTextBlock(items.get(i));
             HttpServiceProvider.newInstance().requestPapagoAPI(
-                    context,
-                    TranslationType.SMT,
                     new VolleyCallback() {
                         @Override
                         public void onSuccess(TranslatedModel result) {

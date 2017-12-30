@@ -3,6 +3,7 @@ package com.example.translationapplication.home;
 import com.example.translationapplication.http.HttpServiceProvider;
 import com.example.translationapplication.http.ProviderImplement;
 import com.example.translationapplication.http.VolleyCallback;
+import com.example.translationapplication.http.VolleyManager;
 import com.example.translationapplication.util.DataManager;
 import com.example.translationapplication.util.TranslationType;
 
@@ -16,12 +17,15 @@ public class MainPresenter implements MainContract.UserAction {
     public MainPresenter(MainContract.View view) {
         this.mMainView = view;
         HttpServiceProvider.registerDefaultProvider(new ProviderImplement());
+        VolleyInit();
     }
 
-    private void requestPapago(TranslationType transType, String s) {
+    private void VolleyInit() {
+        VolleyManager.getInstance().setRequestQueue(((MainActivity) mMainView).getApplicationContext());
+    }
+
+    private void requestPapago(String s) {
         HttpServiceProvider.newInstance().requestPapagoAPI(
-                ((MainActivity) mMainView).getApplicationContext(),
-                transType,
                 new VolleyCallback() {
                     @Override
                     public void onSuccess(TranslatedModel result) {
@@ -37,8 +41,8 @@ public class MainPresenter implements MainContract.UserAction {
     }
 
     @Override
-    public void requestBtnClick(TranslationType transType, String s) {
-        requestPapago(transType, s);
+    public void requestBtnClick(String s) {
+        requestPapago(s);
     }
 
     @Override

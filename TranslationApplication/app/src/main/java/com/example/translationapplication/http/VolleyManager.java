@@ -20,10 +20,14 @@ public class VolleyManager {
         return Singleton.INSTANCE;
     }
 
-    public RequestQueue getRequestQueue(Context context) {
-        if (rq == null) {
-            rq = Volley.newRequestQueue(context);
-        }
+    public RequestQueue getRequestQueue() {
+//        if (rq == null) {
+//            throw new IllegalAccessException("Need Initialize Request Queue");
+//        }
         return rq;
+    }
+
+    public void setRequestQueue(Context context) {
+        this.rq = Volley.newRequestQueue(context);
     }
 }

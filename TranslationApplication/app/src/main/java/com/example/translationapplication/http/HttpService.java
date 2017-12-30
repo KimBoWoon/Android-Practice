@@ -1,11 +1,11 @@
 package com.example.translationapplication.http;
 
-import android.content.Context;
 import android.net.Uri;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.example.translationapplication.home.TranslatedModel;
+import com.example.translationapplication.util.DataManager;
 import com.example.translationapplication.util.TranslationType;
 
 public class HttpService implements ServiceInterface {
@@ -28,8 +28,8 @@ public class HttpService implements ServiceInterface {
         return uri.build().toString();
     }
 
-    public void requestPapagoAPI(Context context, TranslationType transType, final VolleyCallback callback, final String text) {
-        String url = makeURL(transType);
+    public void requestPapagoAPI(final VolleyCallback callback, final String text) {
+        String url = makeURL(DataManager.getInstance().getType());
 
         VolleyCustomRequest<TranslatedModel> request = new VolleyCustomRequest<>(
                 url,
@@ -48,10 +48,10 @@ public class HttpService implements ServiceInterface {
                     }
                 });
 
-        addRequestQueue(context, request);
+        addRequestQueue(request);
     }
 
-    private void addRequestQueue(Context context, VolleyCustomRequest<TranslatedModel> request) {
-        VolleyManager.getInstance().getRequestQueue(context).add(request);
+    private void addRequestQueue(VolleyCustomRequest<TranslatedModel> request) {
+        VolleyManager.getInstance().getRequestQueue().add(request);
     }
 }
