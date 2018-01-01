@@ -17,14 +17,6 @@ public class HttpOption {
         params = new HashMap<String, String>();
     }
 
-    public void setHeaders(String key, String value) {
-        headers.put(key, value);
-    }
-
-    public void setParams(String key, String value) {
-        params.put(key, value);
-    }
-
     public Map<String, String> getHeaders() {
         return headers;
     }
@@ -47,5 +39,25 @@ public class HttpOption {
 
     public void setBodyContentType(String bodyContentType) {
         this.bodyContentType = bodyContentType;
+    }
+
+    public void setClientID(String key, String value) {
+        headers.put(key, value);
+    }
+
+    public void setClientSecret(String key, String value) {
+        headers.put(key, value);
+    }
+
+    public void setSource(String key, String value) {
+        params.put(key, value);
+    }
+
+    public void setTarget(String key, String value) {
+        params.put(key, value);
+    }
+
+    public void setText(String key, String value) {
+        params.put(key, value);
     }
 }

@@ -30,12 +30,13 @@ public class HttpService implements ServiceInterface {
 
     private HttpOption httpOptionSetting(String text) {
         HttpOption option = new HttpOption();
+
         option.setBodyContentType("application/x-www-form-urlencoded; charset=utf-8");
-        option.setHeaders("X-Naver-Client-Id", "RFK0kLnsAaftYMktF6XS");
-        option.setHeaders("X-Naver-Client-Secret", "hZ85cZ8bNp");
-        option.setParams("source", DataManager.getInstance().getSource());
-        option.setParams("target", DataManager.getInstance().getTarget());
-        option.setParams("text", text);
+        option.setClientID("X-Naver-Client-Id", "RFK0kLnsAaftYMktF6XS");
+        option.setClientSecret("X-Naver-Client-Secret", "hZ85cZ8bNp");
+        option.setSource("source", DataManager.getInstance().getSource());
+        option.setTarget("target", DataManager.getInstance().getTarget());
+        option.setText("text", text);
 
         return option;
     }
