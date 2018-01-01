@@ -28,13 +28,28 @@ public class HttpService implements ServiceInterface {
         return uri.build().toString();
     }
 
+    private HttpOption httpOptionSetting(String text) {
+        HttpOption option = new HttpOption();
+        option.setBodyContentType("application/x-www-form-urlencoded; charset=utf-8");
+        option.setHeaders("X-Naver-Client-Id", "RFK0kLnsAaftYMktF6XS");
+        option.setHeaders("X-Naver-Client-Secret", "hZ85cZ8bNp");
+        option.setParams("source", DataManager.getInstance().getSource());
+        option.setParams("target", DataManager.getInstance().getTarget());
+        option.setParams("text", text);
+
+        return option;
+    }
+
     public void requestPapagoAPI(final VolleyCallback callback, final String text) {
         String url = makeURL(DataManager.getInstance().getType());
+
+        HttpOption option = httpOptionSetting(text);
 
         VolleyCustomRequest<TranslatedModel> request = new VolleyCustomRequest<>(
                 url,
                 TranslatedModel.class,
                 text,
+                option,
                 new Response.Listener<TranslatedModel>() {
                     @Override
                     public void onResponse(TranslatedModel response) {

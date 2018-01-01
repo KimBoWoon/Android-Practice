@@ -23,84 +23,60 @@ import java.util.Map;
  */
 
 public class VolleyCustomRequest<T> extends Request<T> {
-    private final Gson gson = new Gson();
-    private final Class<T> clazz;
-    private final Response.Listener<T> listener;
-    private final String text;
-    private Map<String, String> params;
-    private Map<String, String> headers;
-    private String bodyContentType;
+    private Gson gson = new Gson();
+    private Class<T> clazz;
+    private Response.Listener<T> listener;
+    private String text;
+    private HttpOption option;
 
-    public VolleyCustomRequest(String url, Class<T> clazz, final String text,
+    public VolleyCustomRequest(String url, Class<T> clazz, String text,
                                Response.Listener<T> listener, Response.ErrorListener errorListener) {
         super(Method.POST, url, errorListener);
         this.clazz = clazz;
         this.listener = listener;
         this.text = text;
-        this.params = params;
     }
 
-    public VolleyCustomRequest(String url, Class<T> clazz, final String text, Map<String, String> params,
+    public VolleyCustomRequest(String url, Class<T> clazz, String text, HttpOption option,
                                Response.Listener<T> listener, Response.ErrorListener errorListener) {
         super(Method.POST, url, errorListener);
         this.clazz = clazz;
         this.listener = listener;
         this.text = text;
-        this.params = params;
-    }
-
-    public VolleyCustomRequest(String url, Class<T> clazz, final String text, Map<String, String> headers,
-                               Map<String, String> params, Response.Listener<T> listener, Response.ErrorListener errorListener) {
-        super(Method.POST, url, errorListener);
-        this.clazz = clazz;
-        this.listener = listener;
-        this.text = text;
-        this.headers = headers;
-        this.params = params;
-    }
-
-    public VolleyCustomRequest(String url, Class<T> clazz, final String text, Map<String, String> headers,
-                               Map<String, String> params, String bodyContentType, Response.Listener<T> listener, Response.ErrorListener errorListener) {
-        super(Method.POST, url, errorListener);
-        this.clazz = clazz;
-        this.listener = listener;
-        this.text = text;
-        this.headers = headers;
-        this.params = params;
-        this.bodyContentType = bodyContentType;
+        this.option = option;
     }
 
     @Override
     public String getBodyContentType() {
-        if (bodyContentType == null) {
-            return "application/x-www-form-urlencoded; charset=utf-8";
+        if (option.getBodyContentType() != null) {
+            return option.getBodyContentType();
         }
-        return null;
+        return "application/x-www-form-urlencoded; charset=utf-8";
     }
 
     @Override
     public Map<String, String> getHeaders() throws AuthFailureError {
-        if (headers == null) {
-            Map<String, String> params = new HashMap<String, String>();
+        if (option.getHeaders() != null) {
+//            Map<String, String> params = new HashMap<String, String>();
+//
+//            params.put("X-Naver-Client-Id", "RFK0kLnsAaftYMktF6XS");
+//            params.put("X-Naver-Client-Secret", "hZ85cZ8bNp");
 
-            params.put("X-Naver-Client-Id", "RFK0kLnsAaftYMktF6XS");
-            params.put("X-Naver-Client-Secret", "hZ85cZ8bNp");
-
-            return params;
+            return option.getHeaders();
         }
         return null;
     }
 
     @Override
     public Map<String, String> getParams() throws AuthFailureError {
-        if (params == null) {
-            Map<String, String> params = new HashMap<String, String>();
+        if (option.getParams() != null) {
+//            Map<String, String> params = new HashMap<String, String>();
+//
+//            params.put("source", DataManager.getInstance().getSource());
+//            params.put("target", DataManager.getInstance().getTarget());
+//            params.put("text", text);
 
-            params.put("source", DataManager.getInstance().getSource());
-            params.put("target", DataManager.getInstance().getTarget());
-            params.put("text", text);
-
-            return params;
+            return option.getParams();
         }
         return null;
     }
