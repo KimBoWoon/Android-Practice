@@ -1,6 +1,8 @@
 package com.bowoon.android.android_videoview;
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,9 +13,15 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.android.logcat.log.ALog;
 
@@ -21,13 +29,13 @@ import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
     private final int GALLERY_CODE = 1112;
-    private ImageView imageView;
     private MediaPlayer mediaPlayer;
     private SurfaceView mPreview;
     private SurfaceHolder holder;
     private CustomHolderCallback customHolderCallback;
     private CustomVideoSize customVideoSize;
     private Uri videoUri;
+    private long currentTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,14 +45,12 @@ public class MainActivity extends AppCompatActivity {
         ALog.logSetting(getApplicationContext(), true, false);
         ALog.setDebug(true);
 
-//        imageView = (ImageView) findViewById(R.id.main_image);
+        mediaPlayer = new MediaPlayer();
         mPreview = (SurfaceView) findViewById(R.id.main_surfaceview);
         customHolderCallback = new CustomHolderCallback();
         customVideoSize = new CustomVideoSize();
         holder = mPreview.getHolder();
         holder.addCallback(customHolderCallback);
-
-        selectGallery();
     }
 
     private void selectGallery() {
@@ -73,24 +79,27 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void sendPicture(Uri imgUri) {
-        String imagePath = getRealPathFromURI(imgUri); // path 경로
-        ExifInterface exif = null;
-        try {
-            exif = new ExifInterface(imagePath);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        int exifOrientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
-        int exifDegree = exifOrientationToDegrees(exifOrientation);
-
-        Bitmap bitmap = BitmapFactory.decodeFile(imagePath);//경로를 통해 비트맵으로 전환
-        imageView.setImageBitmap(rotate(bitmap, exifDegree));//이미지 뷰에 비트맵 넣기
-    }
+//    private void sendPicture(Uri imgUri) {
+//        String imagePath = getRealPathFromURI(imgUri); // path 경로
+//        ExifInterface exif = null;
+//        try {
+//            exif = new ExifInterface(imagePath);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        int exifOrientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+//        int exifDegree = exifOrientationToDegrees(exifOrientation);
+//
+//        Bitmap bitmap = BitmapFactory.decodeFile(imagePath);//경로를 통해 비트맵으로 전환
+//        imageView.setImageBitmap(rotate(bitmap, exifDegree));//이미지 뷰에 비트맵 넣기
+//    }
 
     private void sendVideo(Uri videoUri) {
         try {
-            mediaPlayer = new MediaPlayer();
+            if (mediaPlayer == null) {
+                mediaPlayer = new MediaPlayer();
+            }
+
             mediaPlayer.setDataSource(getApplicationContext(), videoUri);
             mediaPlayer.setDisplay(holder);
             mediaPlayer.setOnVideoSizeChangedListener(customVideoSize);
@@ -135,20 +144,97 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        switch (newConfig.orientation) {
+
+            case Configuration.ORIENTATION_LANDSCAPE:
+                ALog.d("Loading Start - back_imgw");
+                break;
+
+            case Configuration.ORIENTATION_PORTRAIT:
+                ALog.d("Loading Start - back_img");
+                break;
+
+        }
+
+        arrangeVideo();
+    }
+
+    private void arrangeVideo() {
+        WindowManager wm = getWindowManager();
+        if (wm == null) {
+            return;
+        }
+//        LinearLayout ll = (LinearLayout) findViewById(R.id.playBtnLayout);
+
+        if (wm.getDefaultDisplay().getRotation() == Surface.ROTATION_90 || wm.getDefaultDisplay().getRotation() == Surface.ROTATION_270) {
+            ALog.d("landscape");
+//            ll.setVisibility(View.GONE);
+            hideStatusBar();
+        } else {
+            ALog.d("portrat");
+//            ll.setVisibility(View.VISIBLE);
+            showStatusBar();
+        }
+
+        int videoWidth = mediaPlayer.getVideoWidth();
+        int videoHeight = mediaPlayer.getVideoHeight();
+        ALog.d("video :" + videoWidth + "/" + videoHeight);
+        int screenWidth = getWindowManager().getDefaultDisplay().getWidth();
+        int screenHeight = getWindowManager().getDefaultDisplay().getHeight();
+        ALog.d("screen : " + screenWidth + "/" + screenHeight);
+
+        android.view.ViewGroup.LayoutParams lp = mPreview.getLayoutParams();
+
+        //portrat
+        if (screenWidth < screenHeight) {
+            lp.width = screenWidth;
+            lp.height = (int) (((float) videoHeight / (float) videoWidth) * (float) screenWidth);
+        } else {
+            lp.width = (int) (((float) videoWidth / (float) videoHeight) * (float) screenHeight);
+            lp.height = screenHeight;
+        }
+        ALog.d(lp.width + "/" + lp.height);
+        mPreview.setLayoutParams(lp);
+    }
+
+    private void hideStatusBar() {
+        WindowManager.LayoutParams attrs = getWindow().getAttributes();
+        attrs.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
+        getWindow().setAttributes(attrs);
+    }
+
+    private void showStatusBar() {
+        WindowManager.LayoutParams attrs = getWindow().getAttributes();
+        attrs.flags &= ~WindowManager.LayoutParams.FLAG_FULLSCREEN;
+        getWindow().setAttributes(attrs);
+    }
+
+
+    @Override
     protected void onDestroy() {
+        releaseMediaPlayer();
         super.onDestroy();
-        mediaPlayer.stop();
     }
 
     @Override
     protected void onStop() {
+        releaseMediaPlayer();
         super.onStop();
-        mediaPlayer.stop();
     }
 
     @Override
     public void onBackPressed() {
-        selectGallery();
+        if (currentTime + 2000 > System.currentTimeMillis()) {
+            Toast.makeText(getApplicationContext(), "종료", Toast.LENGTH_LONG).show();
+            this.finish();
+        }
+        if (currentTime + 2000 < System.currentTimeMillis()) {
+            currentTime = System.currentTimeMillis();
+            selectGallery();
+        }
     }
 
     private void releaseMediaPlayer() {
@@ -173,7 +259,6 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
             ALog.i("surfaceDestroyed");
-            mediaPlayer.stop();
         }
     }
 
