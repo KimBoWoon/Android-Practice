@@ -2,12 +2,13 @@ package com.bowoon.android.android_videoview;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.WindowManager;
 
 import com.android.logcat.log.ALog;
 
@@ -24,6 +25,8 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.video_surfaceview);
+
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         Intent intent = getIntent();
         path = intent.getStringExtra("path");
@@ -72,6 +75,7 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
     }
 
     private void releaseMediaPlayer() {
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         if (mediaPlayer != null) {
             mediaPlayer.release();
             mediaPlayer = null;
@@ -114,5 +118,30 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
     public void onVideoSizeChanged(MediaPlayer mp, int width, int height) {
         ALog.i("onVideoSizeChanged");
         surfaceHolder.setFixedSize(mediaPlayer.getVideoWidth(), mediaPlayer.getVideoHeight());
+    }
+
+    private float x, y;
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_UP:
+                break;
+            case MotionEvent.ACTION_MOVE:
+                if (event.getX() > x + 50f) {
+                    x = event.getX();
+                    mediaPlayer.seekTo(mediaPlayer.getCurrentPosition() + 1000);
+                } else if (event.getX() < x - 50f) {
+                    x = event.getX();
+                    mediaPlayer.seekTo(mediaPlayer.getCurrentPosition() - 1000);
+                }
+                break;
+            case MotionEvent.ACTION_DOWN:
+                x = event.getRawX();
+                y = event.getY();
+            default:
+                break;
+        }
+        return false;
     }
 }
