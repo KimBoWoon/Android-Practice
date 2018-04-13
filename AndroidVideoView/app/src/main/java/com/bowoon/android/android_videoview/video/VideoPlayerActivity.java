@@ -1,4 +1,4 @@
-package com.bowoon.android.android_videoview;
+package com.bowoon.android.android_videoview.video;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -6,6 +6,7 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.util.DisplayMetrics;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -17,6 +18,9 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.android.logcat.log.ALog;
+import com.bowoon.android.android_videoview.R;
+import com.bowoon.android.android_videoview.callback.TouchCallback;
+import com.bowoon.android.android_videoview.gesture.CustomGestureDetector;
 
 import java.io.IOException;
 
@@ -90,8 +94,10 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
         int videoWidth = mediaPlayer.getVideoWidth();
         int videoHeight = mediaPlayer.getVideoHeight();
         ALog.d("video :" + videoWidth + "/" + videoHeight);
-        int screenWidth = getWindowManager().getDefaultDisplay().getWidth();
-        int screenHeight = getWindowManager().getDefaultDisplay().getHeight();
+
+        DisplayMetrics displayMetrics = getApplicationContext().getResources().getDisplayMetrics();
+        int screenWidth = displayMetrics.widthPixels;
+        int screenHeight = displayMetrics.heightPixels;
         ALog.d("screen : " + screenWidth + "/" + screenHeight);
 
         android.view.ViewGroup.LayoutParams lp = surfaceView.getLayoutParams();

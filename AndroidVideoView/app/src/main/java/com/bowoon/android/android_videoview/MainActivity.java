@@ -1,14 +1,16 @@
 package com.bowoon.android.android_videoview;
 
+import android.database.Cursor;
 import android.os.Bundle;
-import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import com.android.logcat.log.ALog;
+import com.bowoon.android.android_videoview.adapter.RecyclerAdapter;
+import com.bowoon.android.android_videoview.vo.Item;
 
-import java.io.File;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -24,10 +26,12 @@ public class MainActivity extends AppCompatActivity {
         ALog.logSetting(getApplicationContext(), true, false);
         ALog.setDebug(true);
 
+        initView();
+    }
+
+    private void initView() {
         videoList = new ArrayList<>();
-        String root = Environment.getExternalStorageDirectory().toString();
-        File directory = new File(root + "/Movies");
-        findVideos(directory, videoList);
+        videoList = fetchAllVideos();
 
         linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
 
@@ -37,17 +41,29 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(new RecyclerAdapter(getApplicationContext(), videoList));
     }
 
-    void findVideos(File dir, ArrayList<Item> list) {
-        for (File file : dir.listFiles()) {
-            if (file.isDirectory()) {
-                findVideos(file, list);
-            } else if (file.getAbsolutePath().contains(".mp4")) {
-                list.add(new Item(file.getName(), file.getAbsolutePath()));
-            } else if (file.getAbsolutePath().contains(".avi")) {
-                list.add(new Item(file.getName(), file.getAbsolutePath()));
-            } else if (file.getAbsolutePath().contains(".skm")) {
-                list.add(new Item(file.getName(), file.getAbsolutePath()));
-            }
+    private ArrayList<Item> fetchAllVideos() {
+        String[] projection = {
+                MediaStore.Video.Media.DATA,
+                MediaStore.Video.Media.DISPLAY_NAME
+        };
+
+        Cursor videoCursor = getApplicationContext().getContentResolver().query(
+                MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+                projection,
+                null,
+                null,
+                null);
+
+        ArrayList<Item> result = new ArrayList<>();
+        int dataColumnIndex = videoCursor.getColumnIndex(projection[0]);
+        int nameColumnIndex = videoCursor.getColumnIndex(projection[1]);
+
+        if (videoCursor.moveToFirst()) {
+            do {
+                result.add(new Item(videoCursor.getString(nameColumnIndex), videoCursor.getString(dataColumnIndex)));
+            } while (videoCursor.moveToNext());
         }
+        videoCursor.close();
+        return result;
     }
 }

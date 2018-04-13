@@ -1,4 +1,4 @@
-package com.bowoon.android.android_videoview;
+package com.bowoon.android.android_videoview.vo;
 
 public class Item {
     private String title;

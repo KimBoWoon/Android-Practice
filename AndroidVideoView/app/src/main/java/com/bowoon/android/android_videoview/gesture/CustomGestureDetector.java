@@ -1,10 +1,12 @@
-package com.bowoon.android.android_videoview;
+package com.bowoon.android.android_videoview.gesture;
 
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.widget.Toast;
+
+import com.bowoon.android.android_videoview.callback.TouchCallback;
 
 public class CustomGestureDetector extends GestureDetector.SimpleOnGestureListener {
     private Context context;

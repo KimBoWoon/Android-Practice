@@ -1,4 +1,4 @@
-package com.bowoon.android.android_videoview;
+package com.bowoon.android.android_videoview.adapter;
 
 import android.content.Context;
 import android.content.Intent;
@@ -13,11 +13,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.List;
+import com.bowoon.android.android_videoview.R;
+import com.bowoon.android.android_videoview.video.VideoPlayerActivity;
+import com.bowoon.android.android_videoview.vo.Item;
 
-interface ItemClickListener {
-    void onItemClick(int position);
-}
+import java.util.List;
 
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements ItemClickListener {
     private Context context;

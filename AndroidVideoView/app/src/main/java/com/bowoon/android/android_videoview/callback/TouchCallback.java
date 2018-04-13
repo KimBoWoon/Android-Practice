@@ -1,4 +1,4 @@
-package com.bowoon.android.android_videoview;
+package com.bowoon.android.android_videoview.callback;
 
 import android.view.MotionEvent;
 

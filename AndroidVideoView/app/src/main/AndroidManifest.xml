@@ -22,7 +22,7 @@
         </activity>
 
         <activity
-            android:name=".VideoPlayerActivity"
+            android:name=".video.VideoPlayerActivity"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" />
     </application>
