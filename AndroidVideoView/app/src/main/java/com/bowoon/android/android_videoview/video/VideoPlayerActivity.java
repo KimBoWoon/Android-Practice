@@ -25,7 +25,7 @@ import com.bowoon.android.android_videoview.gesture.CustomGestureDetector;
 import java.io.IOException;
 
 public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callback,
-        MediaPlayer.OnVideoSizeChangedListener, TouchCallback {
+        TouchCallback {
     private SurfaceView surfaceView;
     private SurfaceHolder surfaceHolder;
     private MediaPlayer mediaPlayer;
@@ -36,11 +36,14 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
     private GestureDetector gestureDetector;
     private SeekBar seekBar;
     private boolean flag;
+    private int savedTime;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.video_surfaceview);
+
+        ALog.i(savedTime);
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
@@ -66,7 +69,6 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                ALog.i("onProgressChanged");
                 if (seekBar.getMax() == progress) {
                     mediaPlayer.stop();
                     finish();
@@ -75,13 +77,11 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                ALog.i("onStartTrackingTouch");
                 flag = false;
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                ALog.i("onStopTrackingTouch");
                 flag = true;
                 int position = seekBar.getProgress();
                 mediaPlayer.seekTo(position);
@@ -122,7 +122,10 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
             mediaPlayer.setDataSource(path);
             mediaPlayer.setDisplay(surfaceHolder);
             mediaPlayer.prepare();
-            mediaPlayer.setOnVideoSizeChangedListener(this);
+            if (savedTime > -1) {
+                ALog.i(savedTime);
+                mediaPlayer.seekTo(savedTime);
+            }
             mediaPlayer.start();
         } catch (IOException e) {
             e.printStackTrace();
@@ -136,6 +139,33 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
             mediaPlayer.release();
             mediaPlayer = null;
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        ALog.i(mediaPlayer.getCurrentPosition());
+        outState.putInt("mediaPlayerCurrentPosition", mediaPlayer.getCurrentPosition());
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        savedTime = savedInstanceState.getInt("mediaPlayerCurrentPosition");
+        ALog.i(savedTime);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        ALog.i("onPause");
+    }
+
+    @Override
+    protected void onResume() {
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        super.onResume();
+        ALog.i("onResume");
     }
 
     @Override
@@ -171,12 +201,6 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         ALog.i("surfaceDestroyed");
-    }
-
-    @Override
-    public void onVideoSizeChanged(MediaPlayer mp, int width, int height) {
-        ALog.i("onVideoSizeChanged");
-//        surfaceHolder.setFixedSize(mediaPlayer.getVideoWidth(), mediaPlayer.getVideoHeight());
     }
 
     @Override
