@@ -176,7 +176,7 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
     @Override
     public void onVideoSizeChanged(MediaPlayer mp, int width, int height) {
         ALog.i("onVideoSizeChanged");
-        surfaceHolder.setFixedSize(mediaPlayer.getVideoWidth(), mediaPlayer.getVideoHeight());
+//        surfaceHolder.setFixedSize(mediaPlayer.getVideoWidth(), mediaPlayer.getVideoHeight());
     }
 
     @Override

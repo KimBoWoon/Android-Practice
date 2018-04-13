@@ -44,7 +44,8 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<Item> fetchAllVideos() {
         String[] projection = {
                 MediaStore.Video.Media.DATA,
-                MediaStore.Video.Media.DISPLAY_NAME
+                MediaStore.Video.Media.DISPLAY_NAME,
+                MediaStore.Video.Media.DATE_ADDED
         };
 
         Cursor videoCursor = getApplicationContext().getContentResolver().query(
@@ -52,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
                 projection,
                 null,
                 null,
-                null);
+                "date_added DESC");
 
         ArrayList<Item> result = new ArrayList<>();
         int dataColumnIndex = videoCursor.getColumnIndex(projection[0]);
