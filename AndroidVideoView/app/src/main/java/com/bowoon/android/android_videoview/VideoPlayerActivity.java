@@ -4,22 +4,34 @@ import android.app.Activity;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.RelativeLayout;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
 import com.android.logcat.log.ALog;
 
 import java.io.IOException;
 
 public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callback,
-        MediaPlayer.OnVideoSizeChangedListener {
+        MediaPlayer.OnVideoSizeChangedListener, TouchCallback {
     private SurfaceView surfaceView;
     private SurfaceHolder surfaceHolder;
     private MediaPlayer mediaPlayer;
     private String path;
+    private float x, y;
+    private RelativeLayout frameLayout;
+    private TextView videoTime;
+    private GestureDetector gestureDetector;
+    private SeekBar seekBar;
+    private boolean flag;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -31,10 +43,47 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
         Intent intent = getIntent();
         path = intent.getStringExtra("path");
 
+        initView();
+        registerListener();
+    }
+
+    private void initView() {
         mediaPlayer = new MediaPlayer();
+        gestureDetector = new GestureDetector(getApplicationContext(), new CustomGestureDetector(getApplicationContext(), mediaPlayer, this));
+        frameLayout = (RelativeLayout) findViewById(R.id.video_information);
+        videoTime = (TextView) findViewById(R.id.video_time);
         surfaceView = (SurfaceView) findViewById(R.id.main_surfaceview);
+        seekBar = (SeekBar) findViewById(R.id.video_seekbar);
         surfaceHolder = surfaceView.getHolder();
         surfaceHolder.addCallback(this);
+    }
+
+    private void registerListener() {
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                ALog.i("onProgressChanged");
+                if (seekBar.getMax() == progress) {
+                    mediaPlayer.stop();
+                    finish();
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                ALog.i("onStartTrackingTouch");
+                flag = false;
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                ALog.i("onStopTrackingTouch");
+                flag = true;
+                int position = seekBar.getProgress();
+                mediaPlayer.seekTo(position);
+                new ProgressSeekBar().start();
+            }
+        });
     }
 
     private void arrangeVideo() {
@@ -76,6 +125,7 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
 
     private void releaseMediaPlayer() {
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        flag = false;
         if (mediaPlayer != null) {
             mediaPlayer.release();
             mediaPlayer = null;
@@ -97,7 +147,10 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         ALog.i("surfaceCreated");
+        flag = true;
         playVideo(path);
+        seekBar.setMax(mediaPlayer.getDuration());
+        new ProgressSeekBar().start();
     }
 
     @Override
@@ -120,28 +173,64 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
         surfaceHolder.setFixedSize(mediaPlayer.getVideoWidth(), mediaPlayer.getVideoHeight());
     }
 
-    private float x, y;
-
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_UP:
-                break;
-            case MotionEvent.ACTION_MOVE:
-                if (event.getX() > x + 50f) {
-                    x = event.getX();
-                    mediaPlayer.seekTo(mediaPlayer.getCurrentPosition() + 1000);
-                } else if (event.getX() < x - 50f) {
-                    x = event.getX();
-                    mediaPlayer.seekTo(mediaPlayer.getCurrentPosition() - 1000);
-                }
-                break;
-            case MotionEvent.ACTION_DOWN:
-                x = event.getRawX();
-                y = event.getY();
-            default:
-                break;
+        if (event.getAction() == MotionEvent.ACTION_MOVE) {
+            return this.onMove(event);
         }
+        return gestureDetector.onTouchEvent(event);
+    }
+
+    @Override
+    public boolean onDown(MotionEvent event) {
+        x = event.getX();
+        y = event.getY();
+
         return false;
+    }
+
+    @Override
+    public boolean onUp(MotionEvent event) {
+        frameLayout.setVisibility(View.VISIBLE);
+        videoTime.setText(getStringTime(mediaPlayer.getCurrentPosition()) + " / " + getStringTime(mediaPlayer.getDuration()));
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                frameLayout.setVisibility(View.GONE);
+            }
+        }, 5000);
+
+        return false;
+    }
+
+    @Override
+    public boolean onMove(MotionEvent event) {
+        if (event.getX() > x + 50f) {
+            x = event.getX();
+            mediaPlayer.seekTo(mediaPlayer.getCurrentPosition() + 1000);
+        } else if (event.getX() < x - 50f) {
+            x = event.getX();
+            mediaPlayer.seekTo(mediaPlayer.getCurrentPosition() - 1000);
+        }
+
+        return true;
+    }
+
+    private String getStringTime(int time) {
+        int currentSecond = time / 1000;
+        int second = currentSecond % 60;
+        int minute = (currentSecond / 60) % 60;
+        int hour = currentSecond / 3600;
+
+        return hour + ":" + minute + ":" + second;
+    }
+
+    private class ProgressSeekBar extends Thread {
+        @Override
+        public void run() {
+            while (flag) {
+                seekBar.setProgress(mediaPlayer.getCurrentPosition());
+            }
+        }
     }
 }
