@@ -1,6 +1,8 @@
 package com.bowoon.android.android_videoview.vo;
 
-public class Item {
+import java.io.Serializable;
+
+public class Item implements Serializable {
     private String title;
     private String path;
 

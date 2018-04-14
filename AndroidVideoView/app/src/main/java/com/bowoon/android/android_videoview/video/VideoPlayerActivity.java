@@ -1,10 +1,14 @@
 package com.bowoon.android.android_videoview.video;
 
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.DisplayMetrics;
 import android.view.GestureDetector;
@@ -12,15 +16,19 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.logcat.log.ALog;
 import com.bowoon.android.android_videoview.R;
 import com.bowoon.android.android_videoview.callback.TouchCallback;
 import com.bowoon.android.android_videoview.gesture.CustomGestureDetector;
+import com.bowoon.android.android_videoview.vo.Item;
 
 import java.io.IOException;
 
@@ -29,26 +37,31 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
     private SurfaceView surfaceView;
     private SurfaceHolder surfaceHolder;
     private MediaPlayer mediaPlayer;
-    private String path;
     private float x, y;
-    private RelativeLayout frameLayout;
+    private RelativeLayout relativeLayout;
+    private TextView videoTitle;
     private TextView videoTime;
     private GestureDetector gestureDetector;
     private SeekBar seekBar;
-    private boolean flag;
+    private boolean seekBarFlag;
+    private boolean isBind;
     private int savedTime;
+    private Item item;
+    private DisplayMetrics displayMetrics;
+    private Button serviceStartBtn;
+    private Button serviceConnectionBtn;
+    private Button serviceEndBtn;
+    private VideoService mBindService;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.video_surfaceview);
 
-        ALog.i(savedTime);
-
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         Intent intent = getIntent();
-        path = intent.getStringExtra("path");
+        item = (Item) intent.getSerializableExtra("videoContent");
 
         initView();
         registerListener();
@@ -56,13 +69,18 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
 
     private void initView() {
         mediaPlayer = new MediaPlayer();
-        gestureDetector = new GestureDetector(getApplicationContext(), new CustomGestureDetector(getApplicationContext(), mediaPlayer, this));
-        frameLayout = (RelativeLayout) findViewById(R.id.video_information);
+        gestureDetector = new GestureDetector(getApplicationContext(), new CustomGestureDetector(this));
+        relativeLayout = (RelativeLayout) findViewById(R.id.video_information);
+        videoTitle = (TextView) findViewById(R.id.play_video_title);
         videoTime = (TextView) findViewById(R.id.video_time);
         surfaceView = (SurfaceView) findViewById(R.id.main_surfaceview);
         seekBar = (SeekBar) findViewById(R.id.video_seekbar);
+        serviceStartBtn = (Button) findViewById(R.id.video_service);
+        serviceConnectionBtn = (Button) findViewById(R.id.video_service_connection);
+        serviceEndBtn = (Button) findViewById(R.id.video_service_end);
         surfaceHolder = surfaceView.getHolder();
         surfaceHolder.addCallback(this);
+        displayMetrics = getApplicationContext().getResources().getDisplayMetrics();
     }
 
     private void registerListener() {
@@ -77,32 +95,88 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                flag = false;
+                seekBarFlag = false;
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                flag = true;
+                seekBarFlag = true;
                 int position = seekBar.getProgress();
                 mediaPlayer.seekTo(position);
-                new ProgressSeekBar().start();
+//                new ProgressSeekBar().start();
             }
         });
+
+        serviceStartBtn.setOnClickListener(listener);
+        serviceConnectionBtn.setOnClickListener(listener);
+        serviceEndBtn.setOnClickListener(listener);
     }
+
+    Button.OnClickListener listener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            switch (view.getId()) {
+                case R.id.video_service:
+                    ALog.i("startService");
+                    isBind = true;
+                    Intent serviceIntent = new Intent(getApplicationContext(), VideoService.class);
+                    bindService(serviceIntent, mConnection, Context.BIND_AUTO_CREATE);
+                    break;
+                case R.id.video_service_connection:
+                    mBindService.getCurrentTime();
+                    mBindService.getPath();
+                    finish();
+                    break;
+                case R.id.video_service_end:
+                    ALog.i("stopService");
+                    unbindService(mConnection);
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+        // Called when the connection with the service is established
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            VideoService.BindServiceBinder binder = (VideoService.BindServiceBinder) service;
+            mBindService = binder.getService();
+            // get service.
+            mBindService.registerCallback(mCallback);
+            // callback registration
+        }
+
+        // Called when the connection with the service disconnects unexpectedly
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            mBindService = null;
+        }
+    };
+
+    private VideoService.ServiceCallback mCallback = new VideoService.ServiceCallback() {
+        @Override
+        public int getCurrentTime() {
+            ALog.d("called by service");
+            return mediaPlayer.getCurrentPosition();
+        }
+
+        @Override
+        public String getPath() {
+            return item.getPath();
+        }
+    };
 
     private void arrangeVideo() {
         int videoWidth = mediaPlayer.getVideoWidth();
         int videoHeight = mediaPlayer.getVideoHeight();
-        ALog.d("video :" + videoWidth + "/" + videoHeight);
 
-        DisplayMetrics displayMetrics = getApplicationContext().getResources().getDisplayMetrics();
         int screenWidth = displayMetrics.widthPixels;
         int screenHeight = displayMetrics.heightPixels;
-        ALog.d("screen : " + screenWidth + "/" + screenHeight);
 
-        android.view.ViewGroup.LayoutParams lp = surfaceView.getLayoutParams();
+        ViewGroup.LayoutParams lp = surfaceView.getLayoutParams();
 
-        //portrat
         if (screenWidth < screenHeight) {
             lp.width = screenWidth;
             lp.height = (int) (((float) videoHeight / (float) videoWidth) * (float) screenWidth);
@@ -110,7 +184,7 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
             lp.width = (int) (((float) videoWidth / (float) videoHeight) * (float) screenHeight);
             lp.height = screenHeight;
         }
-        ALog.d(lp.width + "/" + lp.height);
+
         surfaceView.setLayoutParams(lp);
     }
 
@@ -122,10 +196,8 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
             mediaPlayer.setDataSource(path);
             mediaPlayer.setDisplay(surfaceHolder);
             mediaPlayer.prepare();
-            if (savedTime > -1) {
-                ALog.i(savedTime);
-                mediaPlayer.seekTo(savedTime);
-            }
+            ALog.i(savedTime);
+            mediaPlayer.seekTo(savedTime);
             mediaPlayer.start();
         } catch (IOException e) {
             e.printStackTrace();
@@ -134,7 +206,11 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
 
     private void releaseMediaPlayer() {
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        flag = false;
+        if (isBind) {
+            unbindService(mConnection);
+        }
+        seekBarFlag = false;
+        isBind = false;
         if (mediaPlayer != null) {
             mediaPlayer.release();
             mediaPlayer = null;
@@ -183,10 +259,10 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         ALog.i("surfaceCreated");
-        flag = true;
-        playVideo(path);
+        seekBarFlag = true;
+        playVideo(item.getPath());
         seekBar.setMax(mediaPlayer.getDuration());
-        new ProgressSeekBar().start();
+//        new ProgressSeekBar().start();
     }
 
     @Override
@@ -221,12 +297,14 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
 
     @Override
     public boolean onUp(MotionEvent event) {
-        frameLayout.setVisibility(View.VISIBLE);
+        relativeLayout.setVisibility(View.VISIBLE);
+        videoTitle.setText(item.getTitle());
         videoTime.setText(getStringTime(mediaPlayer.getCurrentPosition()) + " / " + getStringTime(mediaPlayer.getDuration()));
+
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                frameLayout.setVisibility(View.GONE);
+                relativeLayout.setVisibility(View.GONE);
             }
         }, 5000);
 
@@ -246,6 +324,21 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
         return true;
     }
 
+    @Override
+    public boolean onDoubleTap(MotionEvent event) {
+        int screenDivision = getApplicationContext().getResources().getDisplayMetrics().widthPixels / 2;
+
+        if (event.getX() > screenDivision) {
+            Toast.makeText(getApplicationContext(), "10초 앞으로", Toast.LENGTH_SHORT).show();
+            mediaPlayer.seekTo(mediaPlayer.getCurrentPosition() + 10000);
+        } else {
+            Toast.makeText(getApplicationContext(), "10초 뒤로", Toast.LENGTH_SHORT).show();
+            mediaPlayer.seekTo(mediaPlayer.getCurrentPosition() - 10000);
+        }
+
+        return false;
+    }
+
     private String getStringTime(int time) {
         int currentSecond = time / 1000;
         int second = currentSecond % 60;
@@ -258,7 +351,7 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
     private class ProgressSeekBar extends Thread {
         @Override
         public void run() {
-            while (flag) {
+            while (seekBarFlag) {
                 seekBar.setProgress(mediaPlayer.getCurrentPosition());
             }
         }

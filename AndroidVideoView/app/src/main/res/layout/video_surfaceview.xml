@@ -14,20 +14,52 @@
         android:id="@+id/video_information"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:visibility="gone">
+
+        <TextView
+            android:id="@+id/play_video_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:background="@android:color/transparent"
+            android:textColor="#ffffff" />
+
+        <Button
+            android:id="@+id/video_service"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/play_video_title"
+            android:text="Service" />
+
+        <Button
+            android:id="@+id/video_service_connection"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/video_service"
+            android:text="Connection" />
+
+        <Button
+            android:id="@+id/video_service_end"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_toEndOf="@id/video_service_connection"
+            android:text="ServiceEnd" />
 
         <TextView
             android:id="@+id/video_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
             android:paddingEnd="10dp"
-            android:paddingStart="10dp" />
+            android:paddingStart="10dp"
+            android:textColor="#ffffff" />
 
         <SeekBar
             android:id="@+id/video_seekbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
             android:layout_toEndOf="@id/video_time" />
 
     </RelativeLayout>

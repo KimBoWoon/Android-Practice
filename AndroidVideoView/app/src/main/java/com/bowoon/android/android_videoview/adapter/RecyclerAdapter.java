@@ -36,7 +36,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public void onItemClick(int position) {
         Toast.makeText(context, getItemTitle(position), Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(context, VideoPlayerActivity.class);
-        intent.putExtra("path", items.get(position).getPath());
+        intent.putExtra("videoContent", items.get(position));
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }

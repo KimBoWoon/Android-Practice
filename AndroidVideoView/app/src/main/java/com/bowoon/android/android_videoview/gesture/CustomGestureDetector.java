@@ -1,23 +1,15 @@
 package com.bowoon.android.android_videoview.gesture;
 
-import android.content.Context;
-import android.media.MediaPlayer;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
-import android.widget.Toast;
 
 import com.bowoon.android.android_videoview.callback.TouchCallback;
 
 public class CustomGestureDetector extends GestureDetector.SimpleOnGestureListener {
-    private Context context;
-    private MediaPlayer mediaPlayer;
     private TouchCallback touchCallback;
 
-    public CustomGestureDetector(Context context, MediaPlayer mediaPlayer, TouchCallback touchCallback) {
+    public CustomGestureDetector(TouchCallback touchCallback) {
         super();
-
-        this.context = context;
-        this.mediaPlayer = mediaPlayer;
         this.touchCallback = touchCallback;
     }
 
@@ -53,17 +45,7 @@ public class CustomGestureDetector extends GestureDetector.SimpleOnGestureListen
 
     @Override
     public boolean onDoubleTap(MotionEvent e) {
-        int screenDivision = mediaPlayer.getVideoWidth() / 2;
-
-        if (e.getX() > screenDivision) {
-            Toast.makeText(context, "10초 앞으로", Toast.LENGTH_SHORT).show();
-            mediaPlayer.seekTo(mediaPlayer.getCurrentPosition() + 10000);
-        } else {
-            Toast.makeText(context, "10초 뒤로", Toast.LENGTH_SHORT).show();
-            mediaPlayer.seekTo(mediaPlayer.getCurrentPosition() - 10000);
-        }
-
-        return super.onDoubleTap(e);
+        return touchCallback.onDoubleTap(e);
     }
 
     @Override
