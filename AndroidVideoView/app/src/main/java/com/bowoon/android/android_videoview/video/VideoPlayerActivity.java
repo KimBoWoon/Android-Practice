@@ -44,8 +44,6 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
     private Item item;
     private DisplayMetrics displayMetrics;
     private Button serviceStartBtn;
-    private Button serviceConnectionBtn;
-    private Button serviceEndBtn;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -95,7 +93,7 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
                 seekBarFlag = true;
                 int position = seekBar.getProgress();
                 mediaPlayer.seekTo(position);
-//                new ProgressSeekBar().start();
+                new ProgressSeekBar().start();
             }
         });
 
@@ -112,6 +110,7 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
                     serviceIntent.putExtra("video", item);
                     serviceIntent.putExtra("currentTime", mediaPlayer.getCurrentPosition());
                     startService(serviceIntent);
+                    finish();
                     break;
                 default:
                     break;
@@ -209,7 +208,7 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
         seekBarFlag = true;
         playVideo(item.getPath());
         seekBar.setMax(mediaPlayer.getDuration());
-//        new ProgressSeekBar().start();
+        new ProgressSeekBar().start();
     }
 
     @Override

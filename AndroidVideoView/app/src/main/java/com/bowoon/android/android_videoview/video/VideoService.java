@@ -5,9 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
+import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -28,18 +31,16 @@ public class VideoService extends Service implements SurfaceHolder.Callback {
     private View mView;
     private WindowManager mManager;
     private WindowManager.LayoutParams mParams;
-
     private float mTouchX, mTouchY;
     private int mViewX, mViewY;
-
-    private boolean isMove = false;
-
     private MediaPlayer mediaPlayer;
     private SurfaceHolder surfaceHolder;
     private SurfaceView surfaceView;
     private String path;
     private Button exitBtn;
     private Intent intent;
+    private DisplayMetrics displayMetrics;
+    private int startId;
 
     @Override
     public void onCreate() {
@@ -47,33 +48,45 @@ public class VideoService extends Service implements SurfaceHolder.Callback {
 
         ALog.i("onCreate");
 
-        LayoutInflater mInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        mView = mInflater.inflate(R.layout.service_layout, null);
+        try {
+            displayMetrics = getApplicationContext().getResources().getDisplayMetrics();
+            int width = displayMetrics.widthPixels;
+            int height = displayMetrics.heightPixels;
 
-        mView.setOnTouchListener(mViewTouchListener);
+            ALog.i(width);
+            ALog.i(height);
 
-        surfaceView = (SurfaceView) mView.findViewById(R.id.service_layout_video);
-        exitBtn = (Button) mView.findViewById(R.id.service_exit);
-        exitBtn.setOnClickListener(listener);
+            LayoutInflater mInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            mView = mInflater.inflate(R.layout.service_layout, null);
 
-        surfaceHolder = surfaceView.getHolder();
-        surfaceHolder.addCallback(this);
+            mView.setOnTouchListener(mViewTouchListener);
 
-        mediaPlayer = new MediaPlayer();
+            surfaceView = (SurfaceView) mView.findViewById(R.id.service_layout_video);
+            exitBtn = (Button) mView.findViewById(R.id.service_exit);
+            exitBtn.setOnClickListener(listener);
 
-        mParams = new WindowManager.LayoutParams(
-                WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.TYPE_PHONE,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-                PixelFormat.TRANSLUCENT);
-        mParams.gravity = Gravity.BOTTOM | Gravity.END;
+            surfaceHolder = surfaceView.getHolder();
+            surfaceHolder.addCallback(this);
 
-        mParams.width = 550;
-        mParams.height = 300;
+            mediaPlayer = new MediaPlayer();
 
-        mManager = (WindowManager) getSystemService(WINDOW_SERVICE);
-        mManager.addView(mView, mParams);
+            mParams = new WindowManager.LayoutParams(
+                    WindowManager.LayoutParams.WRAP_CONTENT,
+                    WindowManager.LayoutParams.WRAP_CONTENT,
+                    WindowManager.LayoutParams.TYPE_PHONE,
+                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                    PixelFormat.TRANSLUCENT);
+            mParams.gravity = Gravity.BOTTOM | Gravity.END;
+
+            mParams.width = 550;
+            mParams.height = 300;
+
+            mManager = (WindowManager) getSystemService(WINDOW_SERVICE);
+            mManager.addView(mView, mParams);
+        } catch (NullPointerException e) {
+            ALog.i("onCreate NullPointer Exception");
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -83,8 +96,10 @@ public class VideoService extends Service implements SurfaceHolder.Callback {
         currentTime = intent.getIntExtra("currentTime", -1);
         Item item = (Item) intent.getSerializableExtra("video");
         path = item.getPath();
+        this.startId = startId;
 
-//        playVideo(path);
+//        startForeground(startId, new Notification());
+
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -126,9 +141,11 @@ public class VideoService extends Service implements SurfaceHolder.Callback {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onDestroy() {
         super.onDestroy();
+//        stopForeground(startId);
         if (mView != null) {
             mManager.removeView(mView);
             mView = null;
@@ -164,12 +181,9 @@ public class VideoService extends Service implements SurfaceHolder.Callback {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
             int touchCount = event.getPointerCount();
-            double distance;
 
             switch (event.getAction() & MotionEvent.ACTION_MASK) {
                 case MotionEvent.ACTION_DOWN:
-                    isMove = false;
-
                     mTouchX = event.getRawX();
                     mTouchY = event.getRawY();
                     mViewX = mParams.x;
@@ -187,34 +201,38 @@ public class VideoService extends Service implements SurfaceHolder.Callback {
                     break;
                 case MotionEvent.ACTION_MOVE:
                     if (touchCount == 1) {
-                        isMove = true;
-
                         int x = (int) (mTouchX - event.getRawX());
                         int y = (int) (mTouchY - event.getRawY());
-
-                        final int num = 5;
-                        if ((x > -num && x < num) && (y > -num && y < num)) {
-                            isMove = false;
-                            break;
-                        }
 
                         mParams.x = mViewX + x;
                         mParams.y = mViewY + y;
 
                         mManager.updateViewLayout(mView, mParams);
                     } else if (touchCount == 2) {
-                        distance = Math.sqrt(Math.pow(mTouchX - event.getRawX(), 2) + Math.pow(mTouchY - event.getRawY(), 2));
-                        ALog.i(distance);
+                        double distance = spacing(event);
+                        mParams.width = (int) distance;
+                        if (displayMetrics.widthPixels != mParams.width) {
+                            mParams.height = mParams.height + 5;
+                        }
+                        mManager.updateViewLayout(mView, mParams);
                     }
-
-                    break;
-                case MotionEvent.ACTION_POINTER_DOWN:
-                    distance = Math.sqrt(Math.pow(mTouchX - event.getRawX(), 2) + Math.pow(mTouchY - event.getRawY(), 2));
-                    ALog.i(distance);
                     break;
             }
 
             return true;
         }
     };
+
+    private double spacing(MotionEvent event) {
+        float x = event.getX(0) - event.getX(1);
+        float y = event.getY(0) - event.getY(1);
+        double distance = Math.sqrt(x * x + y * y);
+
+        if (distance >= displayMetrics.widthPixels) {
+            distance = displayMetrics.widthPixels;
+            return distance;
+        }
+
+        return distance;
+    }
 }
