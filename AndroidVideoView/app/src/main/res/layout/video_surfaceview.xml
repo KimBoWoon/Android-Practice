@@ -31,21 +31,6 @@
             android:layout_toEndOf="@id/play_video_title"
             android:text="Service" />
 
-        <Button
-            android:id="@+id/video_service_connection"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toEndOf="@id/video_service"
-            android:text="Connection" />
-
-        <Button
-            android:id="@+id/video_service_end"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_toEndOf="@id/video_service_connection"
-            android:text="ServiceEnd" />
-
         <TextView
             android:id="@+id/video_time"
             android:layout_width="wrap_content"

@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.media.MediaPlayer;
-import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.view.Gravity;
@@ -15,16 +15,16 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 
 import com.android.logcat.log.ALog;
 import com.bowoon.android.android_videoview.R;
+import com.bowoon.android.android_videoview.vo.Item;
 
 import java.io.IOException;
 
 public class VideoService extends Service implements SurfaceHolder.Callback {
     private int currentTime;
-    private final IBinder mBinder = new BindServiceBinder();
-    private ServiceCallback mCallback;
     private View mView;
     private WindowManager mManager;
     private WindowManager.LayoutParams mParams;
@@ -38,10 +38,14 @@ public class VideoService extends Service implements SurfaceHolder.Callback {
     private SurfaceHolder surfaceHolder;
     private SurfaceView surfaceView;
     private String path;
+    private Button exitBtn;
+    private Intent intent;
 
     @Override
     public void onCreate() {
         super.onCreate();
+
+        ALog.i("onCreate");
 
         LayoutInflater mInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mView = mInflater.inflate(R.layout.service_layout, null);
@@ -49,6 +53,8 @@ public class VideoService extends Service implements SurfaceHolder.Callback {
         mView.setOnTouchListener(mViewTouchListener);
 
         surfaceView = (SurfaceView) mView.findViewById(R.id.service_layout_video);
+        exitBtn = (Button) mView.findViewById(R.id.service_exit);
+        exitBtn.setOnClickListener(listener);
 
         surfaceHolder = surfaceView.getHolder();
         surfaceHolder.addCallback(this);
@@ -63,16 +69,29 @@ public class VideoService extends Service implements SurfaceHolder.Callback {
                 PixelFormat.TRANSLUCENT);
         mParams.gravity = Gravity.BOTTOM | Gravity.END;
 
-        mParams.width = 320;
-        mParams.height = 240;
+        mParams.width = 550;
+        mParams.height = 300;
 
         mManager = (WindowManager) getSystemService(WINDOW_SERVICE);
         mManager.addView(mView, mParams);
     }
 
     @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        ALog.i("onStartCommand");
+        this.intent = intent;
+        currentTime = intent.getIntExtra("currentTime", -1);
+        Item item = (Item) intent.getSerializableExtra("video");
+        path = item.getPath();
+
+//        playVideo(path);
+        return super.onStartCommand(intent, flags, startId);
+    }
+
+    @Override
     public void surfaceCreated(SurfaceHolder holder) {
         ALog.i("surfaceCreated");
+        playVideo(path);
     }
 
     @Override
@@ -97,7 +116,10 @@ public class VideoService extends Service implements SurfaceHolder.Callback {
             mediaPlayer.setDataSource(path);
             mediaPlayer.setDisplay(surfaceHolder);
             mediaPlayer.prepare();
-            mediaPlayer.seekTo(currentTime);
+            if (currentTime != -1) {
+                ALog.i(currentTime);
+                mediaPlayer.seekTo(currentTime);
+            }
             mediaPlayer.start();
         } catch (IOException e) {
             e.printStackTrace();
@@ -107,40 +129,36 @@ public class VideoService extends Service implements SurfaceHolder.Callback {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        if (mView != null) {
+            mManager.removeView(mView);
+            mView = null;
+        }
     }
 
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return mBinder;
+        return null;
     }
 
-    public interface ServiceCallback {
-        int getCurrentTime();
-
-        String getPath();
-    }
-
-    public void registerCallback(ServiceCallback cb) {
-        mCallback = cb;
-    }
-
-    public void getCurrentTime() {
-        ALog.d("called by Activity");
-        currentTime = mCallback.getCurrentTime();
-    }
-
-    public void getPath() {
-        path = mCallback.getPath();
-        playVideo(path);
-    }
-
-    // Declare inner class
-    public class BindServiceBinder extends Binder {
-        VideoService getService() {
-            return VideoService.this;
+    private void releaseMediaPlayer() {
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
+            mediaPlayer = null;
         }
     }
+
+    View.OnClickListener listener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.service_exit:
+                    releaseMediaPlayer();
+                    stopService(intent);
+                    break;
+            }
+        }
+    };
 
     private View.OnTouchListener mViewTouchListener = new View.OnTouchListener() {
         @Override
@@ -159,6 +177,13 @@ public class VideoService extends Service implements SurfaceHolder.Callback {
 
                     break;
                 case MotionEvent.ACTION_UP:
+                    exitBtn.setVisibility(View.VISIBLE);
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            exitBtn.setVisibility(View.GONE);
+                        }
+                    }, 3000);
                     break;
                 case MotionEvent.ACTION_MOVE:
                     if (touchCount == 1) {

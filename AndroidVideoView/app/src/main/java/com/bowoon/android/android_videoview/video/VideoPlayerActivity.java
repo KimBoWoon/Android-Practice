@@ -1,14 +1,10 @@
 package com.bowoon.android.android_videoview.video;
 
 import android.app.Activity;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.DisplayMetrics;
 import android.view.GestureDetector;
@@ -44,14 +40,12 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
     private GestureDetector gestureDetector;
     private SeekBar seekBar;
     private boolean seekBarFlag;
-    private boolean isBind;
     private int savedTime;
     private Item item;
     private DisplayMetrics displayMetrics;
     private Button serviceStartBtn;
     private Button serviceConnectionBtn;
     private Button serviceEndBtn;
-    private VideoService mBindService;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -76,8 +70,6 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
         surfaceView = (SurfaceView) findViewById(R.id.main_surfaceview);
         seekBar = (SeekBar) findViewById(R.id.video_seekbar);
         serviceStartBtn = (Button) findViewById(R.id.video_service);
-        serviceConnectionBtn = (Button) findViewById(R.id.video_service_connection);
-        serviceEndBtn = (Button) findViewById(R.id.video_service_end);
         surfaceHolder = surfaceView.getHolder();
         surfaceHolder.addCallback(this);
         displayMetrics = getApplicationContext().getResources().getDisplayMetrics();
@@ -108,8 +100,6 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
         });
 
         serviceStartBtn.setOnClickListener(listener);
-        serviceConnectionBtn.setOnClickListener(listener);
-        serviceEndBtn.setOnClickListener(listener);
     }
 
     Button.OnClickListener listener = new View.OnClickListener() {
@@ -118,53 +108,14 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
             switch (view.getId()) {
                 case R.id.video_service:
                     ALog.i("startService");
-                    isBind = true;
                     Intent serviceIntent = new Intent(getApplicationContext(), VideoService.class);
-                    bindService(serviceIntent, mConnection, Context.BIND_AUTO_CREATE);
-                    break;
-                case R.id.video_service_connection:
-                    mBindService.getCurrentTime();
-                    mBindService.getPath();
-                    finish();
-                    break;
-                case R.id.video_service_end:
-                    ALog.i("stopService");
-                    unbindService(mConnection);
+                    serviceIntent.putExtra("video", item);
+                    serviceIntent.putExtra("currentTime", mediaPlayer.getCurrentPosition());
+                    startService(serviceIntent);
                     break;
                 default:
                     break;
             }
-        }
-    };
-
-    private ServiceConnection mConnection = new ServiceConnection() {
-        // Called when the connection with the service is established
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            VideoService.BindServiceBinder binder = (VideoService.BindServiceBinder) service;
-            mBindService = binder.getService();
-            // get service.
-            mBindService.registerCallback(mCallback);
-            // callback registration
-        }
-
-        // Called when the connection with the service disconnects unexpectedly
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            mBindService = null;
-        }
-    };
-
-    private VideoService.ServiceCallback mCallback = new VideoService.ServiceCallback() {
-        @Override
-        public int getCurrentTime() {
-            ALog.d("called by service");
-            return mediaPlayer.getCurrentPosition();
-        }
-
-        @Override
-        public String getPath() {
-            return item.getPath();
         }
     };
 
@@ -206,11 +157,7 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
 
     private void releaseMediaPlayer() {
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        if (isBind) {
-            unbindService(mConnection);
-        }
         seekBarFlag = false;
-        isBind = false;
         if (mediaPlayer != null) {
             mediaPlayer.release();
             mediaPlayer = null;
