@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#000000">
@@ -9,14 +9,41 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <Button
-        android:id="@+id/service_exit"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:background="@android:color/transparent"
-        android:text="X"
-        android:textColor="#ffffff"
-        android:visibility="gone" />
+        android:layout_gravity="center|bottom">
 
-</RelativeLayout>
+        <Button
+            android:id="@+id/service_play"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:text="▶"
+            android:textColor="#ffffff"
+            android:visibility="visible" />
+
+        <Button
+            android:id="@+id/service_pause"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:text="II"
+            android:textColor="#ffffff"
+            android:visibility="visible" />
+
+        <Button
+            android:id="@+id/service_exit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:text="X"
+            android:textColor="#ffffff"
+            android:visibility="visible" />
+
+    </LinearLayout>
+
+</FrameLayout>

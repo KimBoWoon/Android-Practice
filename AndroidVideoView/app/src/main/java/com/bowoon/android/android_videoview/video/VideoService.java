@@ -1,15 +1,17 @@
 package com.bowoon.android.android_videoview.video;
 
+import android.annotation.TargetApi;
+import android.app.Notification;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.PixelFormat;
+import android.graphics.Point;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -38,9 +40,11 @@ public class VideoService extends Service implements SurfaceHolder.Callback {
     private SurfaceView surfaceView;
     private String path;
     private Button exitBtn;
+    private Button playBtn;
+    private Button pauseBtn;
     private Intent intent;
     private DisplayMetrics displayMetrics;
-    private int startId;
+    private boolean isPause;
 
     @Override
     public void onCreate() {
@@ -53,16 +57,17 @@ public class VideoService extends Service implements SurfaceHolder.Callback {
             int width = displayMetrics.widthPixels;
             int height = displayMetrics.heightPixels;
 
-            ALog.i(width);
-            ALog.i(height);
-
             LayoutInflater mInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             mView = mInflater.inflate(R.layout.service_layout, null);
 
             mView.setOnTouchListener(mViewTouchListener);
 
             surfaceView = (SurfaceView) mView.findViewById(R.id.service_layout_video);
+            playBtn = (Button) mView.findViewById(R.id.service_play);
+            pauseBtn = (Button) mView.findViewById(R.id.service_pause);
             exitBtn = (Button) mView.findViewById(R.id.service_exit);
+            playBtn.setOnClickListener(listener);
+            pauseBtn.setOnClickListener(listener);
             exitBtn.setOnClickListener(listener);
 
             surfaceHolder = surfaceView.getHolder();
@@ -70,16 +75,36 @@ public class VideoService extends Service implements SurfaceHolder.Callback {
 
             mediaPlayer = new MediaPlayer();
 
+//            mParams = new WindowManager.LayoutParams(
+//                    WindowManager.LayoutParams.WRAP_CONTENT,
+//                    WindowManager.LayoutParams.WRAP_CONTENT,
+//                    WindowManager.LayoutParams.TYPE_PHONE,
+//                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+//                    PixelFormat.TRANSLUCENT);
             mParams = new WindowManager.LayoutParams(
                     WindowManager.LayoutParams.WRAP_CONTENT,
                     WindowManager.LayoutParams.WRAP_CONTENT,
                     WindowManager.LayoutParams.TYPE_PHONE,
-                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                    WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
                     PixelFormat.TRANSLUCENT);
             mParams.gravity = Gravity.BOTTOM | Gravity.END;
 
-            mParams.width = 550;
-            mParams.height = 300;
+            ALog.i(displayMetrics.widthPixels / 120);
+            ALog.i(displayMetrics.heightPixels / 120);
+
+            Point point = screenRatio(displayMetrics);
+
+            if (displayMetrics.widthPixels * 16 > displayMetrics.heightPixels * 9) {
+                width = displayMetrics.heightPixels * point.y / point.x;
+            } else {
+                height = displayMetrics.widthPixels * point.x / point.y;
+            }
+
+            ALog.i(width);
+            ALog.i(height);
+
+            mParams.width = height;
+            mParams.height = width;
 
             mManager = (WindowManager) getSystemService(WINDOW_SERVICE);
             mManager.addView(mView, mParams);
@@ -96,9 +121,7 @@ public class VideoService extends Service implements SurfaceHolder.Callback {
         currentTime = intent.getIntExtra("currentTime", -1);
         Item item = (Item) intent.getSerializableExtra("video");
         path = item.getPath();
-        this.startId = startId;
-
-//        startForeground(startId, new Notification());
+        startForeground(startId, new Notification());
 
         return super.onStartCommand(intent, flags, startId);
     }
@@ -112,10 +135,9 @@ public class VideoService extends Service implements SurfaceHolder.Callback {
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
         ALog.i("surfaceChanged");
-//        if (mediaPlayer != null) {
-//            mediaPlayer.setDisplay(holder);
-//            arrangeVideo();
-//        }
+        if (mediaPlayer != null) {
+            mediaPlayer.setDisplay(holder);
+        }
     }
 
     @Override
@@ -141,15 +163,23 @@ public class VideoService extends Service implements SurfaceHolder.Callback {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
+    @TargetApi(Build.VERSION_CODES.N)
     @Override
     public void onDestroy() {
         super.onDestroy();
-//        stopForeground(startId);
+        ALog.i("onDestroy");
+        stopSelf();
+        stopForeground(true);
         if (mView != null) {
             mManager.removeView(mView);
             mView = null;
         }
+    }
+
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        ALog.i("onTaskRemoved");
+        // 여기에 필요한 코드를 추가한다.
     }
 
     @Nullable
@@ -166,11 +196,25 @@ public class VideoService extends Service implements SurfaceHolder.Callback {
     }
 
     View.OnClickListener listener = new View.OnClickListener() {
+        @TargetApi(Build.VERSION_CODES.N)
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
+                case R.id.service_play:
+                    if (isPause) {
+                        isPause = false;
+                        mediaPlayer.start();
+                    }
+                    break;
+                case R.id.service_pause:
+                    if (mediaPlayer.isPlaying()) {
+                        isPause = true;
+                        mediaPlayer.pause();
+                    }
+                    break;
                 case R.id.service_exit:
                     releaseMediaPlayer();
+                    stopForeground(true);
                     stopService(intent);
                     break;
             }
@@ -191,10 +235,14 @@ public class VideoService extends Service implements SurfaceHolder.Callback {
 
                     break;
                 case MotionEvent.ACTION_UP:
+                    playBtn.setVisibility(View.VISIBLE);
+                    pauseBtn.setVisibility(View.VISIBLE);
                     exitBtn.setVisibility(View.VISIBLE);
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
+                            playBtn.setVisibility(View.GONE);
+                            pauseBtn.setVisibility(View.GONE);
                             exitBtn.setVisibility(View.GONE);
                         }
                     }, 3000);
@@ -209,12 +257,26 @@ public class VideoService extends Service implements SurfaceHolder.Callback {
 
                         mManager.updateViewLayout(mView, mParams);
                     } else if (touchCount == 2) {
-                        double distance = spacing(event);
-                        mParams.width = (int) distance;
-                        if (displayMetrics.widthPixels != mParams.width) {
-                            mParams.height = mParams.height + 5;
+//                        double distance = spacing(event);
+//                        mParams.width = (int) distance;
+//                        if (displayMetrics.widthPixels != mParams.width) {
+//                            mParams.height = mParams.height + 5;
+//                        }
+                        Point point = screenRatio(displayMetrics);
+                        int width = 0, height = 0;
+
+                        if (displayMetrics.widthPixels * 16 > displayMetrics.heightPixels * 9) {
+                            width = displayMetrics.heightPixels * point.y / point.x;
+                        } else {
+                            height = displayMetrics.widthPixels * point.x / point.y;
                         }
-                        mManager.updateViewLayout(mView, mParams);
+
+                        ALog.i(width);
+                        ALog.i(height);
+
+//                        mParams.width = height;
+//                        mParams.height = width;
+//                        mManager.updateViewLayout(mView, mParams);
                     }
                     break;
             }
@@ -234,5 +296,37 @@ public class VideoService extends Service implements SurfaceHolder.Callback {
         }
 
         return distance;
+    }
+
+    private Point screenRatio(DisplayMetrics displayMetrics) {
+        int max, min, gcd, widthPixels, heightPixels;
+        Point result = new Point();
+
+        widthPixels = displayMetrics.widthPixels;
+        heightPixels = displayMetrics.heightPixels;
+
+        if (widthPixels < heightPixels) {
+            max = widthPixels;
+            min = heightPixels;
+        } else {
+            max = heightPixels;
+            min = widthPixels;
+        }
+
+        gcd = getGCD(max, min);
+
+        result.x = widthPixels / gcd;
+        result.y = heightPixels / gcd;
+
+        return result;
+    }
+
+    public int getGCD(int a, int b) {
+        while (b != 0) {
+            int temp = a % b;
+            a = b;
+            b = temp;
+        }
+        return Math.abs(a);
     }
 }

@@ -28,7 +28,7 @@
             android:id="@+id/video_service"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toEndOf="@id/play_video_title"
+            android:layout_alignParentEnd="true"
             android:text="Service" />
 
         <TextView

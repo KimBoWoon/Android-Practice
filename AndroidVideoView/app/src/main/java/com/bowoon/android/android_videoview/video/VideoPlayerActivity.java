@@ -110,6 +110,7 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
                     serviceIntent.putExtra("video", item);
                     serviceIntent.putExtra("currentTime", mediaPlayer.getCurrentPosition());
                     startService(serviceIntent);
+                    seekBarFlag = false;
                     finish();
                     break;
                 default:
