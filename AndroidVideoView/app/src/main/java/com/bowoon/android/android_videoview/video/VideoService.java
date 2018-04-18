@@ -13,14 +13,17 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.DisplayMetrics;
+import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.android.logcat.log.ALog;
 import com.bowoon.android.android_videoview.R;
@@ -45,6 +48,8 @@ public class VideoService extends Service implements SurfaceHolder.Callback {
     private Intent intent;
     private DisplayMetrics displayMetrics;
     private boolean isPause;
+    private ScaleGestureDetector scaleGestureDetector;
+    private GestureDetector gestureDetector2;
 
     @Override
     public void onCreate() {
@@ -59,6 +64,9 @@ public class VideoService extends Service implements SurfaceHolder.Callback {
 
             LayoutInflater mInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             mView = mInflater.inflate(R.layout.service_layout, null);
+
+            scaleGestureDetector = new ScaleGestureDetector(getApplicationContext(), new ServiceGestureDetector());
+            gestureDetector2 = new GestureDetector(getApplicationContext(), new CustomGestureDetector2());
 
             mView.setOnTouchListener(mViewTouchListener);
 
@@ -75,18 +83,18 @@ public class VideoService extends Service implements SurfaceHolder.Callback {
 
             mediaPlayer = new MediaPlayer();
 
-//            mParams = new WindowManager.LayoutParams(
-//                    WindowManager.LayoutParams.WRAP_CONTENT,
-//                    WindowManager.LayoutParams.WRAP_CONTENT,
-//                    WindowManager.LayoutParams.TYPE_PHONE,
-//                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-//                    PixelFormat.TRANSLUCENT);
             mParams = new WindowManager.LayoutParams(
                     WindowManager.LayoutParams.WRAP_CONTENT,
                     WindowManager.LayoutParams.WRAP_CONTENT,
                     WindowManager.LayoutParams.TYPE_PHONE,
-                    WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
+                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
                     PixelFormat.TRANSLUCENT);
+//            mParams = new WindowManager.LayoutParams(
+//                    WindowManager.LayoutParams.WRAP_CONTENT,
+//                    WindowManager.LayoutParams.WRAP_CONTENT,
+//                    WindowManager.LayoutParams.TYPE_PHONE,
+//                    WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
+//                    PixelFormat.TRANSLUCENT);
             mParams.gravity = Gravity.BOTTOM | Gravity.END;
 
             ALog.i(displayMetrics.widthPixels / 120);
@@ -224,63 +232,20 @@ public class VideoService extends Service implements SurfaceHolder.Callback {
     private View.OnTouchListener mViewTouchListener = new View.OnTouchListener() {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
-            int touchCount = event.getPointerCount();
+            if (event.getAction() == MotionEvent.ACTION_MOVE) {
+                int x = (int) (mTouchX - event.getRawX());
+                int y = (int) (mTouchY - event.getRawY());
 
-            switch (event.getAction() & MotionEvent.ACTION_MASK) {
-                case MotionEvent.ACTION_DOWN:
-                    mTouchX = event.getRawX();
-                    mTouchY = event.getRawY();
-                    mViewX = mParams.x;
-                    mViewY = mParams.y;
+                mParams.x = mViewX + x;
+                mParams.y = mViewY + y;
 
-                    break;
-                case MotionEvent.ACTION_UP:
-                    playBtn.setVisibility(View.VISIBLE);
-                    pauseBtn.setVisibility(View.VISIBLE);
-                    exitBtn.setVisibility(View.VISIBLE);
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            playBtn.setVisibility(View.GONE);
-                            pauseBtn.setVisibility(View.GONE);
-                            exitBtn.setVisibility(View.GONE);
-                        }
-                    }, 3000);
-                    break;
-                case MotionEvent.ACTION_MOVE:
-                    if (touchCount == 1) {
-                        int x = (int) (mTouchX - event.getRawX());
-                        int y = (int) (mTouchY - event.getRawY());
+                mManager.updateViewLayout(mView, mParams);
 
-                        mParams.x = mViewX + x;
-                        mParams.y = mViewY + y;
-
-                        mManager.updateViewLayout(mView, mParams);
-                    } else if (touchCount == 2) {
-//                        double distance = spacing(event);
-//                        mParams.width = (int) distance;
-//                        if (displayMetrics.widthPixels != mParams.width) {
-//                            mParams.height = mParams.height + 5;
-//                        }
-                        Point point = screenRatio(displayMetrics);
-                        int width = 0, height = 0;
-
-                        if (displayMetrics.widthPixels * 16 > displayMetrics.heightPixels * 9) {
-                            width = displayMetrics.heightPixels * point.y / point.x;
-                        } else {
-                            height = displayMetrics.widthPixels * point.x / point.y;
-                        }
-
-                        ALog.i(width);
-                        ALog.i(height);
-
-//                        mParams.width = height;
-//                        mParams.height = width;
-//                        mManager.updateViewLayout(mView, mParams);
-                    }
-                    break;
+                return true;
             }
 
+            gestureDetector2.onTouchEvent(event);
+            scaleGestureDetector.onTouchEvent(event);
             return true;
         }
     };
@@ -328,5 +293,120 @@ public class VideoService extends Service implements SurfaceHolder.Callback {
             b = temp;
         }
         return Math.abs(a);
+    }
+
+    private class CustomGestureDetector2 extends GestureDetector.SimpleOnGestureListener {
+        public CustomGestureDetector2() {
+            super();
+        }
+
+        @Override
+        public boolean onSingleTapUp(MotionEvent e) {
+            playBtn.setVisibility(View.VISIBLE);
+            pauseBtn.setVisibility(View.VISIBLE);
+            exitBtn.setVisibility(View.VISIBLE);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    playBtn.setVisibility(View.GONE);
+                    pauseBtn.setVisibility(View.GONE);
+                    exitBtn.setVisibility(View.GONE);
+                }
+            }, 3000);
+
+            return false;
+        }
+
+        @Override
+        public void onLongPress(MotionEvent e) {
+            super.onLongPress(e);
+        }
+
+        @Override
+        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+            return super.onScroll(e1, e2, distanceX, distanceY);
+        }
+
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            return super.onFling(e1, e2, velocityX, velocityY);
+        }
+
+        @Override
+        public void onShowPress(MotionEvent e) {
+            super.onShowPress(e);
+        }
+
+        @Override
+        public boolean onDown(MotionEvent e) {
+            mTouchX = e.getRawX();
+            mTouchY = e.getRawY();
+            mViewX = mParams.x;
+            mViewY = mParams.y;
+
+            return false;
+        }
+
+        @Override
+        public boolean onDoubleTap(MotionEvent e) {
+            int screenDivision = getApplicationContext().getResources().getDisplayMetrics().widthPixels / 2;
+
+            if (e.getX() > screenDivision) {
+                Toast.makeText(getApplicationContext(), "10초 앞으로", Toast.LENGTH_SHORT).show();
+                mediaPlayer.seekTo(mediaPlayer.getCurrentPosition() + 10000);
+            } else {
+                Toast.makeText(getApplicationContext(), "10초 뒤로", Toast.LENGTH_SHORT).show();
+                mediaPlayer.seekTo(mediaPlayer.getCurrentPosition() - 10000);
+            }
+
+            return false;
+        }
+
+        @Override
+        public boolean onDoubleTapEvent(MotionEvent e) {
+            return super.onDoubleTapEvent(e);
+        }
+
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+            return super.onSingleTapConfirmed(e);
+        }
+    }
+
+    private class ServiceGestureDetector extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+        private int mW, mH;
+        private final int MIN_WIDTH = 320;
+
+        @Override
+        public boolean onScale(ScaleGestureDetector detector) {
+            // scale our video view
+            ALog.d("sonScale");
+            mW *= detector.getScaleFactor();
+            mH *= detector.getScaleFactor();
+            if (mW < MIN_WIDTH) { // limits width
+                mW = mediaPlayer.getVideoWidth();
+                mH = mediaPlayer.getVideoHeight();
+            }
+            ALog.d("scale=" + detector.getScaleFactor() + ", w=" + mW + ", h=" + mH);
+//        surfaceHolder.setFixedVideoSize(mW, mH); // important
+            mParams.width = mW;
+            mParams.height = mH;
+            return true;
+        }
+
+        @Override
+        public boolean onScaleBegin(ScaleGestureDetector detector) {
+            ALog.d("onScaleBegin");
+            mW = mediaPlayer.getVideoWidth();
+            mH = mediaPlayer.getVideoHeight();
+            ALog.d("scale=" + detector.getScaleFactor() + ", w=" + mW + ", h=" + mH);
+            return true;
+        }
+
+        @Override
+        public void onScaleEnd(ScaleGestureDetector detector) {
+            ALog.d("onScaleEnd");
+            ALog.d("scale=" + detector.getScaleFactor() + ", w=" + mW + ", h=" + mH);
+        }
     }
 }
