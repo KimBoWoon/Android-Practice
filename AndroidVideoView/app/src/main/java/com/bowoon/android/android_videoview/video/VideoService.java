@@ -49,77 +49,52 @@ public class VideoService extends Service implements SurfaceHolder.Callback {
     private DisplayMetrics displayMetrics;
     private boolean isPause;
     private ScaleGestureDetector scaleGestureDetector;
-    private GestureDetector gestureDetector2;
+    private GestureDetector gestureDetector;
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-        ALog.i("onCreate");
+        initView();
+    }
 
-        try {
-            displayMetrics = getApplicationContext().getResources().getDisplayMetrics();
-            int width = displayMetrics.widthPixels;
-            int height = displayMetrics.heightPixels;
+    private void initView() {
+        LayoutInflater mInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        mView = mInflater.inflate(R.layout.service_layout, null);
 
-            LayoutInflater mInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            mView = mInflater.inflate(R.layout.service_layout, null);
+        scaleGestureDetector = new ScaleGestureDetector(getApplicationContext(), new ServiceGestureDetector());
+        gestureDetector = new GestureDetector(getApplicationContext(), new CustomGestureDetector());
 
-            scaleGestureDetector = new ScaleGestureDetector(getApplicationContext(), new ServiceGestureDetector());
-            gestureDetector2 = new GestureDetector(getApplicationContext(), new CustomGestureDetector2());
+        mView.setOnTouchListener(mViewTouchListener);
 
-            mView.setOnTouchListener(mViewTouchListener);
+        surfaceView = (SurfaceView) mView.findViewById(R.id.service_layout_video);
+        playBtn = (Button) mView.findViewById(R.id.service_play);
+        pauseBtn = (Button) mView.findViewById(R.id.service_pause);
+        exitBtn = (Button) mView.findViewById(R.id.service_exit);
+        playBtn.setOnClickListener(listener);
+        pauseBtn.setOnClickListener(listener);
+        exitBtn.setOnClickListener(listener);
 
-            surfaceView = (SurfaceView) mView.findViewById(R.id.service_layout_video);
-            playBtn = (Button) mView.findViewById(R.id.service_play);
-            pauseBtn = (Button) mView.findViewById(R.id.service_pause);
-            exitBtn = (Button) mView.findViewById(R.id.service_exit);
-            playBtn.setOnClickListener(listener);
-            pauseBtn.setOnClickListener(listener);
-            exitBtn.setOnClickListener(listener);
+        surfaceHolder = surfaceView.getHolder();
+        surfaceHolder.addCallback(this);
 
-            surfaceHolder = surfaceView.getHolder();
-            surfaceHolder.addCallback(this);
+        mediaPlayer = new MediaPlayer();
 
-            mediaPlayer = new MediaPlayer();
+        mParams = new WindowManager.LayoutParams(
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.TYPE_PHONE,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
+                PixelFormat.TRANSLUCENT);
+        mParams.gravity = Gravity.BOTTOM | Gravity.END;
 
-            mParams = new WindowManager.LayoutParams(
-                    WindowManager.LayoutParams.WRAP_CONTENT,
-                    WindowManager.LayoutParams.WRAP_CONTENT,
-                    WindowManager.LayoutParams.TYPE_PHONE,
-                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
-                    PixelFormat.TRANSLUCENT);
-//            mParams = new WindowManager.LayoutParams(
-//                    WindowManager.LayoutParams.WRAP_CONTENT,
-//                    WindowManager.LayoutParams.WRAP_CONTENT,
-//                    WindowManager.LayoutParams.TYPE_PHONE,
-//                    WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
-//                    PixelFormat.TRANSLUCENT);
-            mParams.gravity = Gravity.BOTTOM | Gravity.END;
+        displayMetrics = getApplicationContext().getResources().getDisplayMetrics();
 
-            ALog.i(displayMetrics.widthPixels / 120);
-            ALog.i(displayMetrics.heightPixels / 120);
+        mParams.width = 640;
+        mParams.height = 320;
 
-            Point point = screenRatio(displayMetrics);
-
-            if (displayMetrics.widthPixels * 16 > displayMetrics.heightPixels * 9) {
-                width = displayMetrics.heightPixels * point.y / point.x;
-            } else {
-                height = displayMetrics.widthPixels * point.x / point.y;
-            }
-
-            ALog.i(width);
-            ALog.i(height);
-
-            mParams.width = height;
-            mParams.height = width;
-
-            mManager = (WindowManager) getSystemService(WINDOW_SERVICE);
-            mManager.addView(mView, mParams);
-        } catch (NullPointerException e) {
-            ALog.i("onCreate NullPointer Exception");
-            e.printStackTrace();
-        }
+        mManager = (WindowManager) getSystemService(WINDOW_SERVICE);
+        mManager.addView(mView, mParams);
     }
 
     @Override
@@ -144,6 +119,7 @@ public class VideoService extends Service implements SurfaceHolder.Callback {
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
         ALog.i("surfaceChanged");
         if (mediaPlayer != null) {
+            holder.setFixedSize(width, height);
             mediaPlayer.setDisplay(holder);
         }
     }
@@ -187,7 +163,6 @@ public class VideoService extends Service implements SurfaceHolder.Callback {
     @Override
     public void onTaskRemoved(Intent rootIntent) {
         ALog.i("onTaskRemoved");
-        // 여기에 필요한 코드를 추가한다.
     }
 
     @Nullable
@@ -232,7 +207,9 @@ public class VideoService extends Service implements SurfaceHolder.Callback {
     private View.OnTouchListener mViewTouchListener = new View.OnTouchListener() {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
-            if (event.getAction() == MotionEvent.ACTION_MOVE) {
+            int count = event.getPointerCount();
+
+            if (count == 1 && event.getAction() == MotionEvent.ACTION_MOVE) {
                 int x = (int) (mTouchX - event.getRawX());
                 int y = (int) (mTouchY - event.getRawY());
 
@@ -244,59 +221,14 @@ public class VideoService extends Service implements SurfaceHolder.Callback {
                 return true;
             }
 
-            gestureDetector2.onTouchEvent(event);
+            gestureDetector.onTouchEvent(event);
             scaleGestureDetector.onTouchEvent(event);
             return true;
         }
     };
 
-    private double spacing(MotionEvent event) {
-        float x = event.getX(0) - event.getX(1);
-        float y = event.getY(0) - event.getY(1);
-        double distance = Math.sqrt(x * x + y * y);
-
-        if (distance >= displayMetrics.widthPixels) {
-            distance = displayMetrics.widthPixels;
-            return distance;
-        }
-
-        return distance;
-    }
-
-    private Point screenRatio(DisplayMetrics displayMetrics) {
-        int max, min, gcd, widthPixels, heightPixels;
-        Point result = new Point();
-
-        widthPixels = displayMetrics.widthPixels;
-        heightPixels = displayMetrics.heightPixels;
-
-        if (widthPixels < heightPixels) {
-            max = widthPixels;
-            min = heightPixels;
-        } else {
-            max = heightPixels;
-            min = widthPixels;
-        }
-
-        gcd = getGCD(max, min);
-
-        result.x = widthPixels / gcd;
-        result.y = heightPixels / gcd;
-
-        return result;
-    }
-
-    public int getGCD(int a, int b) {
-        while (b != 0) {
-            int temp = a % b;
-            a = b;
-            b = temp;
-        }
-        return Math.abs(a);
-    }
-
-    private class CustomGestureDetector2 extends GestureDetector.SimpleOnGestureListener {
-        public CustomGestureDetector2() {
+    private class CustomGestureDetector extends GestureDetector.SimpleOnGestureListener {
+        public CustomGestureDetector() {
             super();
         }
 
@@ -375,30 +307,35 @@ public class VideoService extends Service implements SurfaceHolder.Callback {
 
     private class ServiceGestureDetector extends ScaleGestureDetector.SimpleOnScaleGestureListener {
         private int mW, mH;
-        private final int MIN_WIDTH = 320;
+        private final int MIN_WIDTH = 640;
 
         @Override
         public boolean onScale(ScaleGestureDetector detector) {
-            // scale our video view
-            ALog.d("sonScale");
+            ALog.d("onScale");
             mW *= detector.getScaleFactor();
             mH *= detector.getScaleFactor();
-            if (mW < MIN_WIDTH) { // limits width
-                mW = mediaPlayer.getVideoWidth();
-                mH = mediaPlayer.getVideoHeight();
+            if (mW <= MIN_WIDTH) {
+                mW = 640;
+                mH = 360;
+            } else if (mW >= displayMetrics.widthPixels) {
+                mW = displayMetrics.widthPixels;
+                mH = computeRatio(16, 9, displayMetrics).y;
             }
             ALog.d("scale=" + detector.getScaleFactor() + ", w=" + mW + ", h=" + mH);
-//        surfaceHolder.setFixedVideoSize(mW, mH); // important
+            surfaceHolder.setFixedSize(mW, mH);
             mParams.width = mW;
             mParams.height = mH;
+            ALog.i(mParams.width);
+            ALog.i(mParams.height);
+            mManager.updateViewLayout(mView, mParams);
             return true;
         }
 
         @Override
         public boolean onScaleBegin(ScaleGestureDetector detector) {
             ALog.d("onScaleBegin");
-            mW = mediaPlayer.getVideoWidth();
-            mH = mediaPlayer.getVideoHeight();
+            mW = mParams.width;
+            mH = mParams.height;
             ALog.d("scale=" + detector.getScaleFactor() + ", w=" + mW + ", h=" + mH);
             return true;
         }
@@ -407,6 +344,59 @@ public class VideoService extends Service implements SurfaceHolder.Callback {
         public void onScaleEnd(ScaleGestureDetector detector) {
             ALog.d("onScaleEnd");
             ALog.d("scale=" + detector.getScaleFactor() + ", w=" + mW + ", h=" + mH);
+        }
+
+        public Point computeRatio(int widthRatio, int heightRatio, DisplayMetrics displayMetrics) {
+            int width = displayMetrics.widthPixels;
+            int height = displayMetrics.heightPixels;
+            Point point = screenRatio(displayMetrics);
+            Point result = new Point();
+
+            if (displayMetrics.widthPixels * widthRatio > displayMetrics.heightPixels * heightRatio) {
+                width = displayMetrics.heightPixels * point.y / point.x;
+            } else {
+                height = displayMetrics.widthPixels * point.x / point.y;
+            }
+
+            result.x = width;
+            result.y = height;
+
+            ALog.i(result.x);
+            ALog.i(result.y);
+
+            return result;
+        }
+
+        private Point screenRatio(DisplayMetrics displayMetrics) {
+            int max, min, gcd, widthPixels, heightPixels;
+            Point result = new Point();
+
+            widthPixels = displayMetrics.widthPixels;
+            heightPixels = displayMetrics.heightPixels;
+
+            if (widthPixels < heightPixels) {
+                max = widthPixels;
+                min = heightPixels;
+            } else {
+                max = heightPixels;
+                min = widthPixels;
+            }
+
+            gcd = getGCD(max, min);
+
+            result.x = widthPixels / gcd;
+            result.y = heightPixels / gcd;
+
+            return result;
+        }
+
+        public int getGCD(int a, int b) {
+            while (b != 0) {
+                int temp = a % b;
+                a = b;
+                b = temp;
+            }
+            return Math.abs(a);
         }
     }
 }
