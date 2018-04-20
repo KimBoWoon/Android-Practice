@@ -42,14 +42,13 @@ public class VideoService extends Service implements SurfaceHolder.Callback {
     private SurfaceHolder surfaceHolder;
     private SurfaceView surfaceView;
     private String path;
-    private Button exitBtn;
-    private Button playBtn;
-    private Button pauseBtn;
+    private Button exitBtn, playBtn, pauseBtn;
     private Intent intent;
     private DisplayMetrics displayMetrics;
     private boolean isPause;
     private ScaleGestureDetector scaleGestureDetector;
     private GestureDetector gestureDetector;
+    private final int MIN_WIDTH = 540, MIN_HEIGHT = 304;
 
     @Override
     public void onCreate() {
@@ -90,8 +89,8 @@ public class VideoService extends Service implements SurfaceHolder.Callback {
 
         displayMetrics = getApplicationContext().getResources().getDisplayMetrics();
 
-        mParams.width = 640;
-        mParams.height = 320;
+        mParams.width = MIN_WIDTH;
+        mParams.height = MIN_HEIGHT;
 
         mManager = (WindowManager) getSystemService(WINDOW_SERVICE);
         mManager.addView(mView, mParams);
@@ -307,7 +306,6 @@ public class VideoService extends Service implements SurfaceHolder.Callback {
 
     private class ServiceGestureDetector extends ScaleGestureDetector.SimpleOnScaleGestureListener {
         private int mW, mH;
-        private final int MIN_WIDTH = 640;
 
         @Override
         public boolean onScale(ScaleGestureDetector detector) {
@@ -315,8 +313,8 @@ public class VideoService extends Service implements SurfaceHolder.Callback {
             mW *= detector.getScaleFactor();
             mH *= detector.getScaleFactor();
             if (mW <= MIN_WIDTH) {
-                mW = 640;
-                mH = 360;
+                mW = MIN_WIDTH;
+                mH = MIN_HEIGHT;
             } else if (mW >= displayMetrics.widthPixels) {
                 mW = displayMetrics.widthPixels;
                 mH = computeRatio(16, 9, displayMetrics).y;

@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
 
         requestReadExternalStoragePermission();
 
-        ALog.logSetting(getApplicationContext(), true, false);
+        ALog.logSetting(getApplicationContext(), false, false);
         ALog.setDebug(true);
 
         initView();
