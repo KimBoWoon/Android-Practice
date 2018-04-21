@@ -280,7 +280,7 @@ public class VideoService extends Service implements SurfaceHolder.Callback {
 
         @Override
         public boolean onDoubleTap(MotionEvent e) {
-            int screenDivision = getApplicationContext().getResources().getDisplayMetrics().widthPixels / 2;
+            int screenDivision = mParams.width / 2;
 
             if (e.getX() > screenDivision) {
                 Toast.makeText(getApplicationContext(), "10초 앞으로", Toast.LENGTH_SHORT).show();
