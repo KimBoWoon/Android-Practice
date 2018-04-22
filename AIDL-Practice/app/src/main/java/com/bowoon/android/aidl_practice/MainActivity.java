@@ -17,6 +17,8 @@ public class MainActivity extends AppCompatActivity {
     private AIDLService aidlService;
     private int value = 0;
     private Button start, end, check;
+    private ExampleService mService;
+    private boolean mBound = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +52,10 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             Log.i("Connection", "onServiceConnected");
-            aidlService = AIDLService.Stub.asInterface(iBinder);
+//            aidlService = AIDLService.Stub.asInterface(iBinder);
+            ExampleService.LocalBinder binder = (ExampleService.LocalBinder) iBinder;
+            mService = binder.getService();
+            mBound = true;
         }
 
         @Override
@@ -88,12 +93,8 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case R.id.check:
                     Log.i("Check", "Service");
-                    try {
-                        value = aidlService.add(10, 10);
+                        value = mService.getRandomNumber();
                         Toast.makeText(getApplicationContext(), String.valueOf(value), Toast.LENGTH_SHORT).show();
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
                     break;
             }
         }

@@ -22,14 +22,11 @@ import android.widget.Toast;
 
 import com.android.logcat.log.ALog;
 import com.bowoon.android.android_videoview.R;
-import com.bowoon.android.android_videoview.callback.TouchCallback;
-import com.bowoon.android.android_videoview.gesture.CustomGestureDetector;
 import com.bowoon.android.android_videoview.vo.Item;
 
 import java.io.IOException;
 
-public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callback,
-        TouchCallback {
+public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callback {
     private SurfaceView surfaceView;
     private SurfaceHolder surfaceHolder;
     private MediaPlayer mediaPlayer;
@@ -61,7 +58,7 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
 
     private void initView() {
         mediaPlayer = new MediaPlayer();
-        gestureDetector = new GestureDetector(getApplicationContext(), new CustomGestureDetector(this));
+        gestureDetector = new GestureDetector(getApplicationContext(), new CustomGestureDetector());
         relativeLayout = (RelativeLayout) findViewById(R.id.video_information);
         videoTitle = (TextView) findViewById(R.id.play_video_title);
         videoTime = (TextView) findViewById(R.id.video_time);
@@ -229,61 +226,17 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_MOVE) {
-            return this.onMove(event);
+            if (event.getX() > x + 50f) {
+                x = event.getX();
+                mediaPlayer.seekTo(mediaPlayer.getCurrentPosition() + 1000);
+            } else if (event.getX() < x - 50f) {
+                x = event.getX();
+                mediaPlayer.seekTo(mediaPlayer.getCurrentPosition() - 1000);
+            }
+
+            return true;
         }
         return gestureDetector.onTouchEvent(event);
-    }
-
-    @Override
-    public boolean onDown(MotionEvent event) {
-        x = event.getX();
-        y = event.getY();
-
-        return false;
-    }
-
-    @Override
-    public boolean onUp(MotionEvent event) {
-        relativeLayout.setVisibility(View.VISIBLE);
-        videoTitle.setText(item.getTitle());
-        videoTime.setText(getStringTime(mediaPlayer.getCurrentPosition()) + " / " + getStringTime(mediaPlayer.getDuration()));
-
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                relativeLayout.setVisibility(View.GONE);
-            }
-        }, 5000);
-
-        return false;
-    }
-
-    @Override
-    public boolean onMove(MotionEvent event) {
-        if (event.getX() > x + 50f) {
-            x = event.getX();
-            mediaPlayer.seekTo(mediaPlayer.getCurrentPosition() + 1000);
-        } else if (event.getX() < x - 50f) {
-            x = event.getX();
-            mediaPlayer.seekTo(mediaPlayer.getCurrentPosition() - 1000);
-        }
-
-        return true;
-    }
-
-    @Override
-    public boolean onDoubleTap(MotionEvent event) {
-        int screenDivision = getApplicationContext().getResources().getDisplayMetrics().widthPixels / 2;
-
-        if (event.getX() > screenDivision) {
-            Toast.makeText(getApplicationContext(), "10초 앞으로", Toast.LENGTH_SHORT).show();
-            mediaPlayer.seekTo(mediaPlayer.getCurrentPosition() + 10000);
-        } else {
-            Toast.makeText(getApplicationContext(), "10초 뒤로", Toast.LENGTH_SHORT).show();
-            mediaPlayer.seekTo(mediaPlayer.getCurrentPosition() - 10000);
-        }
-
-        return false;
     }
 
     private String getStringTime(int time) {
@@ -301,6 +254,81 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
             while (seekBarFlag) {
                 seekBar.setProgress(mediaPlayer.getCurrentPosition());
             }
+        }
+    }
+
+    private class CustomGestureDetector extends GestureDetector.SimpleOnGestureListener {
+        public CustomGestureDetector() {
+            super();
+        }
+
+        @Override
+        public boolean onSingleTapUp(MotionEvent e) {
+            relativeLayout.setVisibility(View.VISIBLE);
+            videoTitle.setText(item.getTitle());
+            videoTime.setText(getStringTime(mediaPlayer.getCurrentPosition()) + " / " + getStringTime(mediaPlayer.getDuration()));
+
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    relativeLayout.setVisibility(View.GONE);
+                }
+            }, 5000);
+
+            return false;
+        }
+
+        @Override
+        public void onLongPress(MotionEvent e) {
+            super.onLongPress(e);
+        }
+
+        @Override
+        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+            return super.onScroll(e1, e2, distanceX, distanceY);
+        }
+
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            return super.onFling(e1, e2, velocityX, velocityY);
+        }
+
+        @Override
+        public void onShowPress(MotionEvent e) {
+            super.onShowPress(e);
+        }
+
+        @Override
+        public boolean onDown(MotionEvent e) {
+            x = e.getX();
+            y = e.getY();
+
+            return false;
+        }
+
+        @Override
+        public boolean onDoubleTap(MotionEvent e) {
+            int screenDivision = getApplicationContext().getResources().getDisplayMetrics().widthPixels / 2;
+
+            if (e.getX() > screenDivision) {
+                Toast.makeText(getApplicationContext(), "10초 앞으로", Toast.LENGTH_SHORT).show();
+                mediaPlayer.seekTo(mediaPlayer.getCurrentPosition() + 10000);
+            } else {
+                Toast.makeText(getApplicationContext(), "10초 뒤로", Toast.LENGTH_SHORT).show();
+                mediaPlayer.seekTo(mediaPlayer.getCurrentPosition() - 10000);
+            }
+
+            return false;
+        }
+
+        @Override
+        public boolean onDoubleTapEvent(MotionEvent e) {
+            return super.onDoubleTapEvent(e);
+        }
+
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+            return super.onSingleTapConfirmed(e);
         }
     }
 }

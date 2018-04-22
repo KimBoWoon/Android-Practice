@@ -8,22 +8,31 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 public class ExampleService extends Service {
-    @Override
-    public void onCreate() {
-        super.onCreate();
+    // Binder given to clients
+    private final IBinder mBinder = new LocalBinder();
+    // Random number generator
+    private final java.util.Random mGenerator = new java.util.Random();
+
+    /**
+     * Class used for the client Binder.  Because we know this service always
+     * runs in the same process as its clients, we don't need to deal with IPC.
+     */
+    public class LocalBinder extends android.os.Binder {
+        ExampleService getService() {
+            // Return this instance of LocalService so clients can call public methods
+            return ExampleService.this;
+        }
     }
 
-    @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        Log.i("on", "Bind");
-        return new AIDLExample();
+        return mBinder;
     }
 
-    private class AIDLExample extends AIDLService.Stub {
-        @Override
-        public int add(int x, int y) throws RemoteException {
-            return x + y;
-        }
+    /**
+     * method for clients
+     */
+    public int getRandomNumber() {
+      return mGenerator.nextInt(100);
     }
 }
