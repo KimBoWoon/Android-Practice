@@ -22,7 +22,7 @@
             android:background="@android:color/transparent"
             android:text="▶"
             android:textColor="#ffffff"
-            android:visibility="visible" />
+            android:visibility="gone" />
 
         <Button
             android:id="@+id/service_pause"
@@ -32,7 +32,7 @@
             android:background="@android:color/transparent"
             android:text="II"
             android:textColor="#ffffff"
-            android:visibility="visible" />
+            android:visibility="gone" />
 
         <Button
             android:id="@+id/service_exit"
@@ -42,7 +42,7 @@
             android:background="@android:color/transparent"
             android:text="X"
             android:textColor="#ffffff"
-            android:visibility="visible" />
+            android:visibility="gone" />
 
     </LinearLayout>
 
