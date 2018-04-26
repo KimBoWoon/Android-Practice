@@ -2,6 +2,8 @@ package com.bowoon.android.android_videoview.video;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
@@ -36,17 +38,18 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
     private TextView videoTime;
     private GestureDetector gestureDetector;
     private SeekBar seekBar;
-    private boolean seekBarFlag;
+    private boolean seekBarFlag, isPlay;
     private int savedTime;
     private Item item;
     private DisplayMetrics displayMetrics;
-    private Button serviceStartBtn;
+    private Button serviceStartBtn, playBtn, pauseBtn;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.video_surfaceview);
 
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         Intent intent = getIntent();
@@ -54,6 +57,14 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
 
         initView();
         registerListener();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        ALog.i("onConfigurationChanged");
+
+        arrangeVideo();
     }
 
     private void initView() {
@@ -65,6 +76,8 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
         surfaceView = (SurfaceView) findViewById(R.id.main_surfaceview);
         seekBar = (SeekBar) findViewById(R.id.video_seekbar);
         serviceStartBtn = (Button) findViewById(R.id.video_service);
+        playBtn = (Button) findViewById(R.id.video_play);
+        pauseBtn = (Button) findViewById(R.id.video_pause);
         surfaceHolder = surfaceView.getHolder();
         surfaceHolder.addCallback(this);
         displayMetrics = getApplicationContext().getResources().getDisplayMetrics();
@@ -95,6 +108,8 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
         });
 
         serviceStartBtn.setOnClickListener(listener);
+        playBtn.setOnClickListener(listener);
+        pauseBtn.setOnClickListener(listener);
     }
 
     Button.OnClickListener listener = new View.OnClickListener() {
@@ -109,6 +124,18 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
                     startService(serviceIntent);
                     seekBarFlag = false;
                     finish();
+                    break;
+                case R.id.video_play:
+                    if (!isPlay) {
+                        isPlay = true;
+                        mediaPlayer.start();
+                    }
+                    break;
+                case R.id.video_pause:
+                    if (isPlay) {
+                        isPlay = false;
+                        mediaPlayer.pause();
+                    }
                     break;
                 default:
                     break;
@@ -204,6 +231,7 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
     public void surfaceCreated(SurfaceHolder holder) {
         ALog.i("surfaceCreated");
         seekBarFlag = true;
+        isPlay = true;
         playVideo(item.getPath());
         seekBar.setMax(mediaPlayer.getDuration());
         new ProgressSeekBar().start();
@@ -265,6 +293,8 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
         @Override
         public boolean onSingleTapUp(MotionEvent e) {
             relativeLayout.setVisibility(View.VISIBLE);
+            videoTitle.setVisibility(View.VISIBLE);
+            serviceStartBtn.setVisibility(View.VISIBLE);
             videoTitle.setText(item.getTitle());
             videoTime.setText(getStringTime(mediaPlayer.getCurrentPosition()) + " / " + getStringTime(mediaPlayer.getDuration()));
 
@@ -272,6 +302,8 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
                 @Override
                 public void run() {
                     relativeLayout.setVisibility(View.GONE);
+                    videoTitle.setVisibility(View.GONE);
+                    serviceStartBtn.setVisibility(View.GONE);
                 }
             }, 5000);
 

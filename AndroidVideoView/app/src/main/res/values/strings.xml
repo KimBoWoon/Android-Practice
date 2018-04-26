@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Android-VideoView</string>
+
+    <string name="service">Service</string>
+    <string name="play">▶</string>
+    <string name="pause">II</string>
+    <string name="service_exit">X</string>
 </resources>

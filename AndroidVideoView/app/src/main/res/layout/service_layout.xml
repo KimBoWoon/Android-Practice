@@ -20,7 +20,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@android:color/transparent"
-            android:text="▶"
+            android:text="@string/play"
             android:textColor="#ffffff"
             android:visibility="gone" />
 
@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@android:color/transparent"
-            android:text="II"
+            android:text="@string/pause"
             android:textColor="#ffffff"
             android:visibility="gone" />
 
@@ -40,7 +40,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@android:color/transparent"
-            android:text="X"
+            android:text="@string/service_exit"
             android:textColor="#ffffff"
             android:visibility="gone" />
 
