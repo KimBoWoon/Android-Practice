@@ -1,6 +1,7 @@
 package com.bowoon.android.android_videoview.video;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
@@ -10,6 +11,7 @@ import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.util.DisplayMetrics;
 import android.view.GestureDetector;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -17,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -27,6 +30,7 @@ import com.bowoon.android.android_videoview.R;
 import com.bowoon.android.android_videoview.vo.Item;
 
 import java.io.IOException;
+import java.sql.BatchUpdateException;
 
 public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callback {
     private SurfaceView surfaceView;
@@ -42,7 +46,8 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
     private int savedTime;
     private Item item;
     private DisplayMetrics displayMetrics;
-    private Button serviceStartBtn, playBtn, pauseBtn;
+    private Button serviceStartBtn, playBtn, pauseBtn, dialogBtn;
+    private String startTime, endTime;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -78,6 +83,7 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
         serviceStartBtn = (Button) findViewById(R.id.video_service);
         playBtn = (Button) findViewById(R.id.video_play);
         pauseBtn = (Button) findViewById(R.id.video_pause);
+        dialogBtn = (Button) findViewById(R.id.make_gif);
         surfaceHolder = surfaceView.getHolder();
         surfaceHolder.addCallback(this);
         displayMetrics = getApplicationContext().getResources().getDisplayMetrics();
@@ -110,6 +116,7 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
         serviceStartBtn.setOnClickListener(listener);
         playBtn.setOnClickListener(listener);
         pauseBtn.setOnClickListener(listener);
+        dialogBtn.setOnClickListener(listener);
     }
 
     Button.OnClickListener listener = new View.OnClickListener() {
@@ -124,6 +131,31 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
                     startService(serviceIntent);
                     seekBarFlag = false;
                     finish();
+                    break;
+                case R.id.make_gif:
+                    mediaPlayer.pause();
+                    seekBarFlag = false;
+                    AlertDialog.Builder builder = new AlertDialog.Builder(VideoPlayerActivity.this);
+                    LayoutInflater inflater = getLayoutInflater();
+                    View v = inflater.inflate(R.layout.dialog_layout, null);
+                    builder.setView(v);
+                    Button make = (Button) v.findViewById(R.id.gif_extractor);
+                    final EditText start = (EditText) v.findViewById(R.id.gif_start);
+                    final EditText end = (EditText) v.findViewById(R.id.gif_end);
+                    final AlertDialog dialog = builder.create();
+                    make.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            startTime = start.getText().toString();
+                            endTime = end.getText().toString();
+
+                            mediaPlayer.start();
+                            seekBarFlag = true;
+                            new ProgressSeekBar().start();
+                            dialog.dismiss();
+                        }
+                    });
+                    dialog.show();
                     break;
                 case R.id.video_play:
                     if (!isPlay) {
@@ -295,6 +327,7 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
             relativeLayout.setVisibility(View.VISIBLE);
             videoTitle.setVisibility(View.VISIBLE);
             serviceStartBtn.setVisibility(View.VISIBLE);
+            dialogBtn.setVisibility(View.VISIBLE);
             videoTitle.setText(item.getTitle());
             videoTime.setText(getStringTime(mediaPlayer.getCurrentPosition()) + " / " + getStringTime(mediaPlayer.getDuration()));
 
@@ -304,6 +337,7 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
                     relativeLayout.setVisibility(View.GONE);
                     videoTitle.setVisibility(View.GONE);
                     serviceStartBtn.setVisibility(View.GONE);
+                    dialogBtn.setVisibility(View.GONE);
                 }
             }, 5000);
 

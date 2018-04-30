@@ -5,4 +5,7 @@
     <string name="play">▶</string>
     <string name="pause">II</string>
     <string name="service_exit">X</string>
+    <string name="make_gif">GIF</string>
+    <string name="start">시작</string>
+    <string name="end">끝</string>
 </resources>
