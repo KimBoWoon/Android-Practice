@@ -17,6 +17,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -27,6 +28,8 @@ import android.widget.Toast;
 
 import com.android.logcat.log.ALog;
 import com.bowoon.android.android_videoview.R;
+import com.bowoon.android.android_videoview.gif.GIFExtractor;
+import com.bowoon.android.android_videoview.gif.GIFView;
 import com.bowoon.android.android_videoview.vo.Item;
 
 import java.io.IOException;
@@ -149,12 +152,24 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
                             startTime = start.getText().toString();
                             endTime = end.getText().toString();
 
-                            mediaPlayer.start();
-                            seekBarFlag = true;
-                            new ProgressSeekBar().start();
+                            GIFExtractor extractor = new GIFExtractor(mediaPlayer.getDuration());
+
+                            Intent intent = new Intent(VideoPlayerActivity.this, GIFView.class);
+                            intent.putExtra("gifImage", extractor.makeGIF(item.getPath(), Long.valueOf(startTime), Long.valueOf(endTime)));
+                            startActivity(intent);
+
+//                            mediaPlayer.start();
+//                            seekBarFlag = true;
+//                            new ProgressSeekBar().start();
                             dialog.dismiss();
                         }
                     });
+
+                    ViewGroup.LayoutParams params = dialog.getWindow().getAttributes();
+                    params.width = ViewGroup.LayoutParams.MATCH_PARENT;
+                    params.height = ViewGroup.LayoutParams.MATCH_PARENT;
+                    dialog.getWindow().setAttributes((android.view.WindowManager.LayoutParams) params);
+
                     dialog.show();
                     break;
                 case R.id.video_play:
