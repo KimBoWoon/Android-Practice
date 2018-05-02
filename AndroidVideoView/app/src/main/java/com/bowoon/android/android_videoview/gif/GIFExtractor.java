@@ -29,7 +29,7 @@ public class GIFExtractor {
 
         retriever.setDataSource(source);
 
-        int frame = 30 * getSecFromMs(endTime);
+        int frame = 10 * getSecFromMs(endTime);
         int rate = (int) (endTime / frame);
 
         Log.i("rate", "rate : " + rate);
@@ -37,8 +37,8 @@ public class GIFExtractor {
         bitmapOption.inJustDecodeBounds = true;
         retriever.getFrameAtTime(0, MediaMetadataRetriever.OPTION_CLOSEST).compress(Bitmap.CompressFormat.WEBP, 100, stream);
         BitmapFactory.decodeByteArray(stream.toByteArray(), 0, stream.toByteArray().length, bitmapOption);
-//        bitmapOption.inSampleSize = calculateInSampleSize(bitmapOption, 320, 180);
-        bitmapOption.inSampleSize = 8;
+        bitmapOption.inSampleSize = calculateInSampleSize(bitmapOption, 320, 180);
+//        bitmapOption.inSampleSize = 16;
         bitmapOption.inJustDecodeBounds = false;
         stream.reset();
 
@@ -46,7 +46,7 @@ public class GIFExtractor {
 
         for (long i = startTime; i <= endTime; i += rate) {
             Log.i("makeGIF", String.valueOf(i));
-            retriever.getFrameAtTime(i * 1000, MediaMetadataRetriever.OPTION_CLOSEST).compress(Bitmap.CompressFormat.WEBP, 100, stream);
+            retriever.getFrameAtTime(i * 1000).compress(Bitmap.CompressFormat.WEBP, 100, stream);
             Bitmap bitmap = BitmapFactory.decodeByteArray(stream.toByteArray(), 0, stream.toByteArray().length, bitmapOption);
             list.add(bitmap);
             stream.reset();

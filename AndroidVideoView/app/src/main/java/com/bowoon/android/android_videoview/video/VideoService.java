@@ -32,7 +32,7 @@ import com.bowoon.android.android_videoview.vo.Item;
 import java.io.IOException;
 
 public class VideoService extends Service implements SurfaceHolder.Callback {
-    private int currentTime;
+    private long currentTime;
     private View mView;
     private WindowManager mManager;
     private WindowManager.LayoutParams mParams;
@@ -100,7 +100,7 @@ public class VideoService extends Service implements SurfaceHolder.Callback {
     public int onStartCommand(Intent intent, int flags, int startId) {
         ALog.i("onStartCommand");
         this.intent = intent;
-        currentTime = intent.getIntExtra("currentTime", -1);
+        currentTime = intent.getLongExtra("currentTime", -1L);
         Item item = (Item) intent.getSerializableExtra("video");
         path = item.getPath();
         startForeground(startId, new Notification());
@@ -138,7 +138,7 @@ public class VideoService extends Service implements SurfaceHolder.Callback {
             mediaPlayer.prepare();
             if (currentTime != -1) {
                 ALog.i(currentTime);
-                mediaPlayer.seekTo(currentTime);
+                mediaPlayer.seekTo((int) currentTime);
             }
             mediaPlayer.start();
         } catch (IOException e) {

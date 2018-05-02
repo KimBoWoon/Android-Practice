@@ -5,12 +5,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
-import android.widget.ImageView;
 
 import com.bowoon.android.android_videoview.R;
-import com.bumptech.glide.Glide;
 
+import java.io.IOException;
 import java.util.Arrays;
+
+import pl.droidsonroids.gif.GifDrawable;
+import pl.droidsonroids.gif.GifImageView;
 
 public class GIFView extends Activity {
     @Override
@@ -23,8 +25,14 @@ public class GIFView extends Activity {
 
         Log.i("GIFView", Arrays.toString(bytes));
 
-        ImageView imageView = (ImageView) findViewById(R.id.gif_view);
+        GifImageView gifImageView = (GifImageView) findViewById(R.id.gif_view);
 
-        Glide.with(this).load(bytes).into(imageView);
+        try {
+            GifDrawable gifUriDrawable = new GifDrawable(bytes);
+            gifUriDrawable.setLoopCount(0);
+            gifImageView.setImageDrawable(gifUriDrawable);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
