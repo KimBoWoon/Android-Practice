@@ -9,23 +9,33 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.logcat.log.ALog;
 import com.bowoon.android.android_videoview.R;
 import com.bowoon.android.android_videoview.vo.Item;
+import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.PlaybackParameters;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
+import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.BandwidthMeter;
@@ -41,6 +51,8 @@ public class VideoPlayerActivity extends Activity {
     private SimpleExoPlayer exoPlayer;
     private PlayerView playerView;
     private MediaSource mediaSource;
+    private ProgressBar progressBar;
+    private LinearLayout linearLayout;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -63,11 +75,15 @@ public class VideoPlayerActivity extends Activity {
         videoTitle = (TextView) findViewById(R.id.play_video_title);
         videoTitle.setText(item.getTitle());
         playerView = (PlayerView) findViewById(R.id.main_player_view);
+        progressBar = (ProgressBar) findViewById(R.id.video_loading);
+        linearLayout = (LinearLayout) findViewById(R.id.button_group);
         exoPlayer = ExoPlayerFactory.newSimpleInstance(this, getDefaultTrackSelector());
         playerView.setPlayer(exoPlayer);
+        exoPlayer.addListener(new VideoEventListener());
 
         serviceStartBtn.setOnClickListener(listener);
         dialogBtn.setOnClickListener(listener);
+        playerView.setOnClickListener(listener);
     }
 
     public void setVideo(Uri uri) {
@@ -88,24 +104,30 @@ public class VideoPlayerActivity extends Activity {
         return trackSelector;
     }
 
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            videoTitle.setVisibility(View.VISIBLE);
+            linearLayout.setVisibility(View.VISIBLE);
+
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    videoTitle.setVisibility(View.GONE);
+                    linearLayout.setVisibility(View.GONE);
+                }
+            }, 3000);
+        }
+        return super.onTouchEvent(event);
+    }
+
     Button.OnClickListener listener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
             switch (view.getId()) {
                 case R.id.main_player_view:
-                    videoTitle.setVisibility(View.VISIBLE);
-                    serviceStartBtn.setVisibility(View.VISIBLE);
-                    dialogBtn.setVisibility(View.VISIBLE);
-
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            videoTitle.setVisibility(View.GONE);
-                            serviceStartBtn.setVisibility(View.GONE);
-                            dialogBtn.setVisibility(View.GONE);
-                        }
-                    }, 3000);
-                    break;
+                    Toast.makeText(getApplicationContext(), "PlayerView", Toast.LENGTH_SHORT).show();
+                    ALog.i("PlayerView");
                 case R.id.video_service:
                     ALog.i("startService");
                     Intent serviceIntent = new Intent(getApplicationContext(), VideoService.class);
@@ -188,5 +210,65 @@ public class VideoPlayerActivity extends Activity {
     protected void onDestroy() {
         releaseMediaPlayer();
         super.onDestroy();
+    }
+
+    private class VideoEventListener implements Player.EventListener {
+        @Override
+        public void onTimelineChanged(Timeline timeline, Object manifest, int reason) {
+
+        }
+
+        @Override
+        public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
+
+        }
+
+        @Override
+        public void onLoadingChanged(boolean isLoading) {
+
+        }
+
+        @Override
+        public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+            if (Player.STATE_IDLE == playbackState) {
+                progressBar.setVisibility(View.VISIBLE);
+            } else if (Player.STATE_BUFFERING == playbackState) {
+                progressBar.setVisibility(View.VISIBLE);
+            } else if (Player.STATE_READY == playbackState) {
+                progressBar.setVisibility(View.GONE);
+            } else if (Player.STATE_ENDED == playbackState) {
+                progressBar.setVisibility(View.GONE);
+            }
+        }
+
+        @Override
+        public void onRepeatModeChanged(int repeatMode) {
+
+        }
+
+        @Override
+        public void onShuffleModeEnabledChanged(boolean shuffleModeEnabled) {
+
+        }
+
+        @Override
+        public void onPlayerError(ExoPlaybackException error) {
+
+        }
+
+        @Override
+        public void onPositionDiscontinuity(int reason) {
+
+        }
+
+        @Override
+        public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
+
+        }
+
+        @Override
+        public void onSeekProcessed() {
+
+        }
     }
 }
