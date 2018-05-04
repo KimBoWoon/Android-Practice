@@ -8,4 +8,5 @@
     <string name="make_gif">GIF</string>
     <string name="start">시작</string>
     <string name="end">끝</string>
+    <string name="fps">fps</string>
 </resources>

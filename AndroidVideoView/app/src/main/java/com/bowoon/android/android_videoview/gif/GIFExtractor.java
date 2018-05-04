@@ -1,35 +1,47 @@
 package com.bowoon.android.android_videoview.gif;
 
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
+import android.net.Uri;
+import android.os.Environment;
 import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
 public class GIFExtractor {
     private AnimatedGifEncoder encoder;
     private ByteArrayOutputStream outputStream;
-    private int videoTotalTime;
+    private Context context;
 
-    public GIFExtractor(int videoTotalTime) {
+    public GIFExtractor() {
         encoder = new AnimatedGifEncoder();
         outputStream = new ByteArrayOutputStream();
-        this.videoTotalTime = videoTotalTime;
     }
 
-    public byte[] makeGIF(String source, long startTime, long endTime) {
+    public GIFExtractor(Context context) {
+        encoder = new AnimatedGifEncoder();
+        outputStream = new ByteArrayOutputStream();
+        this.context = context;
+    }
+
+    public byte[] makeGIF(String source, long startTime, long endTime, int fps) {
         encoder.start(outputStream);
-        encoder.setDelay(getDelayOfFrame(10));
+        encoder.setDelay(getDelayOfFrame(fps));
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         BitmapFactory.Options bitmapOption = new BitmapFactory.Options();
 
         retriever.setDataSource(source);
 
-        int frame = 10 * getSecFromMs(endTime);
+        int frame = fps * getSecFromMs(endTime);
         int rate = (int) (endTime / frame);
 
         Log.i("rate", "rate : " + rate);
@@ -40,15 +52,25 @@ public class GIFExtractor {
         bitmapOption.inSampleSize = calculateInSampleSize(bitmapOption, 320, 180);
 //        bitmapOption.inSampleSize = 16;
         bitmapOption.inJustDecodeBounds = false;
+        try {
+            stream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         stream.reset();
 
         ArrayList<Bitmap> list = new ArrayList<Bitmap>();
 
         for (long i = startTime; i <= endTime; i += rate) {
             Log.i("makeGIF", String.valueOf(i));
-            retriever.getFrameAtTime(i * 1000).compress(Bitmap.CompressFormat.WEBP, 100, stream);
+            retriever.getFrameAtTime(i * 1000, MediaMetadataRetriever.OPTION_CLOSEST).compress(Bitmap.CompressFormat.JPEG, 100, stream);
             Bitmap bitmap = BitmapFactory.decodeByteArray(stream.toByteArray(), 0, stream.toByteArray().length, bitmapOption);
             list.add(bitmap);
+            try {
+                stream.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             stream.reset();
         }
 
@@ -56,8 +78,10 @@ public class GIFExtractor {
 
         for (int i = 0; i < list.size(); i++) {
             Log.i("addFrame", String.valueOf(i));
+            saveBitmaptoJpeg(list.get(i), "gif", "image_" + i + ".jpg");
             encoder.addFrame(list.get(i));
         }
+
         retriever.release();
         encoder.finish();
         try {
@@ -66,7 +90,34 @@ public class GIFExtractor {
             e.printStackTrace();
         }
 
+        saveBitmaptoJpeg(BitmapFactory.decodeByteArray(outputStream.toByteArray(), 0, outputStream.size(), bitmapOption), "gif", "output.gif");
+
         return outputStream.toByteArray();
+    }
+
+    public void saveBitmaptoJpeg(Bitmap bitmap, String folder, String name) {
+        String ex_storage = Environment.getExternalStorageDirectory().getAbsolutePath();
+        // Get Absolute Path in External Sdcard
+        String foler_name = "/" + folder + "/";
+        String file_name = name;
+        String string_path = ex_storage + foler_name;
+
+        File file_path;
+        try {
+            file_path = new File(string_path);
+            if (!file_path.isDirectory()) {
+                file_path.mkdirs();
+            }
+            FileOutputStream out = new FileOutputStream(string_path + file_name);
+
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+            out.close();
+            context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(file_path)));
+        } catch (FileNotFoundException exception) {
+            Log.e("FileNotFoundException", exception.getMessage());
+        } catch (IOException exception) {
+            Log.e("IOException", exception.getMessage());
+        }
     }
 
     public int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {

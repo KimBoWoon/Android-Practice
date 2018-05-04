@@ -8,6 +8,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:text="@string/start" />
 
     <EditText
@@ -19,10 +20,23 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:text="@string/end" />
 
     <EditText
         android:id="@+id/gif_end"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="number" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/fps" />
+
+    <EditText
+        android:id="@+id/gif_fps"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="number" />
