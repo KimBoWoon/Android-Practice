@@ -1,5 +1,7 @@
 package com.bowoon.android.android_http_spi.volley;
 
+import android.util.Log;
+
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
@@ -37,7 +39,9 @@ public class JsonCustomRequest extends JsonRequest<JSONObject> {
 
     @Override
     public String getBodyContentType() {
+        Log.i("getBodyContentType", option.getBodyContentType() + "");
         if (option.getBodyContentType() != null) {
+            Log.i("getBodyContentType", option.getBodyContentType());
             return option.getBodyContentType();
         }
         return "application/json";
@@ -46,9 +50,19 @@ public class JsonCustomRequest extends JsonRequest<JSONObject> {
     @Override
     public Map<String, String> getHeaders() throws AuthFailureError {
         if (option.getHeaders() != null) {
+            Log.i("getHeaders", "getHeaders");
             return option.getHeaders();
         }
-        return null;
+        return super.getHeaders();
+    }
+
+    @Override
+    protected Map<String, String> getParams() throws AuthFailureError {
+        if (option.getParams() != null) {
+            Log.i("getParams", "getParams");
+            return option.getParams();
+        }
+        return super.getParams();
     }
 
     @Override

@@ -10,11 +10,13 @@ import java.util.Map;
 public class HttpOption {
     private Map<String, String> headers;
     private Map<String, String> params;
+    private Map<String, FileDataPart> byteData;
     private String bodyContentType;
 
     public HttpOption() {
         headers = new HashMap<String, String>();
         params = new HashMap<String, String>();
+        byteData = new HashMap<String, FileDataPart>();
     }
 
     public Map<String, String> getHeaders() {
@@ -33,6 +35,14 @@ public class HttpOption {
         this.params = params;
     }
 
+    public Map<String, FileDataPart> getByteData() {
+        return byteData;
+    }
+
+    public void setByteData(Map<String, FileDataPart> byteData) {
+        this.byteData = byteData;
+    }
+
     public String getBodyContentType() {
         return bodyContentType;
     }
@@ -41,8 +51,32 @@ public class HttpOption {
         this.bodyContentType = bodyContentType;
     }
 
+    public void setAuthorization(String authorization) {
+        setHeaders("Authorization", authorization);
+    }
+
+    public void setContentDisposition(String contentDisposition) {
+        setHeaders("Content-Disposition", contentDisposition);
+    }
+
+    public void setContentTransferEncoding(String contentTransferEncoding) {
+        setHeaders("Content-Transfer-Encoding", contentTransferEncoding);
+    }
+
+    public void setTitle(String value) {
+        setParams("title", value);
+    }
+
+    public void setContent(String value) {
+        setParams("contents", value);
+    }
+
     public void setContentType(String value) {
         setHeaders("Content-Type", value);
+    }
+
+    public void setImage(FileDataPart value) {
+        setByteData("image", value);
     }
 
     public void setAcceptEncoding(String value) {
@@ -59,5 +93,9 @@ public class HttpOption {
 
     private void setParams(String key, String value) {
         params.put(key, value);
+    }
+
+    private void setByteData(String key, FileDataPart value) {
+        byteData.put(key, value);
     }
 }

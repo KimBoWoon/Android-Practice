@@ -1,5 +1,6 @@
 package com.bowoon.android.android_http_spi.common;
 
+import com.bowoon.android.android_http_spi.okhttp.UseOkHttp;
 import com.bowoon.android.android_http_spi.retrofit.UseRetrofit;
 import com.bowoon.android.android_http_spi.volley.HttpServiceList;
 
@@ -47,5 +48,18 @@ public class HttpServiceProvider {
                     "No provider registered with name: " + name);
         }
         return p.newRetrofitService();
+    }
+
+    public static UseOkHttp getOkHttpInstance() {
+        return getOkHttpInstance(DEFAULT_PROVIDER_NAME);
+    }
+
+    public static UseOkHttp getOkHttpInstance(String name) {
+        CreateHttpService p = providers.get(name);
+        if (p == null) {
+            throw new IllegalArgumentException(
+                    "No provider registered with name: " + name);
+        }
+        return p.newOkHttpService();
     }
 }
