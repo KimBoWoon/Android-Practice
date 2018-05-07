@@ -16,8 +16,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    lintOptions {
-        abortOnError false
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
@@ -46,4 +47,7 @@ dependencies {
     implementation('com.google.apis:google-api-services-drive:v3-rev114-1.23.0') {
         exclude group: 'org.apache.httpcomponents'
     }
+
+    implementation 'com.twitter.sdk.android:twitter:3.2.0'
+    implementation 'com.twitter.sdk.android:twitter-core:3.2.0'
 }
