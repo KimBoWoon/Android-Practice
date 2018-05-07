@@ -7,7 +7,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
@@ -16,11 +15,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
 import com.bowoon.android.android_http_spi.common.CreateHttpServiceProvider;
@@ -48,75 +44,74 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
 public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks {
-    private RecyclerView recyclerView;
-    private LinearLayoutManager linearLayoutManager;
-    private OAuthLoginButton mOAuthLoginButton;
     private static OAuthLogin mOAuthLoginInstance;
     private static String token;
     private static Context context;
     private static ByteArrayOutputStream outputStream;
-    private static Resources resources;
-    GoogleAccountCredential mCredential;
-    static final int REQUEST_ACCOUNT_PICKER = 1000;
-    static final int REQUEST_AUTHORIZATION = 1001;
-    static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
-    static final int REQUEST_PERMISSION_GET_ACCOUNTS = 1003;
+    private GoogleAccountCredential mCredential;
+    private static final int REQUEST_ACCOUNT_PICKER = 1000;
+    private static final int REQUEST_AUTHORIZATION = 1001;
+    private static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
+    private static final int REQUEST_PERMISSION_GET_ACCOUNTS = 1003;
 
     private static final String BUTTON_TEXT = "Call Drive API";
     private static final String PREF_ACCOUNT_NAME = "accountName";
     private static final Set<String> SCOPES = DriveScopes.all();
+
+    private String OAUTH_CLIENT_ID = "u6os9btMkZnp2DorvWa9";
+    private String OAUTH_CLIENT_SECRET = "d6UAm3Fp_i";
+    private String OAUTH_CLIENT_NAME = "네이버 블로그에 업로드";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        VolleyManager.getInstance().setRequestQueue(getApplicationContext());
-        HttpServiceProvider.registerDefaultProvider(new CreateHttpServiceProvider());
-
-        Button uploadNaverBlog, uploadGoogleDrive;
-        uploadNaverBlog = (Button) findViewById(R.id.upload_naver_blog);
-        uploadGoogleDrive = (Button) findViewById(R.id.upload_google_drive);
-        uploadNaverBlog.setOnClickListener(listener);
-        uploadGoogleDrive.setOnClickListener(listener);
+        initData();
+        initView();
     }
 
-    Button.OnClickListener listener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            switch (view.getId()) {
-                case R.id.upload_naver_blog:
-                    mOAuthLoginButton = (OAuthLoginButton) findViewById(R.id.buttonOAuthLoginImg);
-                    mOAuthLoginButton.setOAuthLoginHandler(mOAuthLoginHandler);
-                    context = MainActivity.this;
-                    resources = getResources();
+    public void initData() {
+        context = MainActivity.this;
 
-                    String OAUTH_CLIENT_ID = "u6os9btMkZnp2DorvWa9";
-                    String OAUTH_CLIENT_SECRET = "d6UAm3Fp_i";
-                    String OAUTH_CLIENT_NAME = "네이버 아이디로 로그인";
+        mOAuthLoginInstance = OAuthLogin.getInstance();
+        mOAuthLoginInstance.init(
+                getApplicationContext(),
+                OAUTH_CLIENT_ID,
+                OAUTH_CLIENT_SECRET,
+                OAUTH_CLIENT_NAME
+                //,OAUTH_CALLBACK_INTENT
+                // SDK 4.1.4 버전부터는 OAUTH_CALLBACK_INTENT변수를 사용하지 않습니다.
+        );
+    }
 
-                    mOAuthLoginInstance = OAuthLogin.getInstance();
-                    mOAuthLoginInstance.init(
-                            getApplicationContext(),
-                            OAUTH_CLIENT_ID,
-                            OAUTH_CLIENT_SECRET,
-                            OAUTH_CLIENT_NAME
-                            //,OAUTH_CALLBACK_INTENT
-                            // SDK 4.1.4 버전부터는 OAUTH_CALLBACK_INTENT변수를 사용하지 않습니다.
-                    );
-                    mOAuthLoginInstance.startOauthLoginActivity(MainActivity.this, mOAuthLoginHandler);
-                    break;
-                case R.id.upload_google_drive:
-                    initGoogleDrive();
-                    getResultsFromApi();
-                    break;
-            }
+    private void initView() {
+        ButterKnife.bind(this);
+        VolleyManager.getInstance().setRequestQueue(getApplicationContext());
+        HttpServiceProvider.registerDefaultProvider(new CreateHttpServiceProvider());
+    }
+
+    @OnClick({R.id.upload_naver_blog, R.id.upload_google_drive, R.id.upload_facebook_post, R.id.logout})
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.upload_naver_blog:
+                mOAuthLoginInstance.startOauthLoginActivity(MainActivity.this, mOAuthLoginHandler);
+                break;
+            case R.id.upload_google_drive:
+                initGoogleDrive();
+                getResultsFromApi();
+                break;
+            case R.id.logout:
+                mOAuthLoginInstance.logout(getApplicationContext());
+                break;
         }
-    };
+    }
 
     @SuppressLint("HandlerLeak")
     static private OAuthLoginHandler mOAuthLoginHandler = new OAuthLoginHandler() {

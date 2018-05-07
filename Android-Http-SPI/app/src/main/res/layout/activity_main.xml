@@ -7,11 +7,6 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <com.nhn.android.naverlogin.ui.view.OAuthLoginButton
-        android:id="@+id/buttonOAuthLoginImg"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp" />
-
     <Button
         android:id="@+id/upload_naver_blog"
         android:layout_width="match_parent"
@@ -23,5 +18,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Upload Google Drive" />
+
+    <Button
+        android:id="@+id/logout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="로그아웃" />
 
 </LinearLayout>

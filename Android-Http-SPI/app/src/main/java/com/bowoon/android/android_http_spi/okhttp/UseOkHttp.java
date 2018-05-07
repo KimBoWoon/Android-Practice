@@ -3,7 +3,6 @@ package com.bowoon.android.android_http_spi.okhttp;
 import android.util.Log;
 
 import com.bowoon.android.android_http_spi.common.HttpCallback;
-import com.bowoon.android.android_http_spi.model.PersonModel;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -41,8 +40,8 @@ public class UseOkHttp {
 //                Log.d("aaaa", "Response Body is " + response.body().string());
                 GsonBuilder gsonBuilder = new GsonBuilder();
                 final Gson gson = gsonBuilder.create();
-                PersonModel persons = gson.fromJson(response.body().string(), PersonModel.class);
-                callback.onSuccess(persons);
+//                PersonModel persons = gson.fromJson(response.body().string(), PersonModel.class);
+//                callback.onSuccess(persons);
             }
         });
     }
