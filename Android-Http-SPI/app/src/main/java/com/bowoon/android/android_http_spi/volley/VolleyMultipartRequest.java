@@ -13,8 +13,12 @@ import com.bowoon.android.android_http_spi.common.HttpOption;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.URLConnection;
+import java.util.Arrays;
 import java.util.Map;
 
 public class VolleyMultipartRequest extends Request<NetworkResponse> {
@@ -67,6 +71,7 @@ public class VolleyMultipartRequest extends Request<NetworkResponse> {
     @Override
     public byte[] getBody() throws AuthFailureError {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
+//        PrintWriter writer = new PrintWriter(bos, true);
         DataOutputStream dos = new DataOutputStream(bos);
 //        MultiPartUtil mu = new MultiPartUtil();
 
@@ -146,6 +151,7 @@ public class VolleyMultipartRequest extends Request<NetworkResponse> {
         dataOutputStream.writeBytes("Content-Type: text/plain; charset=UTF-8" + LINE_FEED);
         dataOutputStream.writeBytes(LINE_FEED);
         dataOutputStream.writeUTF(parameterValue + LINE_FEED);
+        dataOutputStream.flush();
     }
 
     private void buildDataPart(DataOutputStream dataOutputStream, FileDataPart dataFile, String inputName) throws IOException {
@@ -175,5 +181,6 @@ public class VolleyMultipartRequest extends Request<NetworkResponse> {
         }
 
         dataOutputStream.writeBytes(LINE_FEED);
+        dataOutputStream.flush();
     }
 }

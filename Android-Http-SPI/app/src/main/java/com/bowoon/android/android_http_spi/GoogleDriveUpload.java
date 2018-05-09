@@ -13,7 +13,15 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
+import com.bowoon.android.android_http_spi.common.HttpCallback;
+import com.bowoon.android.android_http_spi.common.HttpServiceProvider;
+import com.google.android.gms.auth.GoogleAuthException;
+import com.google.android.gms.auth.GoogleAuthUtil;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.api.client.extensions.android.http.AndroidHttp;
@@ -24,10 +32,13 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.DateTime;
 import com.google.api.client.util.ExponentialBackOff;
+import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
+import com.google.api.services.drive.model.FileList;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -208,14 +219,28 @@ public class GoogleDriveUpload extends Activity implements EasyPermissions.Permi
         }
 
         private void getDataFromApi() throws IOException {
-            File file = new File();
-            file.setName("Test");
-            file.setCreatedTime(new DateTime(System.currentTimeMillis()));
-            FileContent mediaContent = new FileContent("image/jpeg", new java.io.File("/storage/sdcard0/DCIM/Camera/20113259_김보운.jpg"));
+//            File file = new File();
+//            file.setName("Test");
+//            FileContent content = new FileContent("image/gif", new java.io.File("/storage/sdcard0/Download/android-logcat.gif"));
+//            mService.files().create(file, content).execute();
+            try {
+                HttpServiceProvider.getRetrofitInstance().googleDriveUpload(mCredential.getToken(),
+                        new java.io.File("/storage/sdcard0/Download/android-logcat.gif"),
+                        new HttpCallback() {
+                            @Override
+                            public void onSuccess() {
+                                Log.i("GoogleDriveUpload", "success");
+                            }
 
-            mService.files().create(file, mediaContent).execute();
+                            @Override
+                            public void onFail() {
+                                Log.i("GoogleDriveUpload", "fail");
+                            }
+                        });
+            } catch (GoogleAuthException e) {
+                e.printStackTrace();
+            }
         }
-
 
         @Override
         protected void onPreExecute() {
@@ -226,17 +251,10 @@ public class GoogleDriveUpload extends Activity implements EasyPermissions.Permi
         protected void onCancelled() {
 
         }
-    }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        finish();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        finish();
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+        }
     }
 }

@@ -5,6 +5,6 @@ package com.bowoon.android.android_http_spi.common;
  */
 
 public interface HttpCallback {
-    void onSuccess(Object result);
+    void onSuccess();
     void onFail();
 }

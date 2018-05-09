@@ -59,7 +59,7 @@ public class TwitterPostUpload extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         TwitterApiClient twitterApiClient = TwitterCore.getInstance().getApiClient();
-        StatusesService statusesService = twitterApiClient.getStatusesService();
+        final StatusesService statusesService = twitterApiClient.getStatusesService();
 
         MediaService mediaService = twitterApiClient.getMediaService();
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -97,8 +97,5 @@ public class TwitterPostUpload extends Activity {
         });
 
         finish();
-
-        // Pass the activity result to the login button.
-//        loginButton.onActivityResult(requestCode, resultCode, data);
     }
 }

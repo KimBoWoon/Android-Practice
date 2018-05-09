@@ -3,8 +3,6 @@ package com.bowoon.android.android_http_spi;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -20,6 +18,8 @@ import com.nhn.android.naverlogin.OAuthLoginHandler;
 import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -90,44 +90,34 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void run(boolean success) {
             if (success) {
-                token = mOAuthLoginInstance.getAccessToken(context);
-                outputStream = new ByteArrayOutputStream();
-                Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher);
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
-//                HttpServiceProvider.getRetrofitInstance().naverBlogPost(token, outputStream.toByteArray(), new HttpCallback() {
-//                    @Override
-//                    public void onSuccess(Object result) {
-//                        Toast.makeText(context, "success", Toast.LENGTH_SHORT).show();
-//                    }
-//
-//                    @Override
-//                    public void onFail() {
-//                        Toast.makeText(context, "fail", Toast.LENGTH_SHORT).show();
-//                    }
-//                });
-//                HttpServiceProvider.getVolleyInstance().twitterPost(mCredential, new HttpCallback() {
-//                    @Override
-//                    public void onSuccess(Object result) {
-//                        Toast.makeText(context, "success", Toast.LENGTH_SHORT).show();
-//                    }
-//
-//                    @Override
-//                    public void onFail() {
-//                        Toast.makeText(context, "fail", Toast.LENGTH_SHORT).show();
-//                    }
-//                });
-                HttpServiceProvider.getVolleyInstance().naverBlogPost(token, outputStream.toByteArray(), new HttpCallback() {
-                    @Override
-                    public void onSuccess(Object result) {
-                        Toast.makeText(context, "success", Toast.LENGTH_SHORT).show();
-                    }
+                try {
+                    token = mOAuthLoginInstance.getAccessToken(context);
+                    File imageFile = new File("/storage/sdcard0/Download/android-logcat.gif");
+                    HttpServiceProvider.getRetrofitInstance().naverBlogPost(token, imageFile, new HttpCallback() {
+                        @Override
+                        public void onSuccess() {
+                            Toast.makeText(context, "success", Toast.LENGTH_SHORT).show();
+                        }
 
-                    @Override
-                    public void onFail() {
-                        Toast.makeText(context, "fail", Toast.LENGTH_SHORT).show();
-                    }
-                });
-                Log.i("token", token + "");
+                        @Override
+                        public void onFail() {
+                            Toast.makeText(context, "fail", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+//                    HttpServiceProvider.getVolleyInstance().naverBlogPost(token, com.google.android.gms.common.util.IOUtils.toByteArray(imageFile), new HttpCallback() {
+//                        @Override
+//                        public void onSuccess() {
+//                            Toast.makeText(context, "success", Toast.LENGTH_SHORT).show();
+//                        }
+//
+//                        @Override
+//                        public void onFail() {
+//                            Toast.makeText(context, "fail", Toast.LENGTH_SHORT).show();
+//                        }
+//                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 Log.i("success", "success");
             } else {
                 Log.i("fail", "fail");
