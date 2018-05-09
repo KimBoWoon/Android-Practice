@@ -15,11 +15,8 @@ import com.bowoon.android.android_http_spi.common.HttpServiceProvider;
 import com.bowoon.android.android_http_spi.volley.VolleyManager;
 import com.nhn.android.naverlogin.OAuthLogin;
 import com.nhn.android.naverlogin.OAuthLoginHandler;
-import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -28,13 +25,10 @@ public class MainActivity extends AppCompatActivity {
     private static OAuthLogin mOAuthLoginInstance;
     private static String token;
     private static Context context;
-    private static ByteArrayOutputStream outputStream;
 
     private String OAUTH_CLIENT_ID = "u6os9btMkZnp2DorvWa9";
     private String OAUTH_CLIENT_SECRET = "d6UAm3Fp_i";
     private String OAUTH_CLIENT_NAME = "네이버 블로그에 업로드";
-
-    private TwitterLoginButton loginButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,8 +48,6 @@ public class MainActivity extends AppCompatActivity {
                 OAUTH_CLIENT_ID,
                 OAUTH_CLIENT_SECRET,
                 OAUTH_CLIENT_NAME
-                //,OAUTH_CALLBACK_INTENT
-                // SDK 4.1.4 버전부터는 OAUTH_CALLBACK_INTENT변수를 사용하지 않습니다.
         );
     }
 
@@ -76,11 +68,27 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent1);
                 break;
             case R.id.upload_twitter_post:
+//                HttpServiceProvider.getRetrofitInstance().twitterPostUpload(new HttpCallback() {
+//                    @Override
+//                    public void onSuccess() {
+//                        Toast.makeText(context, "success", Toast.LENGTH_SHORT).show();
+//                    }
+//
+//                    @Override
+//                    public void onFail() {
+//                        Toast.makeText(context, "fail", Toast.LENGTH_SHORT).show();
+//                    }
+//                });
                 Intent intent2 = new Intent(this, TwitterPostUpload.class);
                 startActivity(intent2);
                 break;
             case R.id.logout:
-                mOAuthLoginInstance.logout(getApplicationContext());
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mOAuthLoginInstance.logoutAndDeleteToken(getApplicationContext());
+                    }
+                }).start();
                 break;
         }
     }
@@ -93,18 +101,7 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     token = mOAuthLoginInstance.getAccessToken(context);
                     File imageFile = new File("/storage/sdcard0/Download/android-logcat.gif");
-                    HttpServiceProvider.getRetrofitInstance().naverBlogPost(token, imageFile, new HttpCallback() {
-                        @Override
-                        public void onSuccess() {
-                            Toast.makeText(context, "success", Toast.LENGTH_SHORT).show();
-                        }
-
-                        @Override
-                        public void onFail() {
-                            Toast.makeText(context, "fail", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-//                    HttpServiceProvider.getVolleyInstance().naverBlogPost(token, com.google.android.gms.common.util.IOUtils.toByteArray(imageFile), new HttpCallback() {
+//                    HttpServiceProvider.getRetrofitInstance().naverBlogPost(token, imageFile, new HttpCallback() {
 //                        @Override
 //                        public void onSuccess() {
 //                            Toast.makeText(context, "success", Toast.LENGTH_SHORT).show();
@@ -115,6 +112,17 @@ public class MainActivity extends AppCompatActivity {
 //                            Toast.makeText(context, "fail", Toast.LENGTH_SHORT).show();
 //                        }
 //                    });
+                    HttpServiceProvider.getVolleyInstance().naverBlogPost(token, com.google.android.gms.common.util.IOUtils.toByteArray(imageFile), new HttpCallback() {
+                        @Override
+                        public void onSuccess() {
+                            Toast.makeText(context, "success", Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void onFail() {
+                            Toast.makeText(context, "fail", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

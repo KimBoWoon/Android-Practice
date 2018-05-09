@@ -6,6 +6,8 @@ import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.Header;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
@@ -23,4 +25,16 @@ public interface APIInterface {
     @POST("/upload/drive/v3/files?uploadType=media")
     Call<JSONObject> upload(@Header("Authorization") String authorization,
                             @Body RequestBody image);
+
+    @FormUrlEncoded
+    @POST("/1.1/statuses/update.json")
+    Call<JSONObject> tweet(@Field("status") String status,
+                           @Field("in_reply_to_status_id") Long inReplyToStatusId,
+                           @Field("possibly_sensitive") Boolean possiblySensitive,
+                           @Field("lat") Double latitude,
+                           @Field("long") Double longitude,
+                           @Field("place_id") String placeId,
+                           @Field("display_coordinates") Boolean displayCoordinates,
+                           @Field("trim_user") Boolean trimUser,
+                           @Field("media_ids") String mediaIds);
 }

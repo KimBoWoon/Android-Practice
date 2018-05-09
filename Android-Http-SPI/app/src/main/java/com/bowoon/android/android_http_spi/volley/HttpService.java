@@ -14,6 +14,8 @@ import com.bowoon.android.android_http_spi.common.HttpOption;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+
 public class HttpService implements HttpServiceList {
     private String makeURL() {
         return "https://openapi.naver.com/blog/writePost.json";
@@ -25,6 +27,7 @@ public class HttpService implements HttpServiceList {
             option.setAuthorization("Bearer " + token);
             option.setTitle("네이버 multi-part 이미지 첨부 테스트");
             option.setContent("<font color='red'>multi-part</font>로 첨부한 글입니다. <br>  이미지 첨부 <br> <img src='#0' />");
+            option.setOpen("all");
             option.setImage(new FileDataPart("practice.gif", bytes, "image/gif"));
 
             return option;
@@ -58,7 +61,11 @@ public class HttpService implements HttpServiceList {
                 new Response.Listener<NetworkResponse>() {
                     @Override
                     public void onResponse(NetworkResponse response) {
-                        Log.i("VolleySuccess", String.valueOf(response));
+                        try {
+                            Log.i("VolleySuccess", new String(response.data, "UTF-8"));
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        }
                         callback.onSuccess();
                     }
                 },

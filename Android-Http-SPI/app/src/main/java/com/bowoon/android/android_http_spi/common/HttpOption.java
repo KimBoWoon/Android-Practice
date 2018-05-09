@@ -79,6 +79,10 @@ public class HttpOption {
         setByteData("image", value);
     }
 
+    public void setOpen(String value) {
+        setParams("options.openType", value);
+    }
+
     public void setAcceptEncoding(String value) {
         setHeaders("Accept-Encoding", value);
     }

@@ -2,13 +2,12 @@ package com.bowoon.android.android_http_spi;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Base64;
 import android.util.Log;
 
+import com.google.android.gms.common.util.IOUtils;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.Twitter;
@@ -23,34 +22,37 @@ import com.twitter.sdk.android.core.models.Tweet;
 import com.twitter.sdk.android.core.services.MediaService;
 import com.twitter.sdk.android.core.services.StatusesService;
 
-import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 
 public class TwitterPostUpload extends Activity {
+    private TwitterAuthClient twitterAuthClient;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Twitter.initialize(getApplicationContext());
 
-        TwitterAuthClient twitterAuthClient = new TwitterAuthClient();
+        twitterAuthClient = new TwitterAuthClient();
         twitterAuthClient.authorize(this, new Callback<TwitterSession>() {
             @Override
             public void success(Result<TwitterSession> result) {
+                Log.i("TwitterLogin", "Success");
                 TwitterSession session = TwitterCore.getInstance().getSessionManager().getActiveSession();
                 TwitterAuthToken authToken = session.getAuthToken();
                 String token = authToken.token;
                 String secret = authToken.secret;
                 Log.i("token", token);
                 Log.i("secret", secret);
-                Log.i("Twitter", "Success");
             }
 
             @Override
             public void failure(TwitterException exception) {
-                Log.i("Twitter", "failure");
+                Log.i("TwitterLogin", "failure");
             }
         });
     }
@@ -58,44 +60,49 @@ public class TwitterPostUpload extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        TwitterApiClient twitterApiClient = TwitterCore.getInstance().getApiClient();
-        final StatusesService statusesService = twitterApiClient.getStatusesService();
+        try {
+            TwitterApiClient twitterApiClient = TwitterCore.getInstance().getApiClient();
+            final StatusesService statusesService = twitterApiClient.getStatusesService();
+            MediaService mediaService = twitterApiClient.getMediaService();
+            File imageFile = new File("/storage/sdcard0/Download/android-logcat.gif");
 
-        MediaService mediaService = twitterApiClient.getMediaService();
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
-        String encodedImage = Base64.encodeToString(outputStream.toByteArray(), Base64.DEFAULT);
-        Log.i("encodedImage", encodedImage);
+            byte[] imageBytes = IOUtils.toByteArray(imageFile);
+            String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
+//            Log.i("encodedImage", encodedImage);
 
-        RequestBody media = RequestBody.create(MediaType.parse("image/jpeg"), outputStream.toByteArray());
-        RequestBody mediaData = RequestBody.create(MediaType.parse("text/plain"), encodedImage);
+            RequestBody media = RequestBody.create(MediaType.parse("image/gif"), imageBytes);
+            RequestBody mediaData = RequestBody.create(MediaType.parse("text/plain"), encodedImage);
 
-        Call<Media> call = mediaService.upload(media, mediaData, null);
-        call.enqueue(new Callback<Media>() {
-            @Override
-            public void success(Result<Media> result) {
-                Log.i("success", String.valueOf(result.response.raw()));
-                Call<Tweet> call = statusesService.update("Test", null, null, null, null, null, null, null, result.data.mediaIdString);
-                call.enqueue(new Callback<Tweet>() {
-                    @Override
-                    public void success(Result<Tweet> result) {
-                        //Do something with result
-                        Log.i("twitter", String.valueOf(result.response.raw()));
-                    }
+            Call<Media> call = mediaService.upload(media, null, null);
+            call.enqueue(new Callback<Media>() {
+                @Override
+                public void success(Result<Media> result) {
+                    Log.i("success", String.valueOf(result.response.raw()));
+                    Call<Tweet> call = statusesService.update("Test", null, null, null, null, null, null, null, result.data.mediaIdString);
+                    call.enqueue(new Callback<Tweet>() {
+                        @Override
+                        public void success(Result<Tweet> result) {
+                            //Do something with result
+                            Log.i("twitter", String.valueOf(result.response.raw()));
+                        }
 
-                    public void failure(TwitterException exception) {
-                        //Do something on failure
-                    }
-                });
-            }
+                        public void failure(TwitterException exception) {
+                            //Do something on failure
+                        }
+                    });
+                }
 
-            @Override
-            public void failure(TwitterException exception) {
-                Log.i("failure", "failure");
-            }
-        });
+                @Override
+                public void failure(TwitterException exception) {
+                    Log.i("failure", "failure");
+                    Log.i("failure", exception.getMessage());
+                }
+            });
 
-        finish();
+            twitterAuthClient.cancelAuthorize();
+            finish();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -20,6 +20,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class UseRetrofit {
     private final String NAVER_BASE_URL = "https://openapi.naver.com/";
     private final String GOOGLE_BASE_URL = "https://www.googleapis.com/";
+    private final String TWITTER_BASE_URL = "https://api.twitter.com/";
 
     public void naverBlogPost(String token, File file, final HttpCallback callback) {
         Retrofit client = new Retrofit.Builder().baseUrl(NAVER_BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
@@ -35,13 +36,13 @@ public class UseRetrofit {
         call.enqueue(new Callback<JSONObject>() {
             @Override
             public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
-                Log.i("Success", String.valueOf(response.raw()));
+                Log.i("naverBlogPost", String.valueOf(response.raw()));
                 callback.onSuccess();
             }
 
             @Override
             public void onFailure(Call<JSONObject> call, Throwable t) {
-                Log.i("Success", call.toString());
+                Log.i("naverBlogPost", call.toString());
                 callback.onFail();
             }
         });
@@ -65,6 +66,26 @@ public class UseRetrofit {
             @Override
             public void onFailure(Call<JSONObject> call, Throwable t) {
                 Log.i("googleDriveUpload", t.getMessage());
+                callback.onFail();
+            }
+        });
+    }
+
+    public void twitterPostUpload(final HttpCallback callback) {
+        Retrofit client = new Retrofit.Builder().baseUrl(TWITTER_BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
+        APIInterface service = client.create(APIInterface.class);
+
+        Call<JSONObject> call = service.tweet("Test", null, null, null, null, null, null, null, null);
+        call.enqueue(new Callback<JSONObject>() {
+            @Override
+            public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
+                Log.i("twitterPostUpload", String.valueOf(response.raw()));
+                callback.onSuccess();
+            }
+
+            @Override
+            public void onFailure(Call<JSONObject> call, Throwable t) {
+                Log.i("twitterPostUpload", t.getMessage());
                 callback.onFail();
             }
         });
