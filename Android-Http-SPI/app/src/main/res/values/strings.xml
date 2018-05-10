@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Android-Http-SPI</string>
 
-    <string name="com.twitter.sdk.android.CONSUMER_KEY">YewEwxXeWJKlpPizsKq1zqKXH</string>
-    <string name="com.twitter.sdk.android.CONSUMER_SECRET">JEhw2tUqrJWQn4X0wjDwIUUyQANemx1a9TO7beOAa2PcErBs8r</string>
+    <string name="com.twitter.sdk.android.CONSUMER_KEY">vbkGe8wX56qcuR15er3fFUmqg</string>
+    <string name="com.twitter.sdk.android.CONSUMER_SECRET">U3aKoRcimzOXMFRst3ZCNZnacPtLMITM2kK0rEXlD6QateGPx7</string>
 </resources>

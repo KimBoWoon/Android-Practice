@@ -73,11 +73,42 @@ public class TwitterPostUpload extends Activity {
             RequestBody media = RequestBody.create(MediaType.parse("image/gif"), imageBytes);
             RequestBody mediaData = RequestBody.create(MediaType.parse("text/plain"), encodedImage);
 
-            Call<Media> call = mediaService.upload(media, null, null);
+            Call<Tweet> call1 = statusesService.show(994586950311948288L, null, null, null);
+            call1.enqueue(new Callback<Tweet>() {
+                @Override
+                public void success(Result<Tweet> result) {
+                    //Do something with result
+                    Log.i("twittershow", String.valueOf(result.response.raw()));
+                    Log.i("twittershow", result.data.user.name);
+                    Log.i("twittershow", result.data.text);
+                }
+
+                public void failure(TwitterException exception) {
+                    //Do something on failure
+                }
+            });
+
+            Call<Tweet> call2 = statusesService.update("Test", null, null, null, null, null, null, null, null);
+            call2.enqueue(new Callback<Tweet>() {
+                @Override
+                public void success(Result<Tweet> result) {
+                    Log.i("call2success", String.valueOf(result.response.raw()));
+                    Log.i("call2success", result.data.user.name);
+                    Log.i("call2success", result.data.text);
+                }
+
+                @Override
+                public void failure(TwitterException exception) {
+                    Log.i("call2", "fail");
+                }
+            });
+
+            Call<Media> call = mediaService.upload(media, mediaData, null);
             call.enqueue(new Callback<Media>() {
                 @Override
                 public void success(Result<Media> result) {
                     Log.i("success", String.valueOf(result.response.raw()));
+                    Log.i("success", result.data.mediaIdString);
                     Call<Tweet> call = statusesService.update("Test", null, null, null, null, null, null, null, result.data.mediaIdString);
                     call.enqueue(new Callback<Tweet>() {
                         @Override
