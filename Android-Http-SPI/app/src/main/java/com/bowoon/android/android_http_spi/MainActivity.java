@@ -2,7 +2,9 @@ package com.bowoon.android.android_http_spi;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -11,24 +13,21 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import com.bowoon.android.android_http_spi.common.CreateHttpServiceProvider;
 import com.bowoon.android.android_http_spi.common.HttpCallback;
 import com.bowoon.android.android_http_spi.common.HttpServiceProvider;
+import com.bowoon.android.android_http_spi.model.BlogCategory;
+import com.bowoon.android.android_http_spi.model.Category;
 import com.bowoon.android.android_http_spi.volley.VolleyManager;
 import com.nhn.android.naverlogin.OAuthLogin;
 import com.nhn.android.naverlogin.OAuthLoginHandler;
-import com.twitter.sdk.android.core.Callback;
-import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.Twitter;
-import com.twitter.sdk.android.core.TwitterAuthToken;
-import com.twitter.sdk.android.core.TwitterCore;
-import com.twitter.sdk.android.core.TwitterException;
-import com.twitter.sdk.android.core.TwitterSession;
-import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 
 import java.io.File;
+import java.io.IOException;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -118,15 +117,116 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     token = mOAuthLoginInstance.getAccessToken(context);
                     Log.i("naverToken", token);
-                    HttpServiceProvider.getRetrofitInstance().getNaverBlogCategory(token, new HttpCallback() {
+//                    HttpServiceProvider.getRetrofitInstance().getNaverBlogCategory(token, new HttpCallback() {
+//                        @Override
+//                        public void onSuccess(Object o) {
+//                            Toast.makeText(context, "success", Toast.LENGTH_SHORT).show();
+//                            if (o instanceof BlogCategory) {
+//                                final ArrayAdapter<Category> adapter = new ArrayAdapter<Category>(
+//                                        context,
+//                                        android.R.layout.select_dialog_singlechoice);
+//                                BlogCategory category = (BlogCategory) o;
+//
+//                                AlertDialog.Builder alertBuilder = new AlertDialog.Builder(
+//                                        context);
+//                                alertBuilder.setIcon(R.mipmap.ic_launcher);
+//                                alertBuilder.setTitle("항목중에 하나를 선택하세요.");
+//
+//                                for (int i = 0; i < category.getResult().size(); i++) {
+//                                    adapter.add(category.getResult().get(i));
+//                                    if (category.getResult().get(i).getSubCategories().size() != 0) {
+//                                        for (int j = 0; j < category.getResult().get(i).getSubCategories().size(); j++) {
+//                                            adapter.add(category.getResult().get(i).getSubCategories().get(j));
+//                                        }
+//                                    }
+//                                }
+//
+//                                alertBuilder.setAdapter(adapter,
+//                                        new DialogInterface.OnClickListener() {
+//                                            public void onClick(DialogInterface dialog,
+//                                                                int id) {
+//
+//                                                // AlertDialog 안에 있는 AlertDialog
+//                                                Category clickedItem = adapter.getItem(id);
+//                                                File imageFile = new File("/storage/sdcard0/Download/android-logcat.gif");
+//                                                HttpServiceProvider.getRetrofitInstance().naverBlogPost(token, clickedItem.getCategoryNo(), imageFile, new HttpCallback() {
+//                                                    @Override
+//                                                    public void onSuccess(Object o) {
+//                                                        Toast.makeText(context, "success", Toast.LENGTH_SHORT).show();
+//                                                    }
+//
+//                                                    @Override
+//                                                    public void onFail() {
+//                                                        Toast.makeText(context, "fail", Toast.LENGTH_SHORT).show();
+//                                                    }
+//                                                });
+//                                            }
+//                                        });
+//                                alertBuilder.show();
+//                            }
+//                        }
+//
+//                        @Override
+//                        public void onFail() {
+//                            Toast.makeText(context, "fail", Toast.LENGTH_SHORT).show();
+//                        }
+//                    });
+                    HttpServiceProvider.getVolleyInstance().naverBlogCategory(token, new HttpCallback() {
                         @Override
-                        public void onSuccess() {
+                        public void onSuccess(Object o) {
                             Toast.makeText(context, "success", Toast.LENGTH_SHORT).show();
+                            if (o instanceof BlogCategory) {
+                                final ArrayAdapter<Category> adapter = new ArrayAdapter<Category>(
+                                        context,
+                                        android.R.layout.select_dialog_singlechoice);
+                                BlogCategory category = (BlogCategory) o;
+
+                                AlertDialog.Builder alertBuilder = new AlertDialog.Builder(
+                                        context);
+                                alertBuilder.setIcon(R.mipmap.ic_launcher);
+                                alertBuilder.setTitle("항목중에 하나를 선택하세요.");
+
+                                for (int i = 0; i < category.getResult().size(); i++) {
+                                    adapter.add(category.getResult().get(i));
+                                    if (category.getResult().get(i).getSubCategories().size() != 0) {
+                                        for (int j = 0; j < category.getResult().get(i).getSubCategories().size(); j++) {
+                                            adapter.add(category.getResult().get(i).getSubCategories().get(j));
+                                        }
+                                    }
+                                }
+
+                                alertBuilder.setAdapter(adapter,
+                                        new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog,
+                                                                int id) {
+
+                                                // AlertDialog 안에 있는 AlertDialog
+                                                Category clickedItem = adapter.getItem(id);
+                                                File imageFile = new File("/storage/sdcard0/Download/android-logcat.gif");
+                                                try {
+                                                    HttpServiceProvider.getVolleyInstance().naverBlogPost(token, clickedItem.getCategoryNo(), com.google.android.gms.common.util.IOUtils.toByteArray(imageFile), new HttpCallback() {
+                                                        @Override
+                                                        public void onSuccess(Object o) {
+                                                            Toast.makeText(context, "success", Toast.LENGTH_SHORT).show();
+                                                        }
+
+                                                        @Override
+                                                        public void onFail() {
+                                                            Toast.makeText(context, "fail", Toast.LENGTH_SHORT).show();
+                                                        }
+                                                    });
+                                                } catch (IOException e) {
+                                                    e.printStackTrace();
+                                                }
+                                            }
+                                        });
+                                alertBuilder.show();
+                            }
                         }
 
                         @Override
                         public void onFail() {
-                            Toast.makeText(context, "fail", Toast.LENGTH_SHORT).show();
+
                         }
                     });
 //                    File imageFile = new File("/storage/sdcard0/Download/android-logcat.gif");
@@ -189,7 +289,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_READ_EXT_STORAGE : {
+            case MY_PERMISSIONS_REQUEST_READ_EXT_STORAGE: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // permission was granted, yay! Do the

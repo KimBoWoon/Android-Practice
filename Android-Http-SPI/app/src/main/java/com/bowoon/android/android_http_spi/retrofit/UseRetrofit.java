@@ -3,6 +3,10 @@ package com.bowoon.android.android_http_spi.retrofit;
 import android.util.Log;
 
 import com.bowoon.android.android_http_spi.common.HttpCallback;
+import com.bowoon.android.android_http_spi.model.BlogCategory;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 
 import org.json.JSONObject;
 
@@ -28,23 +32,26 @@ public class UseRetrofit {
 
         String header = "Bearer " + token;
 
-        Call<JSONObject> call = service.naverBlogCatogory(header);
-        call.enqueue(new Callback<JSONObject>() {
+        Call<Object> call = service.naverBlogCategory(header);
+        call.enqueue(new Callback<Object>() {
             @Override
-            public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
-                Log.i("getNaverBlogCategory", String.valueOf(response.body()));
-                callback.onSuccess();
+            public void onResponse(Call<Object> call, Response<Object> response) {
+                GsonBuilder gsonBuilder = new GsonBuilder();
+                Gson gson = gsonBuilder.create();
+                JsonObject jsonObject = gson.toJsonTree(response.body()).getAsJsonObject();
+                BlogCategory category = gson.fromJson(jsonObject.get("message"), BlogCategory.class);
+                callback.onSuccess(category);
             }
 
             @Override
-            public void onFailure(Call<JSONObject> call, Throwable t) {
+            public void onFailure(Call<Object> call, Throwable t) {
                 Log.i("getNaverBlogCategory", call.toString());
                 callback.onFail();
             }
         });
     }
 
-    public void naverBlogPost(String token, File file, final HttpCallback callback) {
+    public void naverBlogPost(String token, int categoryNo, File file, final HttpCallback callback) {
         Retrofit client = new Retrofit.Builder().baseUrl(NAVER_BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
         APIInterface service = client.create(APIInterface.class);
 
@@ -54,12 +61,12 @@ public class UseRetrofit {
         RequestBody image = RequestBody.create(MediaType.parse("image/gif"), file);
         MultipartBody.Part part = MultipartBody.Part.createFormData("image", file.getName(), image);
 
-        Call<JSONObject> call = service.sendPost(header, title, contents, part);
+        Call<JSONObject> call = service.sendPost(header, title, contents, categoryNo, part);
         call.enqueue(new Callback<JSONObject>() {
             @Override
             public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
                 Log.i("naverBlogPost", String.valueOf(response.raw()));
-                callback.onSuccess();
+                callback.onSuccess(null);
             }
 
             @Override
@@ -82,7 +89,7 @@ public class UseRetrofit {
             @Override
             public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
                 Log.i("googleDriveUpload", String.valueOf(response.raw()));
-                callback.onSuccess();
+                callback.onSuccess(null);
             }
 
             @Override
@@ -102,7 +109,7 @@ public class UseRetrofit {
             @Override
             public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
                 Log.i("twitterPostUpload", String.valueOf(response.raw()));
-                callback.onSuccess();
+                callback.onSuccess(null);
             }
 
             @Override

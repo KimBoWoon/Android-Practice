@@ -2,19 +2,26 @@ package com.bowoon.android.android_http_spi.volley;
 
 import android.util.Log;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.bowoon.android.android_http_spi.common.FileDataPart;
 import com.bowoon.android.android_http_spi.common.HttpCallback;
 import com.bowoon.android.android_http_spi.common.HttpOption;
+import com.bowoon.android.android_http_spi.model.BlogCategory;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class HttpService implements HttpServiceList {
     private String makeURL() {
@@ -49,7 +56,53 @@ public class HttpService implements HttpServiceList {
         return object;
     }
 
-    public void naverBlogPost(String token, byte[] bytes, final HttpCallback callback) {
+    @Override
+    public void naverBlogCategory(String token, HttpCallback callback) {
+        String url = "https://openapi.naver.com/blog/listCategory.json";
+//        HttpOption option = httpOptionSetting(token, bytes);
+//        JSONObject jsonObject = makeJSON();
+
+        JsonObjectRequest request = new JsonObjectRequest(
+                Request.Method.POST,
+                url,
+                new JSONObject(),
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            Log.i("VolleySuccess", String.valueOf(response.get("message")));
+                            GsonBuilder gsonBuilder = new GsonBuilder();
+                            Gson gson = gsonBuilder.create();
+                            BlogCategory category = gson.fromJson(response.getString("message"), BlogCategory.class);
+                            callback.onSuccess(category);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        callback.onSuccess(null);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.i("VolleyFail", error.getMessage());
+                        callback.onFail();
+                    }
+                }
+        ) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> map = new HashMap<>();
+                map.put("Authorization", "Bearer " + token);
+                return map;
+            }
+        };
+
+        request.setRetryPolicy(new DefaultRetryPolicy(2000, 5, 1));
+
+        addRequestQueue(request);
+    }
+
+    public void naverBlogPost(String token, int categoryNo, byte[] bytes, final HttpCallback callback) {
         String url = makeURL();
         HttpOption option = httpOptionSetting(token, bytes);
 //        JSONObject jsonObject = makeJSON();
@@ -66,7 +119,7 @@ public class HttpService implements HttpServiceList {
                         } catch (UnsupportedEncodingException e) {
                             e.printStackTrace();
                         }
-                        callback.onSuccess();
+                        callback.onSuccess(null);
                     }
                 },
                 new Response.ErrorListener() {
@@ -84,6 +137,14 @@ public class HttpService implements HttpServiceList {
     }
 
     private void addRequestQueue(VolleyMultipartRequest request) {
+        try {
+            VolleyManager.getInstance().getRequestQueue().add(request);
+        } catch (IllegalAccessException e) {
+            Log.i("IllegalAccessException", e.getMessage());
+        }
+    }
+
+    private void addRequestQueue(JsonObjectRequest request) {
         try {
             VolleyManager.getInstance().getRequestQueue().add(request);
         } catch (IllegalAccessException e) {

@@ -218,7 +218,7 @@ public class GoogleDriveUpload extends Activity implements EasyPermissions.Permi
                         new java.io.File("/storage/sdcard0/Download/android-logcat.gif"),
                         new HttpCallback() {
                             @Override
-                            public void onSuccess() {
+                            public void onSuccess(Object o) {
                                 Log.i("GoogleDriveUpload", "success");
                             }
 

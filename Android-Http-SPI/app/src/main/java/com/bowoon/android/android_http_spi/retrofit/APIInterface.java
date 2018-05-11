@@ -16,13 +16,14 @@ import retrofit2.http.Part;
 
 public interface APIInterface {
     @GET("/blog/listCategory.json")
-    Call<JSONObject> naverBlogCatogory(@Header("Authorization") String authorization);
+    Call<Object> naverBlogCategory(@Header("Authorization") String authorization);
 
     @Multipart
     @POST("/blog/writePost.json")
     Call<JSONObject> sendPost(@Header("Authorization") String authorization,
                               @Part("title") RequestBody title,
                               @Part("contents") RequestBody contents,
+                              @Part("categoryNo") int categoryNo,
                               @Part MultipartBody.Part image
     );
 
