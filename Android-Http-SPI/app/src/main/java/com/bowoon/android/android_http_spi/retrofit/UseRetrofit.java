@@ -22,6 +22,28 @@ public class UseRetrofit {
     private final String GOOGLE_BASE_URL = "https://www.googleapis.com/";
     private final String TWITTER_BASE_URL = "https://api.twitter.com/";
 
+    public void getNaverBlogCategory(String token, final HttpCallback callback) {
+        Retrofit client = new Retrofit.Builder().baseUrl(NAVER_BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
+        APIInterface service = client.create(APIInterface.class);
+
+        String header = "Bearer " + token;
+
+        Call<JSONObject> call = service.naverBlogCatogory(header);
+        call.enqueue(new Callback<JSONObject>() {
+            @Override
+            public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
+                Log.i("getNaverBlogCategory", String.valueOf(response.body()));
+                callback.onSuccess();
+            }
+
+            @Override
+            public void onFailure(Call<JSONObject> call, Throwable t) {
+                Log.i("getNaverBlogCategory", call.toString());
+                callback.onFail();
+            }
+        });
+    }
+
     public void naverBlogPost(String token, File file, final HttpCallback callback) {
         Retrofit client = new Retrofit.Builder().baseUrl(NAVER_BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
         APIInterface service = client.create(APIInterface.class);

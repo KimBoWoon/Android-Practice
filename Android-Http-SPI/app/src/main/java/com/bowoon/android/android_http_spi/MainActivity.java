@@ -52,26 +52,6 @@ public class MainActivity extends AppCompatActivity {
 
         requestReadExternalStoragePermission();
 
-        TwitterLoginButton loginButton = (TwitterLoginButton) findViewById(R.id.login_button);
-        loginButton.setCallback(new Callback<TwitterSession>() {
-            @Override
-            public void success(Result<TwitterSession> result) {
-                // Do something with result, which provides a TwitterSession for making API calls
-                Log.i("TwitterLogin", "Success");
-                TwitterSession session = TwitterCore.getInstance().getSessionManager().getActiveSession();
-                TwitterAuthToken authToken = session.getAuthToken();
-                String token = authToken.token;
-                String secret = authToken.secret;
-                Log.i("token", token);
-                Log.i("secret", secret);
-            }
-
-            @Override
-            public void failure(TwitterException exception) {
-                // Do something on failure
-            }
-        });
-
         initData();
         initView();
     }
@@ -137,7 +117,19 @@ public class MainActivity extends AppCompatActivity {
             if (success) {
                 try {
                     token = mOAuthLoginInstance.getAccessToken(context);
-                    File imageFile = new File("/storage/sdcard0/Download/android-logcat.gif");
+                    Log.i("naverToken", token);
+                    HttpServiceProvider.getRetrofitInstance().getNaverBlogCategory(token, new HttpCallback() {
+                        @Override
+                        public void onSuccess() {
+                            Toast.makeText(context, "success", Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void onFail() {
+                            Toast.makeText(context, "fail", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+//                    File imageFile = new File("/storage/sdcard0/Download/android-logcat.gif");
 //                    HttpServiceProvider.getRetrofitInstance().naverBlogPost(token, imageFile, new HttpCallback() {
 //                        @Override
 //                        public void onSuccess() {
@@ -149,17 +141,17 @@ public class MainActivity extends AppCompatActivity {
 //                            Toast.makeText(context, "fail", Toast.LENGTH_SHORT).show();
 //                        }
 //                    });
-                    HttpServiceProvider.getVolleyInstance().naverBlogPost(token, com.google.android.gms.common.util.IOUtils.toByteArray(imageFile), new HttpCallback() {
-                        @Override
-                        public void onSuccess() {
-                            Toast.makeText(context, "success", Toast.LENGTH_SHORT).show();
-                        }
-
-                        @Override
-                        public void onFail() {
-                            Toast.makeText(context, "fail", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+//                    HttpServiceProvider.getVolleyInstance().naverBlogPost(token, com.google.android.gms.common.util.IOUtils.toByteArray(imageFile), new HttpCallback() {
+//                        @Override
+//                        public void onSuccess() {
+//                            Toast.makeText(context, "success", Toast.LENGTH_SHORT).show();
+//                        }
+//
+//                        @Override
+//                        public void onFail() {
+//                            Toast.makeText(context, "fail", Toast.LENGTH_SHORT).show();
+//                        }
+//                    });
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
