@@ -65,7 +65,24 @@ public class GoogleDriveUpload extends Activity implements EasyPermissions.Permi
         } else if (mCredential.getSelectedAccountName() == null) {
             chooseAccount();
         } else {
-            new MakeRequestTask(mCredential).execute();
+//            new MakeRequestTask(mCredential).execute();
+            try {
+                HttpServiceProvider.getRetrofitInstance().googleDriveUpload(mCredential.getToken(),
+                        new java.io.File("/storage/sdcard0/Download/android-logcat.gif"),
+                        new HttpCallback() {
+                            @Override
+                            public void onSuccess(Object o) {
+                                Log.i("GoogleDriveUpload", "success");
+                            }
+
+                            @Override
+                            public void onFail() {
+                                Log.i("GoogleDriveUpload", "fail");
+                            }
+                        });
+            } catch (IOException | GoogleAuthException e) {
+                e.printStackTrace();
+            }
             finish();
         }
     }

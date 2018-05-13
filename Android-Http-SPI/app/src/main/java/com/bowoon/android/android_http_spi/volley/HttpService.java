@@ -13,6 +13,7 @@ import com.bowoon.android.android_http_spi.common.FileDataPart;
 import com.bowoon.android.android_http_spi.common.HttpCallback;
 import com.bowoon.android.android_http_spi.common.HttpOption;
 import com.bowoon.android.android_http_spi.model.BlogCategory;
+import com.bowoon.android.android_http_spi.util.UrlType;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -24,8 +25,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class HttpService implements HttpServiceList {
-    private String makeURL() {
-        return "https://openapi.naver.com/blog/writePost.json";
+    private String makeURL(UrlType type) {
+        if (UrlType.CATEGORY == type) {
+            return "https://openapi.naver.com/blog/listCategory.json";
+        } else if (UrlType.POST == type) {
+            return "https://openapi.naver.com/blog/writePost.json";
+        }
+        return null;
     }
 
     private HttpOption httpOptionSetting(String token, byte[] bytes) {
@@ -58,7 +64,7 @@ public class HttpService implements HttpServiceList {
 
     @Override
     public void naverBlogCategory(String token, HttpCallback callback) {
-        String url = "https://openapi.naver.com/blog/listCategory.json";
+        String url = makeURL(UrlType.CATEGORY);
 //        HttpOption option = httpOptionSetting(token, bytes);
 //        JSONObject jsonObject = makeJSON();
 
@@ -103,7 +109,7 @@ public class HttpService implements HttpServiceList {
     }
 
     public void naverBlogPost(String token, int categoryNo, byte[] bytes, final HttpCallback callback) {
-        String url = makeURL();
+        String url = makeURL(UrlType.POST);
         HttpOption option = httpOptionSetting(token, bytes);
 //        JSONObject jsonObject = makeJSON();
 

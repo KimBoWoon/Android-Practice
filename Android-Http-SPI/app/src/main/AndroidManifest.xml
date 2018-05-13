@@ -23,6 +23,7 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".NaverBlogUpload" />
         <activity android:name=".GoogleDriveUpload" />
         <activity android:name=".TwitterPostUpload" />
     </application>
