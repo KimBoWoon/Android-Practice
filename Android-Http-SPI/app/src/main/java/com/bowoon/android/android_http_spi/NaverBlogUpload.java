@@ -24,6 +24,7 @@ import java.io.File;
 public class NaverBlogUpload extends Activity {
     private OAuthLogin mOAuthLoginInstance;
     private String token;
+    private byte[] imageFile;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -41,6 +42,9 @@ public class NaverBlogUpload extends Activity {
                 Constant.OAUTH_CLIENT_NAME
         );
         mOAuthLoginInstance.startOauthLoginActivity(NaverBlogUpload.this, mOAuthLoginHandler);
+
+        File file = new File(getIntent().getStringExtra("image"));
+        imageFile = Utility.fileToByte(file);
     }
 
     @SuppressLint("HandlerLeak")
@@ -114,8 +118,7 @@ public class NaverBlogUpload extends Activity {
         alertBuilder.setAdapter(adapter, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 Category clickedItem = adapter.getItem(id);
-                File imageFile = new File("/storage/sdcard0/Download/android-logcat.gif");
-                HttpServiceProvider.getVolleyInstance().naverBlogPost(token, clickedItem.getCategoryNo(), Utility.fileToByte(imageFile), new HttpCallback() {
+                HttpServiceProvider.getVolleyInstance().naverBlogPost(token, clickedItem.getCategoryNo(), imageFile, new HttpCallback() {
                     @Override
                     public void onSuccess(Object o) {
                         Toast.makeText(getApplicationContext(), "success", Toast.LENGTH_SHORT).show();

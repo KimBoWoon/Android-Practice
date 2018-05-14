@@ -16,6 +16,7 @@ import android.util.Log;
 
 import com.bowoon.android.android_http_spi.common.HttpCallback;
 import com.bowoon.android.android_http_spi.common.HttpServiceProvider;
+import com.bowoon.android.android_http_spi.util.Utility;
 import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -27,6 +28,7 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.ExponentialBackOff;
 import com.google.api.services.drive.DriveScopes;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
@@ -44,6 +46,7 @@ public class GoogleDriveUpload extends Activity implements EasyPermissions.Permi
     private static final String BUTTON_TEXT = "Call Drive API";
     private static final String PREF_ACCOUNT_NAME = "accountName";
     private static final Set<String> SCOPES = DriveScopes.all();
+    private byte[] imageFile;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -65,24 +68,9 @@ public class GoogleDriveUpload extends Activity implements EasyPermissions.Permi
         } else if (mCredential.getSelectedAccountName() == null) {
             chooseAccount();
         } else {
-//            new MakeRequestTask(mCredential).execute();
-            try {
-                HttpServiceProvider.getRetrofitInstance().googleDriveUpload(mCredential.getToken(),
-                        new java.io.File("/storage/sdcard0/Download/android-logcat.gif"),
-                        new HttpCallback() {
-                            @Override
-                            public void onSuccess(Object o) {
-                                Log.i("GoogleDriveUpload", "success");
-                            }
-
-                            @Override
-                            public void onFail() {
-                                Log.i("GoogleDriveUpload", "fail");
-                            }
-                        });
-            } catch (IOException | GoogleAuthException e) {
-                e.printStackTrace();
-            }
+            File file = new File(getIntent().getStringExtra("image"));
+            imageFile = Utility.fileToByte(file);
+            new MakeRequestTask(mCredential).execute();
             finish();
         }
     }
@@ -232,7 +220,7 @@ public class GoogleDriveUpload extends Activity implements EasyPermissions.Permi
             try {
                 Log.i("GoogleToken", mCredential.getToken());
                 HttpServiceProvider.getRetrofitInstance().googleDriveUpload(mCredential.getToken(),
-                        new java.io.File("/storage/sdcard0/Download/android-logcat.gif"),
+                        imageFile,
                         new HttpCallback() {
                             @Override
                             public void onSuccess(Object o) {

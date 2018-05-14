@@ -14,7 +14,9 @@ import java.io.File;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -26,8 +28,16 @@ public class UseRetrofit {
     private final String GOOGLE_BASE_URL = "https://www.googleapis.com/";
     private final String TWITTER_BASE_URL = "https://api.twitter.com/";
 
+    private OkHttpClient createOkHttpClient() {
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        builder.addInterceptor(interceptor);
+        return builder.build();
+    }
+
     public void getNaverBlogCategory(String token, final HttpCallback callback) {
-        Retrofit client = new Retrofit.Builder().baseUrl(NAVER_BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
+        Retrofit client = new Retrofit.Builder().baseUrl(NAVER_BASE_URL).addConverterFactory(GsonConverterFactory.create()).client(createOkHttpClient()).build();
         APIInterface service = client.create(APIInterface.class);
 
         String header = "Bearer " + token;
@@ -52,7 +62,7 @@ public class UseRetrofit {
     }
 
     public void naverBlogPost(String token, int categoryNo, File file, final HttpCallback callback) {
-        Retrofit client = new Retrofit.Builder().baseUrl(NAVER_BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
+        Retrofit client = new Retrofit.Builder().baseUrl(NAVER_BASE_URL).addConverterFactory(GsonConverterFactory.create()).client(createOkHttpClient()).build();
         APIInterface service = client.create(APIInterface.class);
 
         String header = "Bearer " + token;
@@ -61,7 +71,7 @@ public class UseRetrofit {
         RequestBody image = RequestBody.create(MediaType.parse("image/gif"), file);
         MultipartBody.Part part = MultipartBody.Part.createFormData("image", file.getName(), image);
 
-        Call<JSONObject> call = service.sendPost(header, title, contents, categoryNo, part);
+        Call<JSONObject> call = service.naverBlogSendPost(header, title, contents, categoryNo, part);
         call.enqueue(new Callback<JSONObject>() {
             @Override
             public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
@@ -77,14 +87,14 @@ public class UseRetrofit {
         });
     }
 
-    public void googleDriveUpload(String token, File file, final HttpCallback callback) {
-        Retrofit client = new Retrofit.Builder().baseUrl(GOOGLE_BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
+    public void googleDriveUpload(String token, byte[] file, final HttpCallback callback) {
+        Retrofit client = new Retrofit.Builder().baseUrl(GOOGLE_BASE_URL).addConverterFactory(GsonConverterFactory.create()).client(createOkHttpClient()).build();
         APIInterface service = client.create(APIInterface.class);
 
         String header = "Bearer " + token;
         RequestBody image = RequestBody.create(MediaType.parse("image/gif"), file);
 
-        Call<JSONObject> call = service.upload(header, image);
+        Call<JSONObject> call = service.googleDriveUpload(header, image);
         call.enqueue(new Callback<JSONObject>() {
             @Override
             public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
@@ -101,10 +111,10 @@ public class UseRetrofit {
     }
 
     public void twitterPostUpload(final HttpCallback callback) {
-        Retrofit client = new Retrofit.Builder().baseUrl(TWITTER_BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
+        Retrofit client = new Retrofit.Builder().baseUrl(TWITTER_BASE_URL).addConverterFactory(GsonConverterFactory.create()).client(createOkHttpClient()).build();
         APIInterface service = client.create(APIInterface.class);
 
-        Call<JSONObject> call = service.tweet("Test", null, null, null, null, null, null, null, null);
+        Call<JSONObject> call = service.twitterTweet("Test", null, null, null, null, null, null, null, null);
         call.enqueue(new Callback<JSONObject>() {
             @Override
             public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {

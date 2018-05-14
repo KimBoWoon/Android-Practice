@@ -20,26 +20,26 @@ public interface APIInterface {
 
     @Multipart
     @POST("/blog/writePost.json")
-    Call<JSONObject> sendPost(@Header("Authorization") String authorization,
-                              @Part("title") RequestBody title,
-                              @Part("contents") RequestBody contents,
-                              @Part("categoryNo") int categoryNo,
-                              @Part MultipartBody.Part image
+    Call<JSONObject> naverBlogSendPost(@Header("Authorization") String authorization,
+                                       @Part("title") RequestBody title,
+                                       @Part("contents") RequestBody contents,
+                                       @Part("categoryNo") int categoryNo,
+                                       @Part MultipartBody.Part image
     );
 
     @POST("/upload/drive/v3/files?uploadType=media")
-    Call<JSONObject> upload(@Header("Authorization") String authorization,
-                            @Body RequestBody image);
+    Call<JSONObject> googleDriveUpload(@Header("Authorization") String authorization,
+                                       @Body RequestBody image);
 
     @FormUrlEncoded
     @POST("/1.1/statuses/update.json")
-    Call<JSONObject> tweet(@Field("status") String status,
-                           @Field("in_reply_to_status_id") Long inReplyToStatusId,
-                           @Field("possibly_sensitive") Boolean possiblySensitive,
-                           @Field("lat") Double latitude,
-                           @Field("long") Double longitude,
-                           @Field("place_id") String placeId,
-                           @Field("display_coordinates") Boolean displayCoordinates,
-                           @Field("trim_user") Boolean trimUser,
-                           @Field("media_ids") String mediaIds);
+    Call<JSONObject> twitterTweet(@Field("status") String status,
+                                  @Field("in_reply_to_status_id") Long inReplyToStatusId,
+                                  @Field("possibly_sensitive") Boolean possiblySensitive,
+                                  @Field("lat") Double latitude,
+                                  @Field("long") Double longitude,
+                                  @Field("place_id") String placeId,
+                                  @Field("display_coordinates") Boolean displayCoordinates,
+                                  @Field("trim_user") Boolean trimUser,
+                                  @Field("media_ids") String mediaIds);
 }
