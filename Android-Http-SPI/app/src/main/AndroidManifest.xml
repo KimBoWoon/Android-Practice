@@ -26,6 +26,9 @@
         <activity android:name=".NaverBlogUpload" />
         <activity android:name=".GoogleDriveUpload" />
         <activity android:name=".TwitterPostUpload" />
+        <activity
+            android:name=".DialogActivity"
+            android:theme="@android:style/Theme.Dialog" />
     </application>
 
 </manifest>

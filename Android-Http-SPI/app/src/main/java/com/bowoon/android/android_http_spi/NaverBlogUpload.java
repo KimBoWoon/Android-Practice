@@ -25,6 +25,7 @@ public class NaverBlogUpload extends Activity {
     private OAuthLogin mOAuthLoginInstance;
     private String token;
     private byte[] imageFile;
+    private File file;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -43,7 +44,7 @@ public class NaverBlogUpload extends Activity {
         );
         mOAuthLoginInstance.startOauthLoginActivity(NaverBlogUpload.this, mOAuthLoginHandler);
 
-        File file = new File(getIntent().getStringExtra("image"));
+        file = new File(getIntent().getStringExtra("image"));
         imageFile = Utility.fileToByte(file);
     }
 
@@ -55,34 +56,34 @@ public class NaverBlogUpload extends Activity {
                 try {
                     token = mOAuthLoginInstance.getAccessToken(getApplicationContext());
                     Log.i("naverToken", token);
-//                    HttpServiceProvider.getRetrofitInstance().getNaverBlogCategory(token, new HttpCallback() {
-//                        @Override
-//                        public void onSuccess(Object o) {
-//                            Toast.makeText(context, "success", Toast.LENGTH_SHORT).show();
-//                            if (o instanceof BlogCategory) {
-//                              makeDialog(token, (BlogCategory) o);
-//                            }
-//                        }
-//
-//                        @Override
-//                        public void onFail() {
-//                            Toast.makeText(context, "fail", Toast.LENGTH_SHORT).show();
-//                        }
-//                    });
-                    HttpServiceProvider.getVolleyInstance().naverBlogCategory(token, new HttpCallback() {
+                    HttpServiceProvider.getRetrofitInstance().getNaverBlogCategory(token, new HttpCallback() {
                         @Override
                         public void onSuccess(Object o) {
                             Toast.makeText(getApplicationContext(), "success", Toast.LENGTH_SHORT).show();
                             if (o instanceof BlogCategory) {
-                                makeDialog(token, (BlogCategory) o);
+                              makeDialog(token, (BlogCategory) o);
                             }
                         }
 
                         @Override
                         public void onFail() {
-
+                            Toast.makeText(getApplicationContext(), "fail", Toast.LENGTH_SHORT).show();
                         }
                     });
+//                    HttpServiceProvider.getVolleyInstance().naverBlogCategory(token, new HttpCallback() {
+//                        @Override
+//                        public void onSuccess(Object o) {
+//                            Toast.makeText(getApplicationContext(), "success", Toast.LENGTH_SHORT).show();
+//                            if (o instanceof BlogCategory) {
+//                                makeDialog(token, (BlogCategory) o);
+//                            }
+//                        }
+//
+//                        @Override
+//                        public void onFail() {
+//
+//                        }
+//                    });
 //                    new Thread(new Runnable() {
 //                        @Override
 //                        public void run() {
@@ -118,7 +119,7 @@ public class NaverBlogUpload extends Activity {
         alertBuilder.setAdapter(adapter, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 Category clickedItem = adapter.getItem(id);
-                HttpServiceProvider.getVolleyInstance().naverBlogPost(token, clickedItem.getCategoryNo(), imageFile, new HttpCallback() {
+                HttpServiceProvider.getRetrofitInstance().naverBlogPost(token, clickedItem.getCategoryNo(), file, new HttpCallback() {
                     @Override
                     public void onSuccess(Object o) {
                         Toast.makeText(getApplicationContext(), "success", Toast.LENGTH_SHORT).show();
@@ -129,6 +130,17 @@ public class NaverBlogUpload extends Activity {
                         Toast.makeText(getApplicationContext(), "fail", Toast.LENGTH_SHORT).show();
                     }
                 });
+//                HttpServiceProvider.getVolleyInstance().naverBlogPost(token, clickedItem.getCategoryNo(), imageFile, new HttpCallback() {
+//                    @Override
+//                    public void onSuccess(Object o) {
+//                        Toast.makeText(getApplicationContext(), "success", Toast.LENGTH_SHORT).show();
+//                    }
+//
+//                    @Override
+//                    public void onFail() {
+//                        Toast.makeText(getApplicationContext(), "fail", Toast.LENGTH_SHORT).show();
+//                    }
+//                });
                 finish();
             }
         });

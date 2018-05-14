@@ -16,11 +16,15 @@ public class HttpServiceProvider {
 
     // 제공자 등록 API
     public static void registerDefaultProvider(CreateHttpService p) {
-        registerProvider(DEFAULT_PROVIDER_NAME, p);
+        if (!providers.containsKey(DEFAULT_PROVIDER_NAME)) {
+            registerProvider(DEFAULT_PROVIDER_NAME, p);
+        }
     }
 
     public static void registerProvider(String name, CreateHttpService p) {
-        providers.put(name, p);
+        if (!providers.containsKey(name)) {
+            providers.put(name, p);
+        }
     }
 
     // 서비스 접근 API

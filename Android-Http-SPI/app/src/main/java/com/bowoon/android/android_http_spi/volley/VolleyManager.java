@@ -28,6 +28,8 @@ public class VolleyManager {
     }
 
     public void setRequestQueue(Context context) {
-        this.rq = Volley.newRequestQueue(context);
+        if (rq == null) {
+            this.rq = Volley.newRequestQueue(context);
+        }
     }
 }

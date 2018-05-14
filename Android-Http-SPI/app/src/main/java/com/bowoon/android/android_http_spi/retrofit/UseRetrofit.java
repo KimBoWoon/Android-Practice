@@ -33,6 +33,7 @@ public class UseRetrofit {
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         builder.addInterceptor(interceptor);
+        builder.retryOnConnectionFailure(true);
         return builder.build();
     }
 

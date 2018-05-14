@@ -63,6 +63,10 @@ public class HttpOption {
         setHeaders("Content-Transfer-Encoding", contentTransferEncoding);
     }
 
+    public void setCategoryNo(int value) {
+        setParams("categoryNo", String.valueOf(value));
+    }
+
     public void setTitle(String value) {
         setParams("title", value);
     }
