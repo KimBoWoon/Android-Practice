@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -62,17 +63,17 @@ public class UseRetrofit {
         });
     }
 
-    public void naverBlogPost(String token, int categoryNo, File file, final HttpCallback callback) {
+    public void naverBlogPost(String token, String title, String content, int categoryNo, File file, final HttpCallback callback) {
         Retrofit client = new Retrofit.Builder().baseUrl(NAVER_BASE_URL).addConverterFactory(GsonConverterFactory.create()).client(createOkHttpClient()).build();
         APIInterface service = client.create(APIInterface.class);
 
         String header = "Bearer " + token;
-        RequestBody title = RequestBody.create(MediaType.parse("text/plain"), "네이버 multi-part 이미지 첨부 테스트");
-        RequestBody contents = RequestBody.create(MediaType.parse("text/plain"), "<font color='red'>multi-part</font>로 첨부한 글입니다. <br>  이미지 첨부 <br> <img src='#0' />");
+        RequestBody titleBody = RequestBody.create(MediaType.parse("text/plain"), title);
+        RequestBody contentBody = RequestBody.create(MediaType.parse("text/plain"), content + "<img src='#0' />");
         RequestBody image = RequestBody.create(MediaType.parse("image/gif"), file);
         MultipartBody.Part part = MultipartBody.Part.createFormData("image", file.getName(), image);
 
-        Call<JSONObject> call = service.naverBlogSendPost(header, title, contents, categoryNo, part);
+        Call<JSONObject> call = service.naverBlogSendPost(header, titleBody, contentBody, categoryNo, part);
         call.enqueue(new Callback<JSONObject>() {
             @Override
             public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
@@ -111,11 +112,11 @@ public class UseRetrofit {
         });
     }
 
-    public void twitterPostUpload(final HttpCallback callback) {
+    public void twitterPostUpload(String token, final HttpCallback callback) {
         Retrofit client = new Retrofit.Builder().baseUrl(TWITTER_BASE_URL).addConverterFactory(GsonConverterFactory.create()).client(createOkHttpClient()).build();
         APIInterface service = client.create(APIInterface.class);
 
-        Call<JSONObject> call = service.twitterTweet("Test", null, null, null, null, null, null, null, null);
+        Call<JSONObject> call = service.twitterTweet(token, "Test", null, null, null, null, null, null, null, null);
         call.enqueue(new Callback<JSONObject>() {
             @Override
             public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
@@ -126,6 +127,30 @@ public class UseRetrofit {
             @Override
             public void onFailure(Call<JSONObject> call, Throwable t) {
                 Log.i("twitterPostUpload", t.getMessage());
+                callback.onFail();
+            }
+        });
+    }
+
+    public void twitterGetToken(String token, final HttpCallback callback) {
+        Retrofit client = new Retrofit.Builder().baseUrl(TWITTER_BASE_URL).addConverterFactory(GsonConverterFactory.create()).client(createOkHttpClient()).build();
+        APIInterface service = client.create(APIInterface.class);
+
+        Call<Object> call = service.getToken(token, "client_credentials");
+        call.enqueue(new Callback<Object>() {
+            @Override
+            public void onResponse(Call<Object> call, Response<Object> response) {
+                Log.i("twitterGetToken", String.valueOf(response.body()));
+                GsonBuilder gsonBuilder = new GsonBuilder();
+                Gson gson = gsonBuilder.create();
+                JsonObject jsonObject = gson.toJsonTree(response.body()).getAsJsonObject();
+                String token = gson.fromJson(jsonObject.get("access_token"), String.class);
+                callback.onSuccess(token);
+            }
+
+            @Override
+            public void onFailure(Call<Object> call, Throwable t) {
+                Log.i("twitterGetToken", t.getMessage());
                 callback.onFail();
             }
         });

@@ -5,5 +5,5 @@ import com.bowoon.android.android_http_spi.common.HttpCallback;
 
 public interface HttpServiceList {
     void naverBlogCategory(String token, final HttpCallback callback);
-    void naverBlogPost(String token, int categoryNo, byte[] bytes, final HttpCallback callback);
+    void naverBlogPost(String token, String title, String content, int categoryNo, byte[] bytes, final HttpCallback callback);
 }

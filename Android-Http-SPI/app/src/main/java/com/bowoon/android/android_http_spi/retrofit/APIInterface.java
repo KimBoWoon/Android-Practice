@@ -33,7 +33,8 @@ public interface APIInterface {
 
     @FormUrlEncoded
     @POST("/1.1/statuses/update.json")
-    Call<JSONObject> twitterTweet(@Field("status") String status,
+    Call<JSONObject> twitterTweet(@Header("Authorization") String authorization,
+                                  @Field("status") String status,
                                   @Field("in_reply_to_status_id") Long inReplyToStatusId,
                                   @Field("possibly_sensitive") Boolean possiblySensitive,
                                   @Field("lat") Double latitude,
@@ -42,4 +43,9 @@ public interface APIInterface {
                                   @Field("display_coordinates") Boolean displayCoordinates,
                                   @Field("trim_user") Boolean trimUser,
                                   @Field("media_ids") String mediaIds);
+
+    @FormUrlEncoded
+    @POST("oauth2/token")
+    Call<Object> getToken(@Header("Authorization") String authorization,
+                              @Field("grant_type") String grant_type);
 }

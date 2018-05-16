@@ -39,17 +39,6 @@ public class DialogActivity extends Activity {
                 startActivity(googleDrive);
                 break;
             case R.id.upload_twitter_post:
-//                HttpServiceProvider.getRetrofitInstance().twitterPostUpload(new HttpCallback() {
-//                    @Override
-//                    public void onSuccess() {
-//                        Toast.makeText(context, "success", Toast.LENGTH_SHORT).show();
-//                    }
-//
-//                    @Override
-//                    public void onFail() {
-//                        Toast.makeText(context, "fail", Toast.LENGTH_SHORT).show();
-//                    }
-//                });
                 Intent twitterPost = new Intent(this, TwitterPostUpload.class);
                 twitterPost.putExtra("image", "/storage/sdcard0/Download/android-logcat.gif");
                 startActivity(twitterPost);

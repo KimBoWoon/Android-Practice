@@ -34,12 +34,12 @@ public class HttpService implements HttpServiceList {
         return null;
     }
 
-    private HttpOption httpOptionSetting(String token, byte[] bytes, int categoryNo) {
+    private HttpOption httpOptionSetting(String token, String title, String content, byte[] bytes, int categoryNo) {
         try {
             HttpOption option = new HttpOption();
             option.setAuthorization("Bearer " + token);
-            option.setTitle("네이버 multi-part 이미지 첨부 테스트");
-            option.setContent("<font color='red'>multi-part</font>로 첨부한 글입니다. <br>  이미지 첨부 <br> <img src='#0' />");
+            option.setTitle(title);
+            option.setContent(content + "<img src='#0' />");
             option.setOpen("all");
             option.setCategoryNo(categoryNo);
             option.setImage(new FileDataPart("practice.gif", bytes, "image/gif"));
@@ -109,9 +109,9 @@ public class HttpService implements HttpServiceList {
         addRequestQueue(request);
     }
 
-    public void naverBlogPost(String token, int categoryNo, byte[] bytes, final HttpCallback callback) {
+    public void naverBlogPost(String token, String title, String content, int categoryNo, byte[] bytes, final HttpCallback callback) {
         String url = makeURL(UrlType.POST);
-        HttpOption option = httpOptionSetting(token, bytes, categoryNo);
+        HttpOption option = httpOptionSetting(token, title, content, bytes, categoryNo);
 //        JSONObject jsonObject = makeJSON();
 
         VolleyMultipartRequest request = new VolleyMultipartRequest(

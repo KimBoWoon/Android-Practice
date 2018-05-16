@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.bowoon.android.android_http_spi.common.HttpCallback;
@@ -21,20 +23,29 @@ import com.nhn.android.naverlogin.OAuthLoginHandler;
 
 import java.io.File;
 
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 public class NaverBlogUpload extends Activity {
     private OAuthLogin mOAuthLoginInstance;
     private String token;
     private byte[] imageFile;
     private File file;
+    private EditText titleEdit, contentEdit;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.naver_post);
 
-        initData();
+        initView();
     }
 
-    public void initData() {
+    public void initView() {
+        ButterKnife.bind(this);
+        titleEdit = (EditText) findViewById(R.id.naver_post_title_edit);
+        contentEdit = (EditText) findViewById(R.id.naver_post_content_edit);
+
         mOAuthLoginInstance = OAuthLogin.getInstance();
         mOAuthLoginInstance.init(
                 getApplicationContext(),
@@ -42,10 +53,24 @@ public class NaverBlogUpload extends Activity {
                 Constant.OAUTH_CLIENT_SECRET,
                 Constant.OAUTH_CLIENT_NAME
         );
-        mOAuthLoginInstance.startOauthLoginActivity(NaverBlogUpload.this, mOAuthLoginHandler);
 
         file = new File(getIntent().getStringExtra("image"));
         imageFile = Utility.fileToByte(file);
+    }
+
+    @OnClick(R.id.naver_post_send_button)
+    public void onClick() {
+        if (titleEdit.getText() == null || titleEdit.getText().toString().length() == 0) {
+            Toast.makeText(getApplicationContext(), "제목을 입력하세요", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (contentEdit.getText() == null || contentEdit.getText().toString().length() == 0) {
+            Toast.makeText(getApplicationContext(), "내용을 입력하세요", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        mOAuthLoginInstance.startOauthLoginActivity(NaverBlogUpload.this, mOAuthLoginHandler);
     }
 
     @SuppressLint("HandlerLeak")
@@ -119,7 +144,9 @@ public class NaverBlogUpload extends Activity {
         alertBuilder.setAdapter(adapter, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 Category clickedItem = adapter.getItem(id);
-                HttpServiceProvider.getRetrofitInstance().naverBlogPost(token, clickedItem.getCategoryNo(), file, new HttpCallback() {
+                String title = titleEdit.getText().toString().trim();
+                String content = contentEdit.getText().toString().trim();
+                HttpServiceProvider.getRetrofitInstance().naverBlogPost(token, title, content, clickedItem.getCategoryNo(), file, new HttpCallback() {
                     @Override
                     public void onSuccess(Object o) {
                         Toast.makeText(getApplicationContext(), "success", Toast.LENGTH_SHORT).show();
@@ -130,7 +157,7 @@ public class NaverBlogUpload extends Activity {
                         Toast.makeText(getApplicationContext(), "fail", Toast.LENGTH_SHORT).show();
                     }
                 });
-//                HttpServiceProvider.getVolleyInstance().naverBlogPost(token, clickedItem.getCategoryNo(), imageFile, new HttpCallback() {
+//                HttpServiceProvider.getVolleyInstance().naverBlogPost(token, title, content, clickedItem.getCategoryNo(), imageFile, new HttpCallback() {
 //                    @Override
 //                    public void onSuccess(Object o) {
 //                        Toast.makeText(getApplicationContext(), "success", Toast.LENGTH_SHORT).show();
