@@ -122,7 +122,8 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
         if (event.getAction() == MotionEvent.ACTION_UP) {
             mVideoInfoView.setVisibility(View.VISIBLE);
             mVideoTitle.setVisibility(View.VISIBLE);
-            mDialogBtn.setVisibility(View.VISIBLE);
+//            mDialogBtn.setVisibility(View.VISIBLE);
+            mServiceBtn.setVisibility(View.VISIBLE);
             mVideoTime.setText(getStringTime(mMediaPlayer.getCurrentPosition()) + " / " + getStringTime(mMediaPlayer.getDuration()));
 
             new Handler().postDelayed(new Runnable() {
@@ -130,7 +131,8 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
                 public void run() {
                     mVideoInfoView.setVisibility(View.GONE);
                     mVideoTitle.setVisibility(View.GONE);
-                    mDialogBtn.setVisibility(View.GONE);
+//                    mDialogBtn.setVisibility(View.GONE);
+                    mServiceBtn.setVisibility(View.GONE);
                 }
             }, 5000);
 
