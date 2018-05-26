@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -36,7 +35,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callback {
-    private final String TAG = "VideoPlayerActivity";
     private SurfaceView mSurfaceView;
     private SurfaceHolder mSurfaceHolder;
     private MediaPlayer mMediaPlayer;
@@ -55,6 +53,8 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
         super.onCreate(savedInstanceState);
         setContentView(R.layout.video_surfaceview);
 
+        ALog.i("VideoPlayerActivity");
+
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
@@ -68,7 +68,7 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        Log.i(TAG, "onConfigurationChanged");
+        ALog.i("onConfigurationChanged");
 
         arrangeVideo();
     }
@@ -254,14 +254,14 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
     @Override
     protected void onPause() {
         super.onPause();
-        Log.i(TAG, "onPause");
+        ALog.i("onPause");
     }
 
     @Override
     protected void onResume() {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         super.onResume();
-        Log.i(TAG, "onResume");
+        ALog.i("onResume");
     }
 
     @Override
@@ -278,7 +278,7 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        Log.i(TAG, "surfaceCreated");
+        ALog.i("surfaceCreated");
         mSeekBarFlag = true;
         isPlay = true;
         playVideo(mVideoItem.getPath());
@@ -288,7 +288,7 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-        Log.i(TAG, "surfaceChanged");
+        ALog.i("surfaceChanged");
         if (mMediaPlayer != null) {
             mMediaPlayer.setDisplay(holder);
             arrangeVideo();
@@ -297,7 +297,7 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-        Log.i(TAG, "surfaceDestroyed");
+        ALog.i("surfaceDestroyed");
     }
 
     private String getStringTime(int time) {

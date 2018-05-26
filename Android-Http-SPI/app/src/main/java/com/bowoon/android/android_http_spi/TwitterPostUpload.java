@@ -9,8 +9,6 @@ import android.util.Log;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.bowoon.android.android_http_spi.common.HttpCallback;
-import com.bowoon.android.android_http_spi.common.HttpServiceProvider;
 import com.bowoon.android.android_http_spi.util.Utility;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
@@ -27,8 +25,6 @@ import com.twitter.sdk.android.core.services.MediaService;
 import com.twitter.sdk.android.core.services.StatusesService;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -83,38 +79,38 @@ public class TwitterPostUpload extends Activity {
         if (requestCode == twitterAuthClient.getRequestCode()) {
             twitterAuthClient.onActivityResult(requestCode, resultCode, data);
 
-            try {
-                String encodeConsumerKey = URLEncoder.encode("vbkGe8wX56qcuR15er3fFUmqg", "UTF-8");
-                String encodeConsumerSecretKey = URLEncoder.encode("U3aKoRcimzOXMFRst3ZCNZnacPtLMITM2kK0rEXlD6QateGPx7", "UTF-8");
-                String base64EncodeKey = Base64.encodeToString((encodeConsumerKey + ":" + encodeConsumerSecretKey).getBytes(), Base64.NO_WRAP);
-
-                HttpServiceProvider.getRetrofitInstance().twitterGetToken(("Basic " + base64EncodeKey).trim(), new HttpCallback() {
-                    @Override
-                    public void onSuccess(Object o) {
-                        Toast.makeText(getApplicationContext(), "success", Toast.LENGTH_SHORT).show();
-                        if (o instanceof String) {
-                            HttpServiceProvider.getRetrofitInstance().twitterPostUpload("Bearer " + (String) o, new HttpCallback() {
-                                @Override
-                                public void onSuccess(Object o) {
-                                    Toast.makeText(getApplicationContext(), "success", Toast.LENGTH_SHORT).show();
-                                }
-
-                                @Override
-                                public void onFail() {
-                                    Toast.makeText(getApplicationContext(), "fail", Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                        }
-                    }
-
-                    @Override
-                    public void onFail() {
-                        Toast.makeText(getApplicationContext(), "fail", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
+//            try {
+//                String encodeConsumerKey = URLEncoder.encode("vbkGe8wX56qcuR15er3fFUmqg", "UTF-8");
+//                String encodeConsumerSecretKey = URLEncoder.encode("U3aKoRcimzOXMFRst3ZCNZnacPtLMITM2kK0rEXlD6QateGPx7", "UTF-8");
+//                String base64EncodeKey = Base64.encodeToString((encodeConsumerKey + ":" + encodeConsumerSecretKey).getBytes(), Base64.NO_WRAP);
+//
+//                HttpServiceProvider.getRetrofitInstance().twitterGetToken(("Basic " + base64EncodeKey).trim(), new HttpCallback() {
+//                    @Override
+//                    public void onSuccess(Object o) {
+//                        Toast.makeText(getApplicationContext(), "success", Toast.LENGTH_SHORT).show();
+//                        if (o instanceof String) {
+//                            HttpServiceProvider.getRetrofitInstance().twitterPostUpload("Bearer " + (String) o, new HttpCallback() {
+//                                @Override
+//                                public void onSuccess(Object o) {
+//                                    Toast.makeText(getApplicationContext(), "success", Toast.LENGTH_SHORT).show();
+//                                }
+//
+//                                @Override
+//                                public void onFail() {
+//                                    Toast.makeText(getApplicationContext(), "fail", Toast.LENGTH_SHORT).show();
+//                                }
+//                            });
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onFail() {
+//                        Toast.makeText(getApplicationContext(), "fail", Toast.LENGTH_SHORT).show();
+//                    }
+//                });
+//            } catch (UnsupportedEncodingException e) {
+//                e.printStackTrace();
+//            }
         }
     }
 

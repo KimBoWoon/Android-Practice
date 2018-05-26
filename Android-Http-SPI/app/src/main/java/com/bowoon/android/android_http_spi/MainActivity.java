@@ -79,6 +79,8 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.main_dialog_button)
     public void onClick() {
-        startActivity(new Intent(this, DialogActivity.class));
+        Intent intent = new Intent(this, DialogActivity.class);
+        intent.putExtra("image", "/storage/sdcard0/Download/android-logcat.gif");
+        startActivity(intent);
     }
 }

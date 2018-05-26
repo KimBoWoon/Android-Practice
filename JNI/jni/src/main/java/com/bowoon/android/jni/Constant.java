@@ -1,9 +1,7 @@
 package com.bowoon.android.jni;
 
-public class Module {
+public class Constant {
     static {
         System.loadLibrary("module");
     }
-
-    public static native int add(int x, int y);
 }
