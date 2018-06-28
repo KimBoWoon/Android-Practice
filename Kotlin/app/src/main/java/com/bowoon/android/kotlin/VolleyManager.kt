@@ -18,10 +18,10 @@ class VolleyManager {
             }
         }
 
-        fun getInstance() : VolleyManager = Singleton.INSTANCE
+        fun getInstance(): VolleyManager = Singleton.INSTANCE
     }
 
-    fun getRequestQueue() : RequestQueue? {
+    fun getRequestQueue(): RequestQueue? {
         if (rq == null) {
             throw IllegalAccessException("Need Initialize Request Queue")
         }
