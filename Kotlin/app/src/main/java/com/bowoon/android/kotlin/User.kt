@@ -5,3 +5,5 @@ data class User(var picture: HashMap<String, String>, var name: HashMap<String, 
         return name["title"] + " " + name["first"] + " " + name["last"] + " " + picture["large"] + " " + picture["medium"] + " " + picture["thumbnail"]
     }
 }
+
+data class RetrofitUser(var results: ArrayList<User>)

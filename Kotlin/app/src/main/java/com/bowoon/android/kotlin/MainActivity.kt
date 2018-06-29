@@ -14,22 +14,38 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        VolleyManager.getInstance().setRequestQueue(applicationContext)
-
         recyclerView = findViewById(R.id.recycler_view)
         linearLayoutManager = LinearLayoutManager(applicationContext, LinearLayoutManager.VERTICAL, false)
 
-        HttpRequest.userRequest(callback = {
-            when (it) {
-                is ArrayList<User> -> {
-//                    Log.i("MainActivity", it.toString())
-                    val adapter = UserAdapter(it)
+        RetrofitManager.getUser(object: HttpCallback {
+            override fun onSuccess(o: Any) {
+                if (o is RetrofitUser) {
+                    val adapter = UserAdapter(o.results)
                     recyclerView.setHasFixedSize(true)
                     recyclerView.layoutManager = linearLayoutManager
                     recyclerView.adapter = adapter
                 }
-                null -> Log.i("MainActivity", "Null")
+                Log.i("MainActivity", o.toString())
+            }
+
+            override fun onFail(message: String) {
+                Log.i("MainActivity", message)
             }
         })
+
+//        VolleyManager.getInstance().setRequestQueue(applicationContext)
+//
+//        HttpRequest.userRequest(callback = {
+//            when (it) {
+//                is ArrayList<User> -> {
+////                    Log.i("MainActivity", it.toString())
+//                    val adapter = UserAdapter(it)
+//                    recyclerView.setHasFixedSize(true)
+//                    recyclerView.layoutManager = linearLayoutManager
+//                    recyclerView.adapter = adapter
+//                }
+//                null -> Log.i("MainActivity", "Null")
+//            }
+//        })
     }
 }
