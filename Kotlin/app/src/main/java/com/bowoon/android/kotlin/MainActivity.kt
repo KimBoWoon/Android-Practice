@@ -17,9 +17,27 @@ class MainActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.recycler_view)
         linearLayoutManager = LinearLayoutManager(applicationContext, LinearLayoutManager.VERTICAL, false)
 
-        RetrofitManager.getUser(object: HttpCallback {
+//        RetrofitManager.getUser(object: HttpCallback {
+//            override fun onSuccess(o: Any) {
+//                if (o is RandomUser) {
+//                    val adapter = UserAdapter(o.results)
+//                    recyclerView.setHasFixedSize(true)
+//                    recyclerView.layoutManager = linearLayoutManager
+//                    recyclerView.adapter = adapter
+//                }
+//                Log.i("MainActivity", o.toString())
+//            }
+//
+//            override fun onFail(message: String) {
+//                Log.i("MainActivity", message)
+//            }
+//        })
+
+        VolleyManager.getInstance().setRequestQueue(applicationContext)
+
+        HttpRequest.userRequest(object: HttpCallback {
             override fun onSuccess(o: Any) {
-                if (o is RetrofitUser) {
+                if (o is RandomUser) {
                     val adapter = UserAdapter(o.results)
                     recyclerView.setHasFixedSize(true)
                     recyclerView.layoutManager = linearLayoutManager
@@ -32,20 +50,5 @@ class MainActivity : AppCompatActivity() {
                 Log.i("MainActivity", message)
             }
         })
-
-//        VolleyManager.getInstance().setRequestQueue(applicationContext)
-//
-//        HttpRequest.userRequest(callback = {
-//            when (it) {
-//                is ArrayList<User> -> {
-////                    Log.i("MainActivity", it.toString())
-//                    val adapter = UserAdapter(it)
-//                    recyclerView.setHasFixedSize(true)
-//                    recyclerView.layoutManager = linearLayoutManager
-//                    recyclerView.adapter = adapter
-//                }
-//                null -> Log.i("MainActivity", "Null")
-//            }
-//        })
     }
 }

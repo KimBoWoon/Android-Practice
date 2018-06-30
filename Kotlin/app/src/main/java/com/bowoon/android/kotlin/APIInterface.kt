@@ -7,5 +7,5 @@ import retrofit2.http.Query
 
 interface APIInterface {
     @GET("/api/")
-    fun getUsers(@Query("results") results: Int): Call<RetrofitUser>
+    fun getUsers(@Query("results") results: Int): Call<RandomUser>
 }

@@ -6,4 +6,4 @@ data class User(var picture: HashMap<String, String>, var name: HashMap<String, 
     }
 }
 
-data class RetrofitUser(var results: ArrayList<User>)
+data class RandomUser(var results: ArrayList<User>)

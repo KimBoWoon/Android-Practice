@@ -19,17 +19,17 @@ class RetrofitManager {
         }
 
         fun getUser(callback: HttpCallback) {
-            val call: Call<RetrofitUser> = service.getUsers(10)
+            val call: Call<RandomUser> = service.getUsers(10)
 
-            call.enqueue(object: Callback<RetrofitUser> {
-                override fun onResponse(call: Call<RetrofitUser>?, response: Response<RetrofitUser>?) {
+            call.enqueue(object: Callback<RandomUser> {
+                override fun onResponse(call: Call<RandomUser>?, response: Response<RandomUser>?) {
                     Log.i("Retrofit2", response?.message())
-                    val retrofitUser: RetrofitUser = response?.body()!!
-                    Log.i("response", retrofitUser.toString())
-                    callback.onSuccess(retrofitUser)
+                    val randomUser: RandomUser = response?.body()!!
+                    Log.i("response", randomUser.toString())
+                    callback.onSuccess(randomUser)
                 }
 
-                override fun onFailure(call: Call<RetrofitUser>?, t: Throwable?) {
+                override fun onFailure(call: Call<RandomUser>?, t: Throwable?) {
                     Log.e("Retrofit2", t?.message)
                     callback.onFail(t?.message!!)
                 }
