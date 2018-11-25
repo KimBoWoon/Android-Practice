@@ -244,8 +244,9 @@ class VideoService : Service(), SurfaceHolder.Callback {
 
         override fun onScale(detector: ScaleGestureDetector): Boolean {
             ALog.d("onScale")
-            mW *= detector.scaleFactor.toInt()
-            mH *= detector.scaleFactor.toInt()
+            mW = (mW.toDouble() * detector.scaleFactor.toDouble()).toInt()
+            mH = (mH.toDouble() * detector.scaleFactor.toDouble()).toInt()
+            ALog.d("ScaleFactor = " + detector.scaleFactor.toInt())
             if (mW <= MIN_WIDTH) {
                 mW = MIN_WIDTH
                 mH = MIN_HEIGHT
