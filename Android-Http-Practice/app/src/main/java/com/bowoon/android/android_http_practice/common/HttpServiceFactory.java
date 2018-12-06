@@ -2,20 +2,20 @@ package com.bowoon.android.android_http_practice.common;
 
 import android.content.Context;
 
-import com.bowoon.android.android_http_practice.okhttp.UseOkHttp;
-import com.bowoon.android.android_http_practice.retrofit.UseRetrofit;
-import com.bowoon.android.android_http_practice.volley.UseVolley;
+import com.bowoon.android.android_http_practice.okhttp.OkHttpClass;
+import com.bowoon.android.android_http_practice.retrofit.RetrofitClass;
+import com.bowoon.android.android_http_practice.volley.VolleyClass;
 
 public class HttpServiceFactory {
     public static HttpService createClass(String name) {
         try {
             switch (name) {
                 case "retrofit":
-                    return new UseRetrofit();
+                    return new RetrofitClass();
                 case "volley":
-                    return new UseVolley();
+                    return new VolleyClass();
                 case "okhttp":
-                    return new UseOkHttp();
+                    return new OkHttpClass();
                 default:
                     return null;
             }
@@ -29,11 +29,11 @@ public class HttpServiceFactory {
     public static HttpService createClass(String name, Context context) {
         switch (name) {
             case "retrofit":
-                return new UseRetrofit();
+                return new RetrofitClass();
             case "volley":
-                return new UseVolley(context);
+                return new VolleyClass(context);
             case "okhttp":
-                return new UseOkHttp();
+                return new OkHttpClass();
             default:
                 return null;
         }

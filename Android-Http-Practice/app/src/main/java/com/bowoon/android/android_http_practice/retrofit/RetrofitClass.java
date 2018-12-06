@@ -16,10 +16,12 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class UseRetrofit implements HttpService {
+public class RetrofitClass implements HttpService {
     private final String BASE_URL = "https://randomuser.me";
 
     private OkHttpClient createOkHttpClient() {
+        // OkHttp 설정
+        // retrofit과 함께 사용하면 좋기 때문
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
@@ -29,9 +31,16 @@ public class UseRetrofit implements HttpService {
     }
 
     public void getPerson(final HttpCallback callback) {
-        Retrofit client = new Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create()).client(createOkHttpClient()).build();
+        // retrofit 생성
+        Retrofit client = new Retrofit
+                .Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(createOkHttpClient())
+                .build();
         APIInterface service = client.create(APIInterface.class);
 
+        // 만들어진 retrofit을 토대로 데이터 요청
         Call<Person> call = service.getPerson(10);
         call.enqueue(new Callback<Person>() {
             @Override

@@ -9,6 +9,7 @@ import java.util.Map;
  * Created by 보운 on 2018-01-01.
  */
 
+// 헤더와 파라메터를 설정하기 위해 만들어둔 Option class
 public class HttpOption {
     private Map<String, String> headers;
     private Map<String, String> params;

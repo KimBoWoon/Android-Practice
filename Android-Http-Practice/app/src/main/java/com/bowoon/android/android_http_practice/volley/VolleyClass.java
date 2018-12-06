@@ -7,6 +7,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.bowoon.android.android_http_practice.common.HttpCallback;
 import com.bowoon.android.android_http_practice.common.HttpService;
 import com.bowoon.android.android_http_practice.model.Person;
@@ -15,19 +16,23 @@ import com.google.gson.GsonBuilder;
 
 import org.json.JSONObject;
 
-public class UseVolley implements HttpService {
+public class VolleyClass implements HttpService {
     private final String BASE_URL = "https://randomuser.me";
 
-    public UseVolley() throws IllegalAccessException {
+    public VolleyClass() throws IllegalAccessException {
         throw new IllegalAccessException("Need Application Context");
     }
 
-    public UseVolley(Context context) {
+    public VolleyClass(Context context) {
+        // volley는 context가 필요함
+        // request queue를 초기화하기 위해 필요
         VolleyManager.getInstance().setRequestQueue(context);
     }
 
     @Override
     public void getPerson(final HttpCallback callback) {
+        // request 생성
+        // JsonObjectRequest, StringRequest, JsonArrayRequest가 존재
         JsonObjectRequest request = new JsonObjectRequest(
                 Request.Method.GET,
                 BASE_URL + "/api/?results=10",
@@ -50,6 +55,7 @@ public class UseVolley implements HttpService {
                 }
         );
 
+        // request를 만들었으면 RequestQueue에 추가하여 데이터를 요청
         addRequestQueue(request);
     }
 

@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
+// MultiPartRequest를 하기위해 따로 커스텀
 public class VolleyMultipartRequest extends Request<NetworkResponse> {
     private final String TWO_HYPHENS = "--";
     private final String LINE_FEED = "\r\n";
@@ -140,7 +141,10 @@ public class VolleyMultipartRequest extends Request<NetworkResponse> {
         }
     }
 
+    // Text Type의 데이터 생성
+    // 한글 데이터를 전송할 때는 UTF-8 설정을 해야함
     private void buildTextPart(DataOutputStream dataOutputStream, String parameterName, String parameterValue) throws IOException {
+        // 데이터의 경계를 표시하기 위함
         dataOutputStream.writeBytes(TWO_HYPHENS + BOUNDARY + LINE_FEED);
         dataOutputStream.writeBytes("Content-Disposition: form-data; name=\"" + parameterName + "\"" + LINE_FEED);
         dataOutputStream.writeBytes("Content-Type: text/plain; charset=UTF-8" + LINE_FEED);
@@ -149,13 +153,17 @@ public class VolleyMultipartRequest extends Request<NetworkResponse> {
         dataOutputStream.flush();
     }
 
+    // Data Type의 데이터 생성(이미지, 영상 등)
     private void buildDataPart(DataOutputStream dataOutputStream, FileDataPart dataFile, String inputName) throws IOException {
+        // 데이터의 경계를 표시하기 위함
         dataOutputStream.writeBytes(TWO_HYPHENS + BOUNDARY + LINE_FEED);
+        // 데이터의 타입 설정
         dataOutputStream.writeBytes("Content-Disposition: form-data; name=\"" +
                 inputName + "\"; filename=\"" + dataFile.getFileName() + "\"" + LINE_FEED);
         if (dataFile.getType() != null && !dataFile.getType().trim().isEmpty()) {
             dataOutputStream.writeBytes("Content-Type: " + dataFile.getType() + LINE_FEED);
         }
+        // 이후에는 데이터가 입력 됨
         dataOutputStream.writeBytes("Content-Transfer-Encoding: binary" + LINE_FEED);
         dataOutputStream.writeBytes(LINE_FEED);
 
