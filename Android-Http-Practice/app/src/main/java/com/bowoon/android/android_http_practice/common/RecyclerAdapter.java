@@ -1,13 +1,11 @@
 package com.bowoon.android.android_http_practice.common;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bowoon.android.android_http_practice.R;
 import com.bowoon.android.android_http_practice.model.Item;
@@ -15,17 +13,13 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-interface ItemClickListener {
-    void onItemClick(int position);
-}
-
-public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements ItemClickListener {
+public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<Item> items;
-    private Context context;
+    private ItemClickListener listener;
 
-    public RecyclerAdapter(Context context, List<Item> items) {
-        this.context = context;
+    public RecyclerAdapter(List<Item> items, ItemClickListener listener) {
         this.items = items;
+        this.listener = listener;
     }
 
     public String getItemTitle(int position) {
@@ -33,16 +27,11 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     @Override
-    public void onItemClick(int position) {
-        Toast.makeText(context, getItemTitle(position), Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         RecyclerView.ViewHolder holder = null;
 
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
-        holder = new UsersViewHolder(v, this);
+        holder = new UsersViewHolder(v, listener);
 
         return holder;
     }
@@ -62,11 +51,11 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         return this.items.size();
     }
 
-    static class UsersViewHolder extends RecyclerView.ViewHolder {
+    public static class UsersViewHolder extends RecyclerView.ViewHolder {
         private TextView name;
         private ImageView profileImg;
 
-        public UsersViewHolder(View itemView, final ItemClickListener itemClickListener) {
+        private UsersViewHolder(View itemView, final ItemClickListener listener) {
             super(itemView);
             this.name = (TextView) itemView.findViewById(R.id.text);
             this.profileImg = (ImageView) itemView.findViewById(R.id.userImg);
@@ -74,7 +63,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    itemClickListener.onItemClick(getAdapterPosition());
+                    listener.onItemClick(getAdapterPosition());
                 }
             });
         }
