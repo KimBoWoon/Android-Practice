@@ -1,19 +1,24 @@
 package com.bowoon.android.aac_practice;
 
-import android.arch.persistence.db.SupportSQLiteDatabase;
-import android.arch.persistence.room.Database;
-import android.arch.persistence.room.Room;
-import android.arch.persistence.room.RoomDatabase;
-import android.arch.persistence.room.migration.Migration;
 import android.content.Context;
-import android.support.annotation.NonNull;
 import android.util.Log;
 
-@Database(entities = {Memo.class}, version = 1)
+import androidx.annotation.NonNull;
+import androidx.room.Database;
+import androidx.room.Room;
+import androidx.room.RoomDatabase;
+import androidx.room.migration.Migration;
+import androidx.sqlite.db.SupportSQLiteDatabase;
+
+/**
+ * 데이터 베이스 초기화
+ */
+@Database(entities = {Memo.class}, version = 2)
 public abstract class AppDatabase extends RoomDatabase {
     public static final String DATABASE_NAME = "aac-practice-memo";
     private static AppDatabase instance;
 
+    // 데이터 베이스 접근을 위한 메소드 (Data Access Object라고 불림)
     public abstract MemoDAO memoDAO();
 
     public static AppDatabase getInstance(final Context context) {
@@ -29,18 +34,23 @@ public abstract class AppDatabase extends RoomDatabase {
         return instance;
     }
 
+    /**
+     * 데이터 베이스 생성
+     * addCallback가 작동되지 않음
+     * 이유는 모르겠음
+     */
     private static AppDatabase buildDatabase(final Context appContext) {
         return Room.databaseBuilder(appContext, AppDatabase.class, DATABASE_NAME)
-//                .addCallback(new Callback() {
-//                    @Override
-//                    public void onCreate(@NonNull SupportSQLiteDatabase db) {
-//                        super.onCreate(db);
-//                        AppDatabase database = AppDatabase.getInstance(appContext);
-//                        insertData(database);
-//                        Log.i("AppDataBase", "after insert data");
-//                    }
-//                })
-//                .addMigrations(MIGRATION_1_2)
+                .addCallback(new RoomDatabase.Callback() {
+                    @Override
+                    public void onCreate(@NonNull SupportSQLiteDatabase db) {
+                        super.onCreate(db);
+                        AppDatabase database = AppDatabase.getInstance(appContext);
+                        insertData(database);
+                        Log.i("AppDataBase", "after insert data");
+                    }
+                })
+                .addMigrations(MIGRATION_1_2)
                 .build();
     }
 
@@ -48,11 +58,14 @@ public abstract class AppDatabase extends RoomDatabase {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                database.runInTransaction(() -> {
-                    database.memoDAO().insert(new Memo("First Memo"));
-                    database.memoDAO().insert(new Memo("Second Memo"));
-                    database.memoDAO().insert(new Memo("Third Memo"));
-                    Log.i("AppDataBase", database.memoDAO().loadAllMemo().toString());
+                database.runInTransaction(new Runnable() {
+                    @Override
+                    public void run() {
+                        database.memoDAO().insert(new Memo("First Memo"));
+                        database.memoDAO().insert(new Memo("Second Memo"));
+                        database.memoDAO().insert(new Memo("Third Memo"));
+                        Log.i("AppDataBase", database.memoDAO().loadAllMemo().toString());
+                    }
                 });
             }
         }).start();
@@ -61,7 +74,7 @@ public abstract class AppDatabase extends RoomDatabase {
     private static final Migration MIGRATION_1_2 = new Migration(1, 2) {
         @Override
         public void migrate(@NonNull SupportSQLiteDatabase database) {
-//            database.execSQL("CREATE VIRTUAL TABLE IF NOT EXISTS `memo` (`content` TEXT, `time` LONG)");
+            database.execSQL("CREATE TABLE IF NOT EXISTS memo (content TEXT, time LONG)");
         }
     };
 }

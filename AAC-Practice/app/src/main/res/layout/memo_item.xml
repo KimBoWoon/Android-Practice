@@ -13,7 +13,7 @@
             type="com.bowoon.android.aac_practice.MemoItemClick" />
     </data>
 
-    <android.support.v7.widget.CardView
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="@{() ->  callback.onClick(memo)}"
@@ -43,5 +43,5 @@
                 android:onClick="@{() -> callback.onDeleteClick(memo)}"
                 android:text="Delete" />
         </LinearLayout>
-    </android.support.v7.widget.CardView>
+    </androidx.cardview.widget.CardView>
 </layout>

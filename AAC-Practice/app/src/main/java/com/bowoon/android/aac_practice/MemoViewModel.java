@@ -1,45 +1,47 @@
 package com.bowoon.android.aac_practice;
 
 import android.app.Application;
-import android.arch.lifecycle.AndroidViewModel;
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MediatorLiveData;
 
 import java.util.List;
 
+import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
+import androidx.lifecycle.Observer;
+
+/**
+ * UI 관련 데이터를 관리하는 클래스
+ */
 public class MemoViewModel extends AndroidViewModel {
-    private final DataRepository mRepository;
-    private LiveData<List<Memo>> memoList;
-    private final MediatorLiveData<List<Memo>> mObservableProducts;
+    private final DataRepository repository;
+    private final MediatorLiveData<List<Memo>> observableMemo;
 
     public MemoViewModel(Application application) {
         super(application);
-//        mRepository = ((BasicApp) application).getRepository();
-//
-////        memoList = ((BasicApp) application).getDatabase().memoDAO().loadAllMemo();
-//        memoList = mRepository.getMemo();
 
-        mObservableProducts = new MediatorLiveData<>();
-        // set by default null, until we get data from the database.
-        mObservableProducts.setValue(null);
+        observableMemo = new MediatorLiveData<>();
+        observableMemo.setValue(null);
 
-        mRepository = ((BasicApp) application).getRepository();
-        LiveData<List<Memo>> products = mRepository.getMemo();
+        repository = ((BasicApp) application).getRepository();
+        LiveData<List<Memo>> memo = repository.getMemo();
 
-        // observe the changes of the products from the database and forward them
-        mObservableProducts.addSource(products, mObservableProducts::setValue);
+        observableMemo.addSource(memo, new Observer<List<Memo>>() {
+            @Override
+            public void onChanged(List<Memo> memos) {
+                observableMemo.setValue(memos);
+            }
+        });
     }
 
     public LiveData<List<Memo>> getAllMemo() {
-//        return memoList;
-        return mObservableProducts;
+        return observableMemo;
     }
 
     public void addMemo(Memo memo) {
-        mRepository.addMemo(memo);
+        repository.addMemo(memo);
     }
 
-    public void deleteAllMemo(Memo memo) {
-        mRepository.deleteAllMemo(memo);
+    public void deleteMemo(Memo memo) {
+        repository.deleteMemo(memo);
     }
 }
