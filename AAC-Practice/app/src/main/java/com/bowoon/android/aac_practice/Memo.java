@@ -1,5 +1,7 @@
 package com.bowoon.android.aac_practice;
 
+import org.joda.time.DateTime;
+
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -11,11 +13,11 @@ public class Memo {
     @ColumnInfo(name = "content")
     private String content;
     @ColumnInfo(name = "time")
-    private long time;
+    private DateTime time;
 
     public Memo(String content) {
         this.content = content;
-        this.time = System.currentTimeMillis();
+        this.time = new DateTime(System.currentTimeMillis());
     }
 
     public int getId() {
@@ -34,11 +36,11 @@ public class Memo {
         this.content = content;
     }
 
-    public long getTime() {
+    public DateTime getTime() {
         return time;
     }
 
-    public void setTime(long time) {
+    public void setTime(DateTime time) {
         this.time = time;
     }
 }

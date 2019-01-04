@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+import androidx.room.TypeConverters;
 import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
@@ -14,6 +15,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
  * 데이터 베이스 초기화
  */
 @Database(entities = {Memo.class}, version = 2)
+@TypeConverters(DateConverter.class)
 public abstract class AppDatabase extends RoomDatabase {
     public static final String DATABASE_NAME = "aac-practice-memo";
     private static AppDatabase instance;
@@ -51,6 +53,7 @@ public abstract class AppDatabase extends RoomDatabase {
                     }
                 })
                 .addMigrations(MIGRATION_1_2)
+                .fallbackToDestructiveMigration()
                 .build();
     }
 
@@ -64,7 +67,6 @@ public abstract class AppDatabase extends RoomDatabase {
                         database.memoDAO().insert(new Memo("First Memo"));
                         database.memoDAO().insert(new Memo("Second Memo"));
                         database.memoDAO().insert(new Memo("Third Memo"));
-                        Log.i("AppDataBase", database.memoDAO().loadAllMemo().toString());
                     }
                 });
             }

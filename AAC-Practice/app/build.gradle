@@ -41,4 +41,6 @@ dependencies {
     // room
     implementation 'androidx.room:room-runtime:2.1.0-alpha03'
     annotationProcessor 'androidx.room:room-compiler:2.1.0-alpha03'
+    // joda time
+    implementation 'joda-time:joda-time:2.10.1'
 }
