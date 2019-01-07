@@ -1,0 +1,49 @@
+apply plugin: 'com.android.application'
+
+apply plugin: 'kotlin-android'
+
+apply plugin: 'kotlin-android-extensions'
+
+apply plugin: 'kotlin-kapt'
+
+android {
+    compileSdkVersion 28
+    defaultConfig {
+        applicationId "com.bowoon.android.aac_practice_kotlin"
+        minSdkVersion 21
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    dataBinding.enabled = true
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'androidx.appcompat:appcompat:1.1.0-alpha01'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-alpha3'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test:runner:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
+
+    // recycler view & card view
+    implementation 'androidx.recyclerview:recyclerview:1.1.0-alpha01'
+    implementation 'androidx.cardview:cardview:1.0.0'
+    // life cycle
+    implementation 'androidx.lifecycle:lifecycle-runtime:2.1.0-alpha01'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0-alpha01'
+    kapt 'androidx.lifecycle:lifecycle-compiler:2.1.0-alpha01'
+    // room
+    implementation 'androidx.room:room-runtime:2.1.0-alpha03'
+    kapt 'androidx.room:room-compiler:2.1.0-alpha03'
+    // joda time
+    implementation 'joda-time:joda-time:2.10.1'
+}
