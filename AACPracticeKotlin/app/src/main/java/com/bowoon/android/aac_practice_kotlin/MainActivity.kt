@@ -57,8 +57,10 @@ class MainActivity : AppCompatActivity() {
             val editText = findViewById<EditText>(R.id.main_edit_text)
             val content = editText.text.toString()
             if (content.isEmpty()) {
+                Toast.makeText(applicationContext, "내용을 입력 하세요!", Toast.LENGTH_SHORT).show()
                 return
             }
+            editText.setText("")
             memoViewModel.addMemo(Memo(content))
         }
     }
