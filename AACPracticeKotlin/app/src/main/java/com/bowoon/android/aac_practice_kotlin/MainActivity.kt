@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
         binding.callback = mainButtonClick
     }
 
-    var clickListener: MemoItemClick = object : MemoItemClick {
+    private var clickListener: MemoItemClick = object : MemoItemClick {
         override fun onClick(memo: Memo) {
             Toast.makeText(applicationContext, memo.content, Toast.LENGTH_SHORT).show()
         }
@@ -52,7 +52,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    var mainButtonClick: MainButtonClick = object : MainButtonClick {
+    private var mainButtonClick: MainButtonClick = object : MainButtonClick {
         override fun onAddClick() {
             val editText = findViewById<EditText>(R.id.main_edit_text)
             val content = editText.text.toString()

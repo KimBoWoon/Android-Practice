@@ -13,7 +13,6 @@ class DataRepository private constructor(private val database: AppDatabase) {
         get() = observableMemo
 
     init {
-
         observableMemo.addSource(this.database.memoDAO().loadAllMemo(), object : Observer<List<Memo>> {
             override fun onChanged(memos: List<Memo>) {
                 observableMemo.postValue(memos)
@@ -29,18 +28,12 @@ class DataRepository private constructor(private val database: AppDatabase) {
         executors.diskIO().execute(Runnable { database.memoDAO().deleteMemo(memo) })
     }
 
-    companion object {
-        private var instance: DataRepository? = null
+    object Singleton {
+        private lateinit var INSTANCE: DataRepository
 
-        fun getInstance(database: AppDatabase?): DataRepository? {
-            if (instance == null) {
-                synchronized(DataRepository::class.java) {
-                    if (instance == null) {
-                        instance = DataRepository(database!!)
-                    }
-                }
-            }
-            return instance
+        fun getInstance(database: AppDatabase): DataRepository {
+            INSTANCE = DataRepository(database)
+            return INSTANCE
         }
     }
 }

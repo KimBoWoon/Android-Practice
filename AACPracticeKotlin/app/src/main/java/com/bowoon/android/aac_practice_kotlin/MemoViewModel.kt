@@ -13,7 +13,7 @@ class MemoViewModel(application: Application) : AndroidViewModel(application) {
 
     init {
         observableMemo.value = null
-        repository = (application as BasicApp).getRepository()!!
+        repository = (application as BasicApp).getRepository()
         val memo = repository.memo
         observableMemo.addSource(memo, object : Observer<List<Memo>> {
             override fun onChanged(memos: List<Memo>) {
