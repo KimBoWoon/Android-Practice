@@ -107,6 +107,7 @@ class VideoPlayerActivity : Activity(), SurfaceHolder.Callback {
                 serviceIntent.putExtra("video", mVideoItem)
                 serviceIntent.putExtra("currentTime", mMediaPlayer.currentPosition)
                 ALog.i(mMediaPlayer.currentPosition)
+                ALog.i(serviceIntent.getIntExtra("currentTime", -1))
                 startService(serviceIntent)
                 finish()
             }

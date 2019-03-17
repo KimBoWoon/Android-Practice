@@ -16,7 +16,7 @@ import com.bowoon.android.android_videoview.video.VideoPlayerActivity
 import com.bowoon.android.android_videoview.vo.Item
 
 class RecyclerAdapter(private val context: Context, private val items: List<Item>) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), ItemClickListener {
-    fun getItemTitle(position: Int): String {
+    private fun getItemTitle(position: Int): String {
         return items[position].title
     }
 

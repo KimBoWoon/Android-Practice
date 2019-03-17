@@ -21,7 +21,7 @@ import com.bowoon.android.android_videoview.vo.Item
 import java.io.IOException
 
 class VideoService : Service(), SurfaceHolder.Callback {
-    private var currentTime: Long = 0
+    private var currentTime: Int = 0
     private lateinit var mView: View
     private lateinit var mManager: WindowManager
     private lateinit var mParams: WindowManager.LayoutParams
@@ -110,15 +110,15 @@ class VideoService : Service(), SurfaceHolder.Callback {
 
         mediaPlayer = MediaPlayer()
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            mParams = WindowManager.LayoutParams(
+        mParams = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            WindowManager.LayoutParams(
                     WindowManager.LayoutParams.WRAP_CONTENT,
                     WindowManager.LayoutParams.WRAP_CONTENT,
                     WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
                     WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
                     PixelFormat.TRANSLUCENT)
         } else {
-            mParams = WindowManager.LayoutParams(
+            WindowManager.LayoutParams(
                     WindowManager.LayoutParams.WRAP_CONTENT,
                     WindowManager.LayoutParams.WRAP_CONTENT,
                     WindowManager.LayoutParams.TYPE_PHONE,
@@ -139,7 +139,8 @@ class VideoService : Service(), SurfaceHolder.Callback {
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         ALog.i("onStartCommand")
         this.intent = intent
-        currentTime = intent.getLongExtra("currentTime", -1L)
+        currentTime = intent.getIntExtra("currentTime", -1)
+        ALog.i(currentTime)
         val item = intent.getSerializableExtra("video") as Item
         path = item.path
         startForeground(startId, Notification())
@@ -167,7 +168,7 @@ class VideoService : Service(), SurfaceHolder.Callback {
             mediaPlayer.setDataSource(path)
             mediaPlayer.setDisplay(surfaceHolder)
             mediaPlayer.prepare()
-            if (currentTime != -1L) {
+            if (currentTime != -1) {
                 ALog.i(currentTime)
                 mediaPlayer.seekTo(currentTime.toInt())
             }
