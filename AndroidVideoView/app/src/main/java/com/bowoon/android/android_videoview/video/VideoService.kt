@@ -13,29 +13,25 @@ import android.os.Handler
 import android.os.IBinder
 import android.util.DisplayMetrics
 import android.view.*
-import android.widget.Button
 import android.widget.Toast
+import androidx.databinding.DataBindingUtil
 import com.android.logcat.log.ALog
 import com.bowoon.android.android_videoview.R
+import com.bowoon.android.android_videoview.VideoButtonClickListener
+import com.bowoon.android.android_videoview.databinding.ServiceLayoutBinding
 import com.bowoon.android.android_videoview.vo.Item
 import java.io.IOException
 
 class VideoService : Service(), SurfaceHolder.Callback {
     private var currentTime: Int = 0
-    private lateinit var mView: View
     private lateinit var mManager: WindowManager
     private lateinit var mParams: WindowManager.LayoutParams
-    private var mTouchX: Float = 0.toFloat()
-    private var mTouchY: Float = 0.toFloat()
+    private var mTouchX: Float = 0f
+    private var mTouchY: Float = 0f
     private var mViewX: Int = 0
     private var mViewY: Int = 0
     private lateinit var mediaPlayer: MediaPlayer
-    private lateinit var surfaceHolder: SurfaceHolder
-    private lateinit var surfaceView: SurfaceView
     private lateinit var path: String
-    private lateinit var exitBtn: Button
-    private lateinit var playBtn: Button
-    private lateinit var pauseBtn: Button
     private lateinit var intent: Intent
     private lateinit var displayMetrics: DisplayMetrics
     private var isPause: Boolean = false
@@ -43,22 +39,27 @@ class VideoService : Service(), SurfaceHolder.Callback {
     private lateinit var gestureDetector: GestureDetector
     private val MIN_WIDTH = 540
     private val MIN_HEIGHT = 304
+    private lateinit var binding: ServiceLayoutBinding
 
-    private var listener: View.OnClickListener = View.OnClickListener { v ->
-        when (v.id) {
-            R.id.service_play -> if (isPause) {
-                isPause = false
-                mediaPlayer.start()
-            }
-            R.id.service_pause -> if (mediaPlayer.isPlaying) {
-                isPause = true
-                mediaPlayer.pause()
-            }
-            R.id.service_exit -> {
-                releaseMediaPlayer()
-                stopForeground(true)
-                stopService(intent)
-            }
+    private val play: VideoButtonClickListener = object : VideoButtonClickListener {
+        override fun onClick() {
+            isPause = false
+            mediaPlayer.start()
+        }
+    }
+
+    private val pause: VideoButtonClickListener = object : VideoButtonClickListener {
+        override fun onClick() {
+            isPause = true
+            mediaPlayer.pause()
+        }
+    }
+
+    private val exit: VideoButtonClickListener = object : VideoButtonClickListener {
+        override fun onClick() {
+            releaseMediaPlayer()
+            stopForeground(true)
+            stopService(intent)
         }
     }
 
@@ -72,7 +73,7 @@ class VideoService : Service(), SurfaceHolder.Callback {
             mParams.x = mViewX + x
             mParams.y = mViewY + y
 
-            mManager.updateViewLayout(mView, mParams)
+            mManager.updateViewLayout(binding.root, mParams)
 
             return@OnTouchListener true
         }
@@ -90,27 +91,28 @@ class VideoService : Service(), SurfaceHolder.Callback {
 
     private fun initView() {
         val mInflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        mView = mInflater.inflate(R.layout.service_layout, null)
+
+        binding = DataBindingUtil.inflate(
+                mInflater,
+                R.layout.service_layout,
+                null,
+                false
+        )
 
         scaleGestureDetector = ScaleGestureDetector(applicationContext, ServiceGestureDetector())
         gestureDetector = GestureDetector(applicationContext, CustomGestureDetector())
 
-        mView.setOnTouchListener(mViewTouchListener)
+        binding.root.setOnTouchListener(mViewTouchListener)
 
-        surfaceView = mView.findViewById<View>(R.id.service_layout_video) as SurfaceView
-        playBtn = mView.findViewById<View>(R.id.service_play) as Button
-        pauseBtn = mView.findViewById<View>(R.id.service_pause) as Button
-        exitBtn = mView.findViewById<View>(R.id.service_exit) as Button
-        playBtn.setOnClickListener(listener)
-        pauseBtn.setOnClickListener(listener)
-        exitBtn.setOnClickListener(listener)
+        binding.play = play
+        binding.pause = pause
+        binding.exit = exit
 
-        surfaceHolder = surfaceView.holder
-        surfaceHolder.addCallback(this)
+        binding.serviceLayoutVideo.holder.addCallback(this)
 
         mediaPlayer = MediaPlayer()
 
-        mParams = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+        mParams = (if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             WindowManager.LayoutParams(
                     WindowManager.LayoutParams.WRAP_CONTENT,
                     WindowManager.LayoutParams.WRAP_CONTENT,
@@ -124,25 +126,26 @@ class VideoService : Service(), SurfaceHolder.Callback {
                     WindowManager.LayoutParams.TYPE_PHONE,
                     WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
                     PixelFormat.TRANSLUCENT)
+        }).apply {
+            gravity = Gravity.BOTTOM or Gravity.END
+            width = MIN_WIDTH
+            height = MIN_HEIGHT
         }
-        mParams.gravity = Gravity.BOTTOM or Gravity.END
 
         displayMetrics = applicationContext.resources.displayMetrics
 
-        mParams.width = MIN_WIDTH
-        mParams.height = MIN_HEIGHT
-
         mManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        mManager.addView(mView, mParams)
+        mManager.addView(binding.root, mParams)
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         ALog.i("onStartCommand")
         this.intent = intent
         currentTime = intent.getIntExtra("currentTime", -1)
-        ALog.i(currentTime)
-        val item = intent.getSerializableExtra("video") as Item
-        path = item.path
+        ALog.i((intent.getSerializableExtra("video") as Item).title)
+        (intent.getSerializableExtra("video") as Item).let {
+            path = it.path
+        }
         startForeground(startId, Notification())
 
         return super.onStartCommand(intent, flags, startId)
@@ -166,11 +169,11 @@ class VideoService : Service(), SurfaceHolder.Callback {
     private fun playVideo(path: String?) {
         try {
             mediaPlayer.setDataSource(path)
-            mediaPlayer.setDisplay(surfaceHolder)
+            mediaPlayer.setDisplay(binding.serviceLayoutVideo.holder)
             mediaPlayer.prepare()
             if (currentTime != -1) {
                 ALog.i(currentTime)
-                mediaPlayer.seekTo(currentTime.toInt())
+                mediaPlayer.seekTo(currentTime)
             }
             mediaPlayer.start()
         } catch (e: IOException) {
@@ -185,7 +188,7 @@ class VideoService : Service(), SurfaceHolder.Callback {
         ALog.i("onDestroy")
         stopSelf()
         stopForeground(true)
-        mManager.removeView(mView)
+        mManager.removeView(binding.root)
     }
 
     override fun onTaskRemoved(rootIntent: Intent) {
@@ -203,13 +206,13 @@ class VideoService : Service(), SurfaceHolder.Callback {
     private inner class CustomGestureDetector : GestureDetector.SimpleOnGestureListener() {
 
         override fun onSingleTapUp(e: MotionEvent): Boolean {
-            playBtn.visibility = View.VISIBLE
-            pauseBtn.visibility = View.VISIBLE
-            exitBtn.visibility = View.VISIBLE
+            binding.servicePlay.visibility = View.VISIBLE
+            binding.servicePause.visibility = View.VISIBLE
+            binding.serviceExit.visibility = View.VISIBLE
             Handler().postDelayed({
-                playBtn.visibility = View.GONE
-                pauseBtn.visibility = View.GONE
-                exitBtn.visibility = View.GONE
+                binding.servicePlay.visibility = View.GONE
+                binding.servicePause.visibility = View.GONE
+                binding.serviceExit.visibility = View.GONE
             }, 3000)
 
             return false
@@ -256,12 +259,12 @@ class VideoService : Service(), SurfaceHolder.Callback {
                 mH = computeRatio(16, 9, displayMetrics).y
             }
             ALog.d("scale=" + detector.scaleFactor + ", w=" + mW + ", h=" + mH)
-            surfaceHolder.setFixedSize(mW, mH)
+            binding.serviceLayoutVideo.holder.setFixedSize(mW, mH)
             mParams.width = mW
             mParams.height = mH
             ALog.i(mParams.width)
             ALog.i(mParams.height)
-            mManager.updateViewLayout(mView, mParams)
+            mManager.updateViewLayout(binding.root, mParams)
             return true
         }
 

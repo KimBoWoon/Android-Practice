@@ -13,34 +13,28 @@ import android.widget.Button
 import android.widget.RelativeLayout
 import android.widget.SeekBar
 import android.widget.TextView
+import androidx.databinding.DataBindingUtil
 import com.android.logcat.log.ALog
 import com.bowoon.android.android_videoview.R
+import com.bowoon.android.android_videoview.databinding.VideoSurfaceviewBinding
 import com.bowoon.android.android_videoview.vo.Item
 import java.io.IOException
 
 class VideoPlayerActivity : Activity(), SurfaceHolder.Callback {
-    private lateinit var mSurfaceView: SurfaceView
-    private lateinit var mSurfaceHolder: SurfaceHolder
+//    private lateinit var mSurfaceHolder: SurfaceHolder
     private lateinit var mMediaPlayer: MediaPlayer
-    private lateinit var mVideoInfoView: RelativeLayout
-    private lateinit var mVideoTitle: TextView
-    private lateinit var mVideoTime: TextView
-    private lateinit var mVideoTimeSeekBar: SeekBar
     private var mSeekBarFlag: Boolean = false
     private var isPlay: Boolean = false
     private lateinit var mVideoItem: Item
     private lateinit var mDisplayMetrics: DisplayMetrics
-    private lateinit var mPlayBtn: Button
-    private lateinit var mPauseBtn: Button
-    private lateinit var mDialogBtn: Button
-    private lateinit var mServiceBtn: Button
     private var mStartTime: Long = 0
     private var mEndTime: Long = 0
     private var mFps: Int = 0
 
+    private lateinit var binding: VideoSurfaceviewBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.video_surfaceview)
 
         ALog.i("VideoPlayerActivity")
 
@@ -62,25 +56,17 @@ class VideoPlayerActivity : Activity(), SurfaceHolder.Callback {
     }
 
     private fun initView() {
+        binding = DataBindingUtil.setContentView(this, R.layout.video_surfaceview)
+
         mMediaPlayer = MediaPlayer()
-        mVideoInfoView = findViewById<RelativeLayout>(R.id.video_information)
-        mVideoTitle = findViewById<TextView>(R.id.play_video_title)
-        mVideoTime = findViewById<TextView>(R.id.video_time)
-        mSurfaceView = findViewById<SurfaceView>(R.id.main_surfaceview)
-        mVideoTimeSeekBar = findViewById<SeekBar>(R.id.video_seekbar)
-        mPlayBtn = findViewById<Button>(R.id.video_play)
-        mPauseBtn = findViewById<Button>(R.id.video_pause)
-        mDialogBtn = findViewById<Button>(R.id.make_gif)
-        mServiceBtn = findViewById<Button>(R.id.video_service)
-        mSurfaceHolder = mSurfaceView.holder
-        mSurfaceHolder.addCallback(this)
+        binding.mainSurfaceview.holder.addCallback(this)
         mDisplayMetrics = applicationContext.resources.displayMetrics
 
-        mVideoTitle.text = mVideoItem.title
+        binding.playVideoTitle.text = mVideoItem.title
     }
 
     private fun registerListener() {
-        mVideoTimeSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+        binding.videoSeekbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 if (seekBar.max == progress) {
                     mMediaPlayer.stop()
@@ -100,7 +86,7 @@ class VideoPlayerActivity : Activity(), SurfaceHolder.Callback {
             }
         })
 
-        mServiceBtn.setOnClickListener(object : View.OnClickListener {
+        binding.videoService.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
                 ALog.i("startService")
                 val serviceIntent = Intent(applicationContext, VideoService::class.java)
@@ -113,7 +99,7 @@ class VideoPlayerActivity : Activity(), SurfaceHolder.Callback {
             }
         })
 
-        mPlayBtn.setOnClickListener(object : View.OnClickListener {
+        binding.videoPlay.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
                 if (!isPlay) {
                     isPlay = true
@@ -122,7 +108,7 @@ class VideoPlayerActivity : Activity(), SurfaceHolder.Callback {
             }
         })
 
-        mPauseBtn.setOnClickListener(object : View.OnClickListener {
+        binding.videoPause.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
                 if (isPlay) {
                     isPlay = false
@@ -134,17 +120,17 @@ class VideoPlayerActivity : Activity(), SurfaceHolder.Callback {
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         if (event.action == MotionEvent.ACTION_UP) {
-            mVideoInfoView.visibility = View.VISIBLE
-            mVideoTitle.visibility = View.VISIBLE
+            binding.videoInformation.visibility = View.VISIBLE
+            binding.playVideoTitle.visibility = View.VISIBLE
 //            mDialogBtn.visibility = View.VISIBLE
-            mServiceBtn.visibility = View.VISIBLE
-            mVideoTime.text = getStringTime(mMediaPlayer.currentPosition) + " / " + getStringTime(mMediaPlayer.duration)
+            binding.videoService.visibility = View.VISIBLE
+            binding.videoTime.text = getStringTime(mMediaPlayer.currentPosition) + " / " + getStringTime(mMediaPlayer.duration)
 
             Handler().postDelayed({
-                mVideoInfoView.visibility = View.GONE
-                mVideoTitle.visibility = View.GONE
+                binding.videoInformation.visibility = View.GONE
+                binding.playVideoTitle.visibility = View.GONE
 //                mDialogBtn.visibility = View.GONE
-                mServiceBtn.visibility = View.GONE
+                binding.videoService.visibility = View.GONE
             }, 5000)
 
             return false
@@ -160,7 +146,7 @@ class VideoPlayerActivity : Activity(), SurfaceHolder.Callback {
         val screenWidth = mDisplayMetrics.widthPixels
         val screenHeight = mDisplayMetrics.heightPixels
 
-        val lp = mSurfaceView.layoutParams
+        val lp = binding.mainSurfaceview.layoutParams
 
         if (screenWidth < screenHeight) {
             lp.width = screenWidth
@@ -170,13 +156,13 @@ class VideoPlayerActivity : Activity(), SurfaceHolder.Callback {
             lp.height = screenHeight
         }
 
-        mSurfaceView.layoutParams = lp
+        binding.mainSurfaceview.layoutParams = lp
     }
 
     private fun playVideo(path: String) {
         try {
             mMediaPlayer.setDataSource(path)
-            mMediaPlayer.setDisplay(mSurfaceHolder)
+            mMediaPlayer.setDisplay(binding.mainSurfaceview.holder)
             mMediaPlayer.prepare()
             mMediaPlayer.start()
         } catch (e: IOException) {
@@ -217,7 +203,7 @@ class VideoPlayerActivity : Activity(), SurfaceHolder.Callback {
         mSeekBarFlag = true
         isPlay = true
         playVideo(mVideoItem.path)
-        mVideoTimeSeekBar.max = mMediaPlayer.duration
+        binding.videoSeekbar.max = mMediaPlayer.duration
         ProgressSeekBar().start()
     }
 
@@ -237,13 +223,13 @@ class VideoPlayerActivity : Activity(), SurfaceHolder.Callback {
         val minute = currentSecond / 60 % 60
         val hour = currentSecond / 3600
 
-        return hour.toString() + ":" + minute + ":" + second
+        return "$hour:$minute:$second"
     }
 
     private inner class ProgressSeekBar : Thread() {
         override fun run() {
             while (mSeekBarFlag) {
-                mVideoTimeSeekBar.progress = mMediaPlayer.currentPosition
+                binding.videoSeekbar.progress = mMediaPlayer.currentPosition
             }
         }
     }

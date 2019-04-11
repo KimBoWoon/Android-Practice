@@ -1,49 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:background="#000000">
+<layout>
 
-    <SurfaceView
-        android:id="@+id/service_layout_video"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    <data>
 
-    <LinearLayout
+        <variable
+            name="play"
+            type="com.bowoon.android.android_videoview.VideoButtonClickListener" />
+
+        <variable
+            name="pause"
+            type="com.bowoon.android.android_videoview.VideoButtonClickListener" />
+
+        <variable
+            name="exit"
+            type="com.bowoon.android.android_videoview.VideoButtonClickListener" />
+    </data>
+
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center|bottom">
+        android:background="#000000">
 
-        <Button
-            android:id="@+id/service_play"
-            android:layout_width="0dp"
+        <SurfaceView
+            android:id="@+id/service_layout_video"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@android:color/transparent"
-            android:text="@string/play"
-            android:textColor="#ffffff"
-            android:visibility="gone" />
+            android:layout_gravity="center|bottom">
 
-        <Button
-            android:id="@+id/service_pause"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@android:color/transparent"
-            android:text="@string/pause"
-            android:textColor="#ffffff"
-            android:visibility="gone" />
+            <Button
+                android:id="@+id/service_play"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:onClick="@{() -> play.onClick()}"
+                android:text="@string/play"
+                android:textColor="#ffffff"
+                android:visibility="gone" />
 
-        <Button
-            android:id="@+id/service_exit"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@android:color/transparent"
-            android:text="@string/service_exit"
-            android:textColor="#ffffff"
-            android:visibility="gone" />
+            <Button
+                android:id="@+id/service_pause"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:onClick="@{() -> pause.onClick()}"
+                android:text="@string/pause"
+                android:textColor="#ffffff"
+                android:visibility="gone" />
 
-    </LinearLayout>
+            <Button
+                android:id="@+id/service_exit"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:onClick="@{() -> exit.onClick()}"
+                android:text="@string/service_exit"
+                android:textColor="#ffffff"
+                android:visibility="gone" />
 
-</FrameLayout>
+        </LinearLayout>
+
+    </FrameLayout>
+</layout>

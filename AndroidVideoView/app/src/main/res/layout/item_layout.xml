@@ -1,18 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <ImageView
-        android:id="@+id/video_thumbnail"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    <data>
+        <variable
+            name="item"
+            type="com.bowoon.android.android_videoview.vo.Item"/>
+        <variable
+            name="listener"
+            type="com.bowoon.android.android_videoview.adapter.ItemClickListener"/>
+    </data>
 
-    <TextView
-        android:id="@+id/video_title"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="#000000" />
+        android:orientation="horizontal"
+        android:onClick="@{() -> listener.onItemClick(item)}">
 
-</LinearLayout>
+        <ImageView
+            android:id="@+id/video_thumbnail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/video_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#000000" />
+
+    </LinearLayout>
+</layout>
