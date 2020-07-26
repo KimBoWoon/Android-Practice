@@ -17,9 +17,9 @@ import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import com.android.logcat.log.ALog
 import com.bowoon.android.android_videoview.R
-import com.bowoon.android.android_videoview.VideoButtonClickListener
+import com.bowoon.android.android_videoview.listener.VideoButtonClickListener
 import com.bowoon.android.android_videoview.databinding.ServiceLayoutBinding
-import com.bowoon.android.android_videoview.vo.Item
+import com.bowoon.android.android_videoview.model.Video
 import java.io.IOException
 
 class VideoService : Service(), SurfaceHolder.Callback {
@@ -142,8 +142,8 @@ class VideoService : Service(), SurfaceHolder.Callback {
         ALog.i("onStartCommand")
         this.intent = intent
         currentTime = intent.getIntExtra("currentTime", -1)
-        ALog.i((intent.getSerializableExtra("video") as Item).title)
-        (intent.getSerializableExtra("video") as Item).let {
+        ALog.i((intent.getSerializableExtra("video") as Video).title)
+        (intent.getSerializableExtra("video") as Video).let {
             path = it.path
         }
         startForeground(startId, Notification())

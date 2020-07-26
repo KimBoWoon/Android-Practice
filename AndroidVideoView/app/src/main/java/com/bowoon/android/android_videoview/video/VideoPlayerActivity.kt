@@ -7,42 +7,39 @@ import android.content.res.Configuration
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
-import android.util.DisplayMetrics
-import android.view.*
-import android.widget.Button
-import android.widget.RelativeLayout
+import android.view.MotionEvent
+import android.view.SurfaceHolder
+import android.view.View
+import android.view.WindowManager
 import android.widget.SeekBar
-import android.widget.TextView
-import androidx.databinding.DataBindingUtil
+import android.widget.Toast
 import com.android.logcat.log.ALog
 import com.bowoon.android.android_videoview.R
-import com.bowoon.android.android_videoview.databinding.VideoSurfaceviewBinding
-import com.bowoon.android.android_videoview.vo.Item
+import com.bowoon.android.android_videoview.model.Video
+import kotlinx.android.synthetic.main.video_surfaceview.*
 import java.io.IOException
 
-class VideoPlayerActivity : Activity(), SurfaceHolder.Callback {
-//    private lateinit var mSurfaceHolder: SurfaceHolder
-    private lateinit var mMediaPlayer: MediaPlayer
-    private var mSeekBarFlag: Boolean = false
-    private var isPlay: Boolean = false
-    private lateinit var mVideoItem: Item
-    private lateinit var mDisplayMetrics: DisplayMetrics
-    private var mStartTime: Long = 0
-    private var mEndTime: Long = 0
-    private var mFps: Int = 0
-
-    private lateinit var binding: VideoSurfaceviewBinding
+class VideoPlayerActivity : Activity() {
+    private var mMediaPlayer: MediaPlayer = MediaPlayer()
+    private var mSeekBarFlag = false
+    private var isPlay = false
+    private lateinit var mVideoVideo: Video
+    
+    companion object {
+        const val LANDSCAPE = 1
+        const val PORTRAIT = 0
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.video_surfaceview)
 
         ALog.i("VideoPlayerActivity")
 
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
-        val intent = intent
-        mVideoItem = intent.getSerializableExtra("videoContent") as Item
+        mVideoVideo = intent.getSerializableExtra("videoContent") as Video
 
         initView()
         registerListener()
@@ -52,21 +49,34 @@ class VideoPlayerActivity : Activity(), SurfaceHolder.Callback {
         super.onConfigurationChanged(newConfig)
         ALog.i("onConfigurationChanged")
 
-        arrangeVideo()
+        resizeSurfaceView()
+    }
+
+    private fun resizeSurfaceView() {
+        val mDisplayMetrics = applicationContext.resources.displayMetrics
+
+        if (windowManager.defaultDisplay.rotation == LANDSCAPE) {
+            Toast.makeText(this, "landscape", Toast.LENGTH_SHORT).show()
+            mainSurfaceView.layoutParams.apply {
+                width = mDisplayMetrics.widthPixels
+                height = mDisplayMetrics.heightPixels
+            }
+        } else if (windowManager.defaultDisplay.rotation == PORTRAIT) {
+            Toast.makeText(this, "portrait", Toast.LENGTH_SHORT).show()
+            mainSurfaceView.layoutParams.apply {
+                width = mDisplayMetrics.widthPixels
+                height = (mMediaPlayer.videoHeight.toFloat() / mMediaPlayer.videoWidth.toFloat() * mDisplayMetrics.widthPixels.toFloat()).toInt()
+            }
+        }
     }
 
     private fun initView() {
-        binding = DataBindingUtil.setContentView(this, R.layout.video_surfaceview)
-
-        mMediaPlayer = MediaPlayer()
-        binding.mainSurfaceview.holder.addCallback(this)
-        mDisplayMetrics = applicationContext.resources.displayMetrics
-
-        binding.playVideoTitle.text = mVideoItem.title
+        mainSurfaceView.holder.addCallback(SurfaceViewCallbackClass())
+        playVideoTitle.text = mVideoVideo.title
     }
 
     private fun registerListener() {
-        binding.videoSeekbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+        videoSeekbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 if (seekBar.max == progress) {
                     mMediaPlayer.stop()
@@ -86,51 +96,43 @@ class VideoPlayerActivity : Activity(), SurfaceHolder.Callback {
             }
         })
 
-        binding.videoService.setOnClickListener(object : View.OnClickListener {
-            override fun onClick(p0: View?) {
-                ALog.i("startService")
-                val serviceIntent = Intent(applicationContext, VideoService::class.java)
-                serviceIntent.putExtra("video", mVideoItem)
-                serviceIntent.putExtra("currentTime", mMediaPlayer.currentPosition)
-                ALog.i(mMediaPlayer.currentPosition)
-                ALog.i(serviceIntent.getIntExtra("currentTime", -1))
-                startService(serviceIntent)
-                finish()
-            }
-        })
+        videoService.setOnClickListener {
+            ALog.i("startService")
+            startService(Intent(applicationContext, VideoService::class.java).apply {
+                putExtra("video", mVideoVideo)
+                putExtra("currentTime", mMediaPlayer.currentPosition)
+            })
+            finish()
+        }
 
-        binding.videoPlay.setOnClickListener(object : View.OnClickListener {
-            override fun onClick(p0: View?) {
-                if (!isPlay) {
-                    isPlay = true
-                    mMediaPlayer.start()
-                }
+        videoPlay.setOnClickListener {
+            if (!isPlay) {
+                isPlay = true
+                mMediaPlayer.start()
             }
-        })
+        }
 
-        binding.videoPause.setOnClickListener(object : View.OnClickListener {
-            override fun onClick(p0: View?) {
-                if (isPlay) {
-                    isPlay = false
-                    mMediaPlayer.pause()
-                }
+        videoPause.setOnClickListener {
+            if (isPlay) {
+                isPlay = false
+                mMediaPlayer.pause()
             }
-        })
+        }
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         if (event.action == MotionEvent.ACTION_UP) {
-            binding.videoInformation.visibility = View.VISIBLE
-            binding.playVideoTitle.visibility = View.VISIBLE
+            videoInformation.visibility = View.VISIBLE
+            playVideoTitle.visibility = View.VISIBLE
 //            mDialogBtn.visibility = View.VISIBLE
-            binding.videoService.visibility = View.VISIBLE
-            binding.videoTime.text = getStringTime(mMediaPlayer.currentPosition) + " / " + getStringTime(mMediaPlayer.duration)
+            videoService.visibility = View.VISIBLE
+            videoTime.text = String.format("%s / %s", getStringTime(mMediaPlayer.currentPosition), getStringTime(mMediaPlayer.duration))
 
             Handler().postDelayed({
-                binding.videoInformation.visibility = View.GONE
-                binding.playVideoTitle.visibility = View.GONE
+                videoInformation.visibility = View.GONE
+                playVideoTitle.visibility = View.GONE
 //                mDialogBtn.visibility = View.GONE
-                binding.videoService.visibility = View.GONE
+                videoService.visibility = View.GONE
             }, 5000)
 
             return false
@@ -138,33 +140,14 @@ class VideoPlayerActivity : Activity(), SurfaceHolder.Callback {
         return super.onTouchEvent(event)
     }
 
-    // 영상 비율에 맞게 확대 / 축소
-    private fun arrangeVideo() {
-        val videoWidth = mMediaPlayer.videoWidth
-        val videoHeight = mMediaPlayer.videoHeight
-
-        val screenWidth = mDisplayMetrics.widthPixels
-        val screenHeight = mDisplayMetrics.heightPixels
-
-        val lp = binding.mainSurfaceview.layoutParams
-
-        if (screenWidth < screenHeight) {
-            lp.width = screenWidth
-            lp.height = (videoHeight.toFloat() / videoWidth.toFloat() * screenWidth.toFloat()).toInt()
-        } else {
-            lp.width = (videoWidth.toFloat() / videoHeight.toFloat() * screenHeight.toFloat()).toInt()
-            lp.height = screenHeight
-        }
-
-        binding.mainSurfaceview.layoutParams = lp
-    }
-
     private fun playVideo(path: String) {
         try {
-            mMediaPlayer.setDataSource(path)
-            mMediaPlayer.setDisplay(binding.mainSurfaceview.holder)
-            mMediaPlayer.prepare()
-            mMediaPlayer.start()
+            mMediaPlayer.apply {
+                setDataSource(path)
+                setDisplay(mainSurfaceView.holder)
+                prepare()
+                start()
+            }
         } catch (e: IOException) {
             e.printStackTrace()
         }
@@ -198,25 +181,6 @@ class VideoPlayerActivity : Activity(), SurfaceHolder.Callback {
         super.onDestroy()
     }
 
-    override fun surfaceCreated(holder: SurfaceHolder) {
-        ALog.i("surfaceCreated")
-        mSeekBarFlag = true
-        isPlay = true
-        playVideo(mVideoItem.path)
-        binding.videoSeekbar.max = mMediaPlayer.duration
-        ProgressSeekBar().start()
-    }
-
-    override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
-        ALog.i("surfaceChanged")
-        mMediaPlayer.setDisplay(holder)
-        arrangeVideo()
-    }
-
-    override fun surfaceDestroyed(holder: SurfaceHolder) {
-        ALog.i("surfaceDestroyed")
-    }
-
     private fun getStringTime(time: Int): String {
         val currentSecond = time / 1000
         val second = currentSecond % 60
@@ -229,8 +193,29 @@ class VideoPlayerActivity : Activity(), SurfaceHolder.Callback {
     private inner class ProgressSeekBar : Thread() {
         override fun run() {
             while (mSeekBarFlag) {
-                binding.videoSeekbar.progress = mMediaPlayer.currentPosition
+                videoSeekbar.progress = mMediaPlayer.currentPosition
             }
+        }
+    }
+
+    private inner class SurfaceViewCallbackClass : SurfaceHolder.Callback {
+        override fun surfaceCreated(holder: SurfaceHolder) {
+            ALog.i("surfaceCreated")
+            mSeekBarFlag = true
+            isPlay = true
+            playVideo(mVideoVideo.path)
+            videoSeekbar.max = mMediaPlayer.duration
+            ProgressSeekBar().start()
+        }
+
+        override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
+            ALog.i("surfaceChanged")
+            mMediaPlayer.setDisplay(holder)
+            resizeSurfaceView()
+        }
+
+        override fun surfaceDestroyed(holder: SurfaceHolder) {
+            ALog.i("surfaceDestroyed")
         }
     }
 }

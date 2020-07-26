@@ -7,26 +7,19 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.logcat.log.ALog
-import com.bowoon.android.android_videoview.adapter.ItemClickListener
-import com.bowoon.android.android_videoview.adapter.RecyclerAdapter
-import com.bowoon.android.android_videoview.databinding.ActivityMainBinding
+import com.bowoon.android.android_videoview.listener.ItemClickListener
+import com.bowoon.android.android_videoview.adapter.VideoAdapter
 import com.bowoon.android.android_videoview.video.VideoPlayerActivity
-import com.bowoon.android.android_videoview.vo.Item
+import com.bowoon.android.android_videoview.model.Video
+import kotlinx.android.synthetic.main.activity_main.*
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
-import java.util.*
-import kotlin.collections.ArrayList
 
 
 class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
-    private lateinit var binding: ActivityMainBinding
-    private var videoList: ArrayList<Item> = ArrayList<Item>()
-    private lateinit var adapter: RecyclerAdapter
-    private lateinit var linearLayoutManager: androidx.recyclerview.widget.LinearLayoutManager
     private val MY_PERMISSIONS_REQUEST_READ_EXT_STORAGE = 1000
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,20 +46,16 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
     }
 
     private fun initView() {
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-        videoList = fetchAllVideos()
-
-        linearLayoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
-        adapter = RecyclerAdapter(listener)
-        adapter.setItems(videoList)
-        binding.recyclerView.adapter = adapter
-        binding.recyclerView.layoutManager = linearLayoutManager
-        binding.recyclerView.setHasFixedSize(true)
+        recyclerview.setHasFixedSize(true)
+        recyclerview.adapter = VideoAdapter(listener).apply {
+            setItems(fetchAllVideos())
+        }
+        recyclerview.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
     }
 
-    private fun fetchAllVideos(): ArrayList<Item> {
+    private fun fetchAllVideos(): ArrayList<Video> {
         var videoCursor: Cursor?
-        var result: ArrayList<Item>
+        var result: ArrayList<Video>
         var dataColumnIndex: Int
         var nameColumnIndex: Int
 
@@ -77,14 +66,14 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
                     null, null,
                     "date_added DESC")
 
-            result = ArrayList<Item>()
+            result = ArrayList<Video>()
             dataColumnIndex = videoCursor!!.getColumnIndex(it[0])
             nameColumnIndex = videoCursor!!.getColumnIndex(it[1])
         }
 
         if (videoCursor!!.moveToFirst()) {
             do {
-                result.add(Item(videoCursor!!.getString(nameColumnIndex), videoCursor!!.getString(dataColumnIndex)))
+                result.add(Video(videoCursor!!.getString(nameColumnIndex), videoCursor!!.getString(dataColumnIndex)))
             } while (videoCursor!!.moveToNext())
         }
         videoCursor!!.close()
@@ -92,10 +81,10 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
     }
 
     private val listener: ItemClickListener = object : ItemClickListener {
-        override fun onItemClick(item: Item) {
-            Toast.makeText(applicationContext, item.title, Toast.LENGTH_SHORT).show()
+        override fun onItemClick(video: Video) {
+            Toast.makeText(applicationContext, video.title, Toast.LENGTH_SHORT).show()
             val intent = Intent(applicationContext, VideoPlayerActivity::class.java)
-            intent.putExtra("videoContent", item)
+            intent.putExtra("videoContent", video)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             applicationContext.startActivity(intent)
         }

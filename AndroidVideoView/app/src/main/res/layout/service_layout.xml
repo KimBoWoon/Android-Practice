@@ -5,15 +5,15 @@
 
         <variable
             name="play"
-            type="com.bowoon.android.android_videoview.VideoButtonClickListener" />
+            type="com.bowoon.android.android_videoview.listener.VideoButtonClickListener" />
 
         <variable
             name="pause"
-            type="com.bowoon.android.android_videoview.VideoButtonClickListener" />
+            type="com.bowoon.android.android_videoview.listener.VideoButtonClickListener" />
 
         <variable
             name="exit"
-            type="com.bowoon.android.android_videoview.VideoButtonClickListener" />
+            type="com.bowoon.android.android_videoview.listener.VideoButtonClickListener" />
     </data>
 
     <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
