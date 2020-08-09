@@ -244,7 +244,12 @@ class VideoService : Service() {
                 return true
             }
             displayMetrics?.let {
-                if (mW > it.widthPixels || mH > it.heightPixels) {
+                if (mW > it.widthPixels) {
+                    mW = it.widthPixels
+                    return true
+                }
+                if (mH > it.heightPixels) {
+                    mH = it.heightPixels
                     return true
                 }
             }
