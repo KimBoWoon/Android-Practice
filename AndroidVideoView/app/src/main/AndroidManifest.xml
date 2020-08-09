@@ -14,7 +14,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".activites.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -29,12 +29,12 @@
         <activity android:name=".gif.GIFView" />
 
         <activity
-            android:name=".video.VideoPlayerActivity"
+            android:name=".activites.VideoPlayerActivity"
             android:configChanges="keyboard|orientation|screenSize"
             android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" />
 
         <service
-            android:name=".video.VideoService"
+            android:name=".services.VideoService"
             android:stopWithTask="false" />
 
     </application>

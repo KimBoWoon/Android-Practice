@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tool="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="listener"
+            type="com.bowoon.android.android_videoview.adapter.SetOnVideoClickListener" />
+
+        <variable
+            name="video"
+            type="com.bowoon.android.android_videoview.model.Video" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="@{() -> listener.onClick(video)}"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/videoThumbnail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/thumbnail"
+            app:bind_image="@{video.path}"
+            tool:background="@mipmap/ic_launcher" />
+
+        <TextView
+            android:id="@+id/videoTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@{video.title}"
+            android:textColor="#000000"
+            tool:text="Title" />
+    </LinearLayout>
+</layout>

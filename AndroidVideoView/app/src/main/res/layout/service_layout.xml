@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
     <data>
 
         <variable
             name="play"
-            type="com.bowoon.android.android_videoview.listener.VideoButtonClickListener" />
+            type="com.bowoon.android.android_videoview.services.SetOnVideoButtonClickListener" />
 
         <variable
             name="pause"
-            type="com.bowoon.android.android_videoview.listener.VideoButtonClickListener" />
+            type="com.bowoon.android.android_videoview.services.SetOnVideoButtonClickListener" />
 
         <variable
             name="exit"
-            type="com.bowoon.android.android_videoview.listener.VideoButtonClickListener" />
+            type="com.bowoon.android.android_videoview.services.SetOnVideoButtonClickListener" />
     </data>
 
-    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <FrameLayout
+        android:id="@+id/service_frame_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="#000000">
@@ -65,6 +66,5 @@
                 android:visibility="gone" />
 
         </LinearLayout>
-
     </FrameLayout>
 </layout>

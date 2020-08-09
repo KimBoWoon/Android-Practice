@@ -1,32 +1,28 @@
-package com.bowoon.android.android_videoview
+package com.bowoon.android.android_videoview.activites
 
 import android.Manifest
-import android.content.Intent
 import android.database.Cursor
 import android.os.Bundle
 import android.provider.MediaStore
-import android.widget.Toast
+import android.view.LayoutInflater
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.databinding.DataBindingUtil
 import com.android.logcat.log.ALog
-import com.bowoon.android.android_videoview.listener.ItemClickListener
+import com.bowoon.android.android_videoview.R
 import com.bowoon.android.android_videoview.adapter.VideoAdapter
-import com.bowoon.android.android_videoview.video.VideoPlayerActivity
+import com.bowoon.android.android_videoview.databinding.ActivityMainBinding
 import com.bowoon.android.android_videoview.model.Video
-import kotlinx.android.synthetic.main.activity_main.*
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
 
-
 class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
-    private val MY_PERMISSIONS_REQUEST_READ_EXT_STORAGE = 1000
+    private var binding: ActivityMainBinding? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
 
-//        requestReadExternalStoragePermission()
+        binding = DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
+
         if (hasStoragePermission()) {
             ALog.i("Storage Permission Granted")
         } else {
@@ -46,11 +42,8 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
     }
 
     private fun initView() {
-        recyclerview.setHasFixedSize(true)
-        recyclerview.adapter = VideoAdapter(listener).apply {
-            setItems(fetchAllVideos())
-        }
-        recyclerview.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
+        binding?.recyclerview?.setHasFixedSize(true)
+        binding?.recyclerview?.adapter = VideoAdapter(fetchAllVideos())
     }
 
     private fun fetchAllVideos(): ArrayList<Video> {
@@ -78,16 +71,6 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         }
         videoCursor!!.close()
         return result
-    }
-
-    private val listener: ItemClickListener = object : ItemClickListener {
-        override fun onItemClick(video: Video) {
-            Toast.makeText(applicationContext, video.title, Toast.LENGTH_SHORT).show()
-            val intent = Intent(applicationContext, VideoPlayerActivity::class.java)
-            intent.putExtra("videoContent", video)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-            applicationContext.startActivity(intent)
-        }
     }
 
     private fun hasStoragePermission(): Boolean {
