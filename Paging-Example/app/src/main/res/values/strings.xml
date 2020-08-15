@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Paging-Example</string>
+
+    <string formatted="false" name="nameFormat">%s. %s %s</string>
+</resources>
