@@ -1,5 +1,6 @@
 package com.bowoon.android.paging_example.model
 
+import androidx.room.Entity
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
@@ -31,6 +32,7 @@ data class UserProfileImage(
     val thumbnail: String?
 )
 
+@Entity(tableName = "persons")
 data class Item(
     @SerializedName("name")
     @Expose
