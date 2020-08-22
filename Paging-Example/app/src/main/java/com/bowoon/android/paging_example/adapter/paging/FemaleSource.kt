@@ -1,13 +1,14 @@
 package com.bowoon.android.paging_example.adapter.paging
 
 import androidx.paging.PageKeyedDataSource
+import com.bowoon.android.paging_example.adapter.paging.PersonDataFactory.Companion.FEMALE
 import com.bowoon.android.paging_example.model.Item
 import com.bowoon.android.paging_example.network.provider.providePersonApi
 import io.reactivex.disposables.CompositeDisposable
 
-class PersonDataSource(private val compositeDisposable: CompositeDisposable) : PageKeyedDataSource<Int, Item>() {
+class FemaleSource(private val compositeDisposable: CompositeDisposable) : PageKeyedDataSource<Int, Item>() {
     companion object {
-        const val TAG = "PersonDataSource"
+        const val TAG = "FemaleSource"
     }
 
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, Item>) {
@@ -16,7 +17,7 @@ class PersonDataSource(private val compositeDisposable: CompositeDisposable) : P
 
         compositeDisposable
             .add(providePersonApi()
-                .getUsers(curPage, params.requestedLoadSize)
+                .getFemale(curPage, params.requestedLoadSize, FEMALE)
                 .subscribe(
                     { users -> callback.onResult(users.items!!, null, nextPage) },
                     { e -> e.printStackTrace() }
@@ -27,7 +28,7 @@ class PersonDataSource(private val compositeDisposable: CompositeDisposable) : P
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, Item>) {
         compositeDisposable
             .add(providePersonApi()
-                .getUsers(params.key, params.requestedLoadSize)
+                .getFemale(params.key, params.requestedLoadSize, FEMALE)
                 .subscribe(
                     { users -> callback.onResult(users.items!!, params.key + 1) },
                     { e -> e.printStackTrace() }

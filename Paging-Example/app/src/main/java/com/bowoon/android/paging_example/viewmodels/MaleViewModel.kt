@@ -5,14 +5,15 @@ import androidx.lifecycle.ViewModel
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
 import com.bowoon.android.paging_example.adapter.paging.PersonDataFactory
+import com.bowoon.android.paging_example.adapter.paging.PersonDataFactory.Companion.MALE
 import com.bowoon.android.paging_example.model.Item
 import io.reactivex.disposables.CompositeDisposable
 
-class PersonViewModel : ViewModel() {
-    var userList: LiveData<PagedList<Item>>
+class MaleViewModel : ViewModel() {
+    val userList: LiveData<PagedList<Item>>
     private val compositeDisposable = CompositeDisposable()
     private val pageSize = 15
-    private val sourceFactory: PersonDataFactory = PersonDataFactory(compositeDisposable)
+    private val factory = PersonDataFactory(compositeDisposable, MALE)
 
     init {
         val pagedListConfig = PagedList.Config.Builder()
@@ -22,7 +23,7 @@ class PersonViewModel : ViewModel() {
             .setEnablePlaceholders(false) // default: true
             .build()
 
-        userList = LivePagedListBuilder(sourceFactory, pagedListConfig).build()
+        userList = LivePagedListBuilder(factory, pagedListConfig).build()
     }
 
     override fun onCleared() {

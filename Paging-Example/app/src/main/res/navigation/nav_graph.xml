@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/user">
+
+    <fragment
+        android:id="@+id/user"
+        android:name="com.bowoon.android.paging_example.fragments.UserFragment"
+        android:label="user screen"
+        tools:layout="@layout/user_fragment">
+        <action
+            android:id="@+id/moveToUser"
+            app:destination="@id/user" />
+        <action
+            android:id="@+id/moveToMale"
+            app:destination="@id/male" />
+        <action
+            android:id="@+id/moveToFemale"
+            app:destination="@id/female" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/female"
+        android:name="com.bowoon.android.paging_example.fragments.FemaleFragment"
+        android:label="female screen"
+        tools:layout="@layout/female_fragment">
+        <action
+            android:id="@+id/moveToUser"
+            app:destination="@id/user" />
+        <action
+            android:id="@+id/moveToMale"
+            app:destination="@id/male" />
+        <action
+            android:id="@+id/moveToFemale"
+            app:destination="@id/female" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/male"
+        android:name="com.bowoon.android.paging_example.fragments.MaleFragment"
+        android:label="male screen"
+        tools:layout="@layout/male_fragment">
+        <action
+            android:id="@+id/moveToUser"
+            app:destination="@id/user" />
+        <action
+            android:id="@+id/moveToMale"
+            app:destination="@id/male" />
+        <action
+            android:id="@+id/moveToFemale"
+            app:destination="@id/female" />
+    </fragment>
+</navigation>
