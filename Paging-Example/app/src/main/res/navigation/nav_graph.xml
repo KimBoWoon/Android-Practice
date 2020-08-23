@@ -3,16 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/user">
+    app:startDestination="@id/all">
 
     <fragment
-        android:id="@+id/user"
-        android:name="com.bowoon.android.paging_example.fragments.UserFragment"
-        android:label="user screen"
-        tools:layout="@layout/user_fragment">
-        <action
-            android:id="@+id/moveToUser"
-            app:destination="@id/user" />
+        android:id="@+id/all"
+        android:name="com.bowoon.android.paging_example.fragments.AllFragment"
+        android:label="all screen"
+        tools:layout="@layout/all_fragment">
         <action
             android:id="@+id/moveToMale"
             app:destination="@id/male" />
@@ -28,13 +25,10 @@
         tools:layout="@layout/female_fragment">
         <action
             android:id="@+id/moveToUser"
-            app:destination="@id/user" />
+            app:destination="@id/all" />
         <action
             android:id="@+id/moveToMale"
             app:destination="@id/male" />
-        <action
-            android:id="@+id/moveToFemale"
-            app:destination="@id/female" />
     </fragment>
 
     <fragment
@@ -44,10 +38,7 @@
         tools:layout="@layout/male_fragment">
         <action
             android:id="@+id/moveToUser"
-            app:destination="@id/user" />
-        <action
-            android:id="@+id/moveToMale"
-            app:destination="@id/male" />
+            app:destination="@id/all" />
         <action
             android:id="@+id/moveToFemale"
             app:destination="@id/female" />

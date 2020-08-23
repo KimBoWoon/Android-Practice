@@ -9,7 +9,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.Navigation
 import androidx.paging.PagedList
 import com.bowoon.android.paging_example.R
 import com.bowoon.android.paging_example.adapter.PersonAdapter
@@ -34,29 +33,18 @@ class MaleFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.male_fragment, container, false)
         binding = DataBindingUtil.inflate(
-            LayoutInflater.from(requireContext()),
+            inflater,
             R.layout.male_fragment,
             container,
             false
         )
-        view.userFragment.setOnClickListener {
-            Navigation.findNavController(view).navigate(R.id.user)
-        }
-        view.maleFragment.setOnClickListener {
-            Navigation.findNavController(view).navigate(R.id.male)
-        }
-        view.femaleFragment.setOnClickListener {
-            Navigation.findNavController(view).navigate(R.id.female)
-        }
-        view.rv_person_list.adapter = adapter
-        return view
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        view.rv_person_list.adapter = adapter
         viewModel.userList.observe(viewLifecycleOwner, Observer<PagedList<Item>> {
-            Log.d(TAG, it.toString())
             adapter.submitList(it)
         })
     }

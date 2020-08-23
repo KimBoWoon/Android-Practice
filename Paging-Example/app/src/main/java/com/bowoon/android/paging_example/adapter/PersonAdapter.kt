@@ -16,7 +16,14 @@ import com.bumptech.glide.signature.ObjectKey
 
 class PersonAdapter : PagedListAdapter<Item, PersonAdapter.PersonViewHolder>(PERSON_COMPARATOR) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PersonViewHolder =
-        PersonViewHolder(DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.person_item, parent, false))
+        PersonViewHolder(
+            DataBindingUtil.inflate(
+                LayoutInflater.from(parent.context),
+                R.layout.person_item,
+                parent,
+                false
+            )
+        )
 
     override fun onBindViewHolder(holder: PersonViewHolder, position: Int) {
         val item = getItem(position)
@@ -43,5 +50,5 @@ class PersonAdapter : PagedListAdapter<Item, PersonAdapter.PersonViewHolder>(PER
         }
     }
 
-    inner class PersonViewHolder(val binding: PersonItemBinding) : RecyclerView.ViewHolder(binding.root)
+    class PersonViewHolder(val binding: PersonItemBinding) : RecyclerView.ViewHolder(binding.root)
 }

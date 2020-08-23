@@ -1,7 +1,7 @@
 package com.bowoon.android.paging_example.adapter.paging
 
 import androidx.paging.PageKeyedDataSource
-import com.bowoon.android.paging_example.adapter.paging.PersonDataFactory.Companion.FEMALE
+import com.bowoon.android.paging_example.adapter.paging.RandomUserDataFactory.Companion.FEMALE
 import com.bowoon.android.paging_example.model.Item
 import com.bowoon.android.paging_example.network.provider.providePersonApi
 import io.reactivex.disposables.CompositeDisposable

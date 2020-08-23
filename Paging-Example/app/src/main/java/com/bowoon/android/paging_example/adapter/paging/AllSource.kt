@@ -5,12 +5,15 @@ import com.bowoon.android.paging_example.model.Item
 import com.bowoon.android.paging_example.network.provider.providePersonApi
 import io.reactivex.disposables.CompositeDisposable
 
-class PersonSource(private val compositeDisposable: CompositeDisposable) : PageKeyedDataSource<Int, Item>() {
+class AllSource(private val compositeDisposable: CompositeDisposable) : PageKeyedDataSource<Int, Item>() {
     companion object {
         const val TAG = "PersonDataSource"
     }
 
-    override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, Item>) {
+    override fun loadInitial(
+        params: LoadInitialParams<Int>,
+        callback: LoadInitialCallback<Int, Item>
+    ) {
         val curPage = 1
         val nextPage = curPage + 1
 
