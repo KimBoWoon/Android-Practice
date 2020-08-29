@@ -14,14 +14,11 @@ class AllSource(private val compositeDisposable: CompositeDisposable) : PageKeye
         params: LoadInitialParams<Int>,
         callback: LoadInitialCallback<Int, Item>
     ) {
-        val curPage = 1
-        val nextPage = curPage + 1
-
         compositeDisposable
             .add(providePersonApi()
-                .getUsers(curPage, params.requestedLoadSize)
+                .getUsers(1, params.requestedLoadSize)
                 .subscribe(
-                    { users -> callback.onResult(users.items!!, null, nextPage) },
+                    { users -> callback.onResult(users.items!!, null, 2) },
                     { e -> e.printStackTrace() }
                 )
             )

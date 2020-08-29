@@ -9,15 +9,15 @@ import com.bowoon.android.paging_example.R
 import com.bowoon.android.paging_example.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityMainBinding
+    private val binding by lazy {
+        DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
+    }
     companion object {
         const val TAG = "MainActivity"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        binding = DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
 
         binding.bottomNavigationBar.setupWithNavController((supportFragmentManager.findFragmentById(R.id.hostFragment) as NavHostFragment).navController)
     }

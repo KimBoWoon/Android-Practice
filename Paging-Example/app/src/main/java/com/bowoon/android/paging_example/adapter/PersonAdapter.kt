@@ -11,7 +11,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bowoon.android.paging_example.R
 import com.bowoon.android.paging_example.databinding.PersonItemBinding
 import com.bowoon.android.paging_example.model.Item
+import com.bowoon.android.paging_example.utils.GlideApp
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DecodeFormat
 import com.bumptech.glide.signature.ObjectKey
 
 class PersonAdapter : PagedListAdapter<Item, PersonAdapter.PersonViewHolder>(PERSON_COMPARATOR) {
@@ -34,7 +36,7 @@ class PersonAdapter : PagedListAdapter<Item, PersonAdapter.PersonViewHolder>(PER
         @BindingAdapter("bind_image")
         @JvmStatic
         fun bindImage(view: ImageView, url: String?) {
-            Glide.with(view.context)
+            GlideApp.with(view.context)
                 .load(url)
                 .centerCrop()
                 .signature(ObjectKey(System.currentTimeMillis()))
