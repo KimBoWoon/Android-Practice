@@ -7,14 +7,19 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.bowoon.android.paging_example.R
 import com.bowoon.android.paging_example.adapter.PersonAdapter
 import com.bowoon.android.paging_example.databinding.FemaleFragmentBinding
+import com.bowoon.android.paging_example.utils.PaginationStatus
 import com.bowoon.android.paging_example.viewmodels.FemaleViewModel
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
+import kotlinx.android.synthetic.main.all_fragment.view.*
 import kotlinx.android.synthetic.main.female_fragment.view.*
+import kotlinx.android.synthetic.main.female_fragment.view.pb_http_request
+import kotlinx.android.synthetic.main.female_fragment.view.rv_person_list
 
 class FemaleFragment : Fragment() {
     private lateinit var binding: FemaleFragmentBinding
@@ -49,6 +54,19 @@ class FemaleFragment : Fragment() {
             { e -> e.printStackTrace() },
             { Log.v(TAG, "Done") }
         ).addTo(compositeDisposable)
+        viewModel.getPaginationState().observe(viewLifecycleOwner, Observer {
+            when (it) {
+                PaginationStatus.Loading -> {
+                    view.pb_http_request.visibility = View.VISIBLE
+                }
+                PaginationStatus.Empty -> {
+                    view.pb_http_request.visibility = View.GONE
+                }
+                PaginationStatus.NotEmpty -> {
+                    view.pb_http_request.visibility = View.GONE
+                }
+            }
+        })
     }
 
     override fun onPause() {

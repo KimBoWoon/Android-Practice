@@ -1,25 +1,43 @@
 package com.bowoon.android.paging_example.adapter.paging
 
+import androidx.lifecycle.MutableLiveData
 import androidx.paging.PageKeyedDataSource
 import com.bowoon.android.paging_example.adapter.paging.RandomUserDataFactory.Companion.FEMALE
 import com.bowoon.android.paging_example.model.Item
 import com.bowoon.android.paging_example.network.provider.providePersonApi
+import com.bowoon.android.paging_example.utils.PaginationStatus
 import io.reactivex.disposables.CompositeDisposable
 
-class FemaleSource(private val compositeDisposable: CompositeDisposable) : PageKeyedDataSource<Int, Item>() {
+class FemaleSource(
+    private val compositeDisposable: CompositeDisposable,
+    private val paginationStatus: MutableLiveData<PaginationStatus>
+) : PageKeyedDataSource<Int, Item>() {
     companion object {
         const val TAG = "FemaleSource"
     }
 
-    override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, Item>) {
-        val curPage = 1
-        val nextPage = curPage + 1
-
+    override fun loadInitial(
+        params: LoadInitialParams<Int>,
+        callback: LoadInitialCallback<Int, Item>
+    ) {
         compositeDisposable
             .add(providePersonApi()
-                .getFemale(curPage, params.requestedLoadSize, FEMALE)
+                .getFemale(1, params.requestedLoadSize, FEMALE)
                 .subscribe(
-                    { users -> callback.onResult(users.items!!, null, nextPage) },
+                    { users ->
+                        when {
+                            users == null -> {
+                                paginationStatus.postValue(PaginationStatus.Empty)
+                            }
+                            users.items?.isEmpty()!! -> {
+                                paginationStatus.postValue(PaginationStatus.Empty)
+                            }
+                            else -> {
+                                paginationStatus.postValue(PaginationStatus.NotEmpty)
+                                callback.onResult(users.items, null, 2)
+                            }
+                        }
+                    },
                     { e -> e.printStackTrace() }
                 )
             )
@@ -30,7 +48,20 @@ class FemaleSource(private val compositeDisposable: CompositeDisposable) : PageK
             .add(providePersonApi()
                 .getFemale(params.key, params.requestedLoadSize, FEMALE)
                 .subscribe(
-                    { users -> callback.onResult(users.items!!, params.key + 1) },
+                    { users ->
+                        when {
+                            users == null -> {
+                                paginationStatus.postValue(PaginationStatus.Empty)
+                            }
+                            users.items?.isEmpty()!! -> {
+                                paginationStatus.postValue(PaginationStatus.Empty)
+                            }
+                            else -> {
+                                paginationStatus.postValue(PaginationStatus.NotEmpty)
+                                callback.onResult(users.items, params.key + 1)
+                            }
+                        }
+                    },
                     { e -> e.printStackTrace() }
                 )
             )
