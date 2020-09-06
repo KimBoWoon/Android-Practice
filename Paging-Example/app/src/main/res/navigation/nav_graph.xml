@@ -7,9 +7,9 @@
 
     <fragment
         android:id="@+id/all"
-        android:name="com.bowoon.android.paging_example.fragments.AllFragment"
+        android:name="com.bowoon.android.paging_example.fragments.PersonFragment"
         android:label="all screen"
-        tools:layout="@layout/all_fragment">
+        tools:layout="@layout/fragment_item_layout">
         <action
             android:id="@+id/moveToMale"
             app:destination="@id/male" />

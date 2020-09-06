@@ -1,19 +1,45 @@
 package com.bowoon.android.paging_example.adapter.paging
 
 import androidx.lifecycle.MutableLiveData
+import androidx.paging.DataSource
 import androidx.paging.PageKeyedDataSource
-import com.bowoon.android.paging_example.adapter.paging.RandomUserDataFactory.Companion.MALE
+import androidx.paging.PagedList
+import androidx.paging.RxPagedListBuilder
 import com.bowoon.android.paging_example.model.Item
 import com.bowoon.android.paging_example.network.provider.providePersonApi
 import com.bowoon.android.paging_example.utils.PaginationStatus
+import io.reactivex.BackpressureStrategy
+import io.reactivex.Flowable
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 
-class MaleSource(
+class PersonDataSource(
+    private val gender: String,
     private val compositeDisposable: CompositeDisposable,
     private val paginationStatus: MutableLiveData<PaginationStatus>
 ) : PageKeyedDataSource<Int, Item>() {
     companion object {
-        const val TAG = "MaleSource"
+        const val TAG = "DataSource"
+        private const val PAGE_SIZE = 20
+
+        private val config = PagedList.Config.Builder()
+            .setPageSize(PAGE_SIZE)
+            .setInitialLoadSizeHint(PAGE_SIZE * 2) // default: page size * 3
+            .setPrefetchDistance(10) // default: page size
+            .setEnablePlaceholders(true) // default: true
+            .build()
+
+        fun create(gender: String, compositeDisposable: CompositeDisposable, paginationStatus: MutableLiveData<PaginationStatus>): Flowable<PagedList<Item>> {
+            return RxPagedListBuilder(object : DataSource.Factory<Int, Item>() {
+                override fun create(): DataSource<Int, Item> {
+                    return PersonDataSource(gender, compositeDisposable, paginationStatus)
+                }
+            }, config)
+                .setFetchScheduler(Schedulers.io())
+                .setNotifyScheduler(AndroidSchedulers.mainThread())
+                .buildFlowable(BackpressureStrategy.BUFFER)
+        }
     }
 
     override fun loadInitial(
@@ -22,7 +48,10 @@ class MaleSource(
     ) {
         compositeDisposable
             .add(providePersonApi()
-                .getMale(1, params.requestedLoadSize, MALE)
+                .getUsers(1, params.requestedLoadSize, gender)
+                .doOnSubscribe {
+                    paginationStatus.postValue(PaginationStatus.Loading)
+                }
                 .subscribe(
                     { users ->
                         when {
@@ -46,7 +75,10 @@ class MaleSource(
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, Item>) {
         compositeDisposable
             .add(providePersonApi()
-                .getMale(params.key, params.requestedLoadSize, MALE)
+                .getUsers(params.key, params.requestedLoadSize, gender)
+                .doOnSubscribe {
+                    paginationStatus.postValue(PaginationStatus.Loading)
+                }
                 .subscribe(
                     { users ->
                         when {

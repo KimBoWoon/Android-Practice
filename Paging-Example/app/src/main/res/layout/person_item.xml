@@ -27,8 +27,18 @@
             android:layout_height="wrap_content"
             android:text="@{@string/nameFormat(item.name.title, item.name.first, item.name.last)}"
             android:textColor="#000000"
-            android:textSize="20sp"
+            android:textSize="20dp"
             app:layout_constraintLeft_toRightOf="@+id/userImg"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/userPhone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{item.phone}"
+            android:textColor="#000000"
+            android:textSize="15dp"
+            app:layout_constraintLeft_toRightOf="@+id/userImg"
+            app:layout_constraintTop_toBottomOf="@id/userName" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
