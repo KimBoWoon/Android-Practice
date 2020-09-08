@@ -1,4 +1,4 @@
-package com.bowoon.android.paging_example.adapter.paging
+package com.bowoon.android.paging_example.paging
 
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.DataSource

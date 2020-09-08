@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/all"
-        android:name="com.bowoon.android.paging_example.fragments.PersonFragment"
+        android:name="com.bowoon.android.paging_example.views.PersonFragment"
         android:label="all screen"
         tools:layout="@layout/fragment_item_layout">
         <action
@@ -20,7 +20,7 @@
 
     <fragment
         android:id="@+id/female"
-        android:name="com.bowoon.android.paging_example.fragments.FemaleFragment"
+        android:name="com.bowoon.android.paging_example.views.FemaleFragment"
         android:label="female screen"
         tools:layout="@layout/female_fragment">
         <action
@@ -33,7 +33,7 @@
 
     <fragment
         android:id="@+id/male"
-        android:name="com.bowoon.android.paging_example.fragments.MaleFragment"
+        android:name="com.bowoon.android.paging_example.views.MaleFragment"
         android:label="male screen"
         tools:layout="@layout/male_fragment">
         <action

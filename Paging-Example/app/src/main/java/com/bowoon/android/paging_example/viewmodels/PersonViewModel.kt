@@ -3,14 +3,14 @@ package com.bowoon.android.paging_example.viewmodels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.paging.PagedList
-import com.bowoon.android.paging_example.adapter.paging.PersonDataSource
+import com.bowoon.android.paging_example.paging.PersonDataSource
 import com.bowoon.android.paging_example.model.Item
 import com.bowoon.android.paging_example.utils.PaginationStatus
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
 
 class PersonViewModel : ViewModel() {
-    private val compositeDisposable = CompositeDisposable()
+    val compositeDisposable = CompositeDisposable()
     private val paginationStatus = MutableLiveData<PaginationStatus>()
     private val personMap = mutableMapOf<String, Flowable<PagedList<Item>>>()
 
@@ -20,8 +20,12 @@ class PersonViewModel : ViewModel() {
         }
     }
 
-    fun getPersonData(gender: String): Flowable<PagedList<Item>> {
-        return personMap[gender]!!
+    fun getPersonData(gender: String): Flowable<PagedList<Item>>? {
+        if (personMap[gender] != null) {
+            return personMap[gender]
+        }
+
+        return null
     }
 
     fun getPaginationState(): MutableLiveData<PaginationStatus> {
