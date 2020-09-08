@@ -17,7 +17,7 @@
             android:id="@+id/userImg"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            app:bind_image="@{item.userProfileImage.thumbnail}"
+            app:bind_image="@{item.picture.thumbnail}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 

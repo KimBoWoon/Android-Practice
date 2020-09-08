@@ -2,6 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlinx-serialization'
 
 android {
     compileSdkVersion 29
@@ -68,4 +69,6 @@ dependencies {
     implementation "androidx.navigation:navigation-ui-ktx:2.3.0"
     implementation "androidx.viewpager2:viewpager2:1.0.0"
     implementation "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.7.0"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version" // or "kotlin-stdlib-jdk8"
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-core:1.0.0-RC" // JVM dependency
 }

@@ -58,12 +58,12 @@ class PersonDataSource(
                             users == null -> {
                                 paginationStatus.postValue(PaginationStatus.Empty)
                             }
-                            users.items?.isEmpty()!! -> {
+                            users.results.isNullOrEmpty() -> {
                                 paginationStatus.postValue(PaginationStatus.Empty)
                             }
                             else -> {
                                 paginationStatus.postValue(PaginationStatus.NotEmpty)
-                                callback.onResult(users.items, null, 2)
+                                callback.onResult(users.results, null, 2)
                             }
                         }
                     },
@@ -85,12 +85,12 @@ class PersonDataSource(
                             users == null -> {
                                 paginationStatus.postValue(PaginationStatus.Empty)
                             }
-                            users.items?.isEmpty()!! -> {
+                            users.results.isNullOrEmpty() -> {
                                 paginationStatus.postValue(PaginationStatus.Empty)
                             }
                             else -> {
                                 paginationStatus.postValue(PaginationStatus.NotEmpty)
-                                callback.onResult(users.items, params.key + 1)
+                                callback.onResult(users.results, params.key + 1)
                             }
                         }
                     },
