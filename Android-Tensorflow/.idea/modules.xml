@@ -2,10 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Android-Tensorflow.iml" filepath="$PROJECT_DIR$/Android-Tensorflow.iml" />
-      <module fileurl="file://D:\GitHub\Android-Practice\Android-Tensorflow\Android-Tensorflow.iml" filepath="D:\GitHub\Android-Practice\Android-Tensorflow\Android-Tensorflow.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://D:\GitHub\Android-Practice\Android-Tensorflow\app\app.iml" filepath="D:\GitHub\Android-Practice\Android-Tensorflow\app\app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Android-Tensorflow.iml" filepath="$PROJECT_DIR$/Android-Tensorflow.iml" group="Android-Tensorflow" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" group="Android-Tensorflow/app" />
     </modules>
   </component>
 </project>
