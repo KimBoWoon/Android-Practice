@@ -15,26 +15,13 @@ import com.bowoon.android.android_videoview.databinding.VideoItemBinding
 import com.bowoon.android.android_videoview.model.Video
 import com.bowoon.android.android_videoview.activites.VideoPlayerActivity
 
-interface SetOnVideoClickListener {
-    fun onClick(video: Video)
-}
-
 class VideoAdapter(private val videos: MutableList<Video>?) : RecyclerView.Adapter<VideoAdapter.VideoViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VideoViewHolder =
             VideoViewHolder(DataBindingUtil.inflate<VideoItemBinding>(LayoutInflater.from(parent.context), R.layout.video_item, parent, false))
 
     override fun onBindViewHolder(holder: VideoViewHolder, position: Int) {
-        videos?.let {
-            holder.binding.video = it[position]
-            holder.binding.listener = object : SetOnVideoClickListener {
-                override fun onClick(video: Video) {
-                    Toast.makeText(holder.binding.root.context, video.title, Toast.LENGTH_SHORT).show()
-                    val intent = Intent(holder.binding.root.context, VideoPlayerActivity::class.java)
-                    intent.putExtra("videoContent", video)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                    holder.binding.root.context.startActivity(intent)
-                }
-            }
+        videos?.get(position)?.let {
+            holder.bind(it)
         }
     }
 
@@ -48,5 +35,17 @@ class VideoAdapter(private val videos: MutableList<Video>?) : RecyclerView.Adapt
         }
     }
 
-    inner class VideoViewHolder(val binding: VideoItemBinding) : RecyclerView.ViewHolder(binding.root)
+    inner class VideoViewHolder(private val binding: VideoItemBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(item: Video) {
+            binding.video = item
+            binding.root.setOnClickListener {
+                binding.root.context.startActivity(
+                        Intent(binding.root.context, VideoPlayerActivity::class.java).apply {
+                            putExtra("videoContent", item)
+                            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                        }
+                )
+            }
+        }
+    }
 }

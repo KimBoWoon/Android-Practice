@@ -6,8 +6,8 @@
     <data>
 
         <variable
-            name="listener"
-            type="com.bowoon.android.android_videoview.adapter.SetOnVideoClickListener" />
+            name="vh"
+            type="com.bowoon.android.android_videoview.adapter.VideoAdapter.VideoViewHolder" />
 
         <variable
             name="video"
@@ -17,7 +17,6 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="@{() -> listener.onClick(video)}"
         android:orientation="horizontal">
 
         <ImageView

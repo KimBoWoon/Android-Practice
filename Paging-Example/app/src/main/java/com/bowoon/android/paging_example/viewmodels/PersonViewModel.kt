@@ -11,7 +11,7 @@ import io.reactivex.disposables.CompositeDisposable
 
 class PersonViewModel : ViewModel() {
     val compositeDisposable = CompositeDisposable()
-    private val paginationStatus = MutableLiveData<PaginationStatus>()
+    val paginationStatus = MutableLiveData<PaginationStatus>()
     private val personMap = mutableMapOf<String, Flowable<PagedList<Item>>>()
 
     fun add(gender: String) {

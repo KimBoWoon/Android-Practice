@@ -1,21 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <data>
-
-        <variable
-            name="play"
-            type="com.bowoon.android.android_videoview.services.SetOnVideoButtonClickListener" />
-
-        <variable
-            name="pause"
-            type="com.bowoon.android.android_videoview.services.SetOnVideoButtonClickListener" />
-
-        <variable
-            name="exit"
-            type="com.bowoon.android.android_videoview.services.SetOnVideoButtonClickListener" />
-    </data>
-
     <FrameLayout
         android:id="@+id/service_frame_layout"
         android:layout_width="wrap_content"
@@ -38,7 +23,6 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@android:color/transparent"
-                android:onClick="@{() -> play.onClick()}"
                 android:text="@string/play"
                 android:textColor="#ffffff"
                 android:visibility="gone" />
@@ -49,7 +33,6 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@android:color/transparent"
-                android:onClick="@{() -> pause.onClick()}"
                 android:text="@string/pause"
                 android:textColor="#ffffff"
                 android:visibility="gone" />
@@ -60,7 +43,6 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@android:color/transparent"
-                android:onClick="@{() -> exit.onClick()}"
                 android:text="@string/service_exit"
                 android:textColor="#ffffff"
                 android:visibility="gone" />

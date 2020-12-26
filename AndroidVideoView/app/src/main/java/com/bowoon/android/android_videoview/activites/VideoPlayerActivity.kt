@@ -1,152 +1,189 @@
 package com.bowoon.android.android_videoview.activites
 
-import android.app.Activity
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.media.MediaPlayer
 import android.os.Bundle
-import android.os.Handler
-import android.view.MotionEvent
-import android.view.SurfaceHolder
-import android.view.View
-import android.view.WindowManager
+import android.util.Log
+import android.view.*
 import android.widget.SeekBar
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import com.android.logcat.log.ALog
+import androidx.lifecycle.ViewModelProvider
 import com.bowoon.android.android_videoview.R
+import com.bowoon.android.android_videoview.activites.vm.VideoPlayerActivityVM
 import com.bowoon.android.android_videoview.databinding.VideoSurfaceviewBinding
 import com.bowoon.android.android_videoview.model.Video
 import com.bowoon.android.android_videoview.services.VideoService
 import com.bowoon.android.android_videoview.utils.Utils
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.schedulers.Schedulers
 import java.io.IOException
+import java.util.concurrent.TimeUnit
+import kotlin.math.roundToInt
 
-class VideoPlayerActivity : Activity() {
-    private var mediaPlayer: MediaPlayer? = null
-    private var seekBarFlag = false
-    private var isPlay = false
-    private var video: Video? = null
-    private var binding: VideoSurfaceviewBinding? = null
+class VideoPlayerActivity : AppCompatActivity() {
+    private val binding by lazy {
+        DataBindingUtil.setContentView<VideoSurfaceviewBinding>(this, R.layout.video_surfaceview)
+    }
+    private val viewModel by lazy {
+        ViewModelProvider(this).get(VideoPlayerActivityVM::class.java)
+    }
     
     companion object {
-        const val LANDSCAPE = 1
-        const val PORTRAIT = 0
+        const val TAG = "VideoPlayerActivity"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        ALog.i("VideoPlayerActivity")
+        Log.i(TAG, "VideoPlayerActivity")
 
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
-        video = intent.getParcelableExtra("videoContent") as Video
+        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
+        actionBar?.hide()
 
-        initView()
-        registerListener()
+        viewModel.video.value = intent.getParcelableExtra("videoContent") as Video
+
+        initBinding()
+        initLiveData()
     }
 
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-        ALog.i("onConfigurationChanged")
-
-        resizeSurfaceView()
-    }
-
-    private fun resizeSurfaceView() {
-        val displayMetrics = Utils.getDisplayMetrics(this)
-        val windowManager = Utils.getWindowManager(this)
-
-        if (displayMetrics != null && windowManager != null && binding != null) {
-            binding?.let { videoSurfaceViewBinding ->
-                videoSurfaceViewBinding.mainSurfaceView.let { surfaceView ->
-                    if (windowManager.defaultDisplay?.rotation == LANDSCAPE) {
-                        Toast.makeText(this, "landscape", Toast.LENGTH_SHORT).show()
-                        surfaceView.layoutParams.apply {
-                            width = displayMetrics.widthPixels
-                            height = displayMetrics.heightPixels
-                        }
-                    } else {
-                        Toast.makeText(this, "portrait", Toast.LENGTH_SHORT).show()
-                        surfaceView.layoutParams.apply {
-                            width = displayMetrics.widthPixels
-                            mediaPlayer?.let { height = (it.videoHeight.toFloat() / it.videoWidth.toFloat() * displayMetrics.widthPixels.toFloat()).toInt() }
-                        }
-                    }
-                }
+    private fun initLiveData() {
+        if (viewModel.player.value == null) {
+            viewModel.player.value = MediaPlayer()
+        }
+        viewModel.isPlay.observe(this) {
+            if (it) {
+                viewModel.player.value?.start()
+            } else {
+                viewModel.player.value?.pause()
             }
+        }
+        viewModel.playTime.observe(this) { playTime ->
+            viewModel.isPlay.value?.let {
+                viewModel.player.value?.let { binding.videoSeekbar.progress = playTime }
+            }
+        }
+        viewModel.video.observe(this) {
+            binding.playVideoTitle.text = it.title
+        }
+        viewModel.orientation.observe(this) {
+            resizeSurfaceView(it)
         }
     }
 
-    private fun initView() {
-        binding = DataBindingUtil.setContentView<VideoSurfaceviewBinding>(this, R.layout.video_surfaceview)
-        binding?.mainSurfaceView?.holder?.addCallback(SurfaceViewCallbackClass())
-        binding?.playVideoTitle?.text = video?.title
-        mediaPlayer = MediaPlayer()
-    }
-
-    private fun registerListener() {
-        binding?.videoSeekbar?.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+    private fun initBinding() {
+        binding.mainSurfaceView.holder?.addCallback(SurfaceViewCallbackClass())
+        binding.videoSeekbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 if (seekBar.max == progress) {
-                    mediaPlayer?.stop()
+                    viewModel.player.value?.stop()
                     finish()
                 }
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar) {
-                seekBarFlag = false
+                viewModel.player.value?.seekTo(seekBar.progress)
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar) {
-                seekBarFlag = true
-                val position = seekBar.progress
-                mediaPlayer?.seekTo(position)
-                ProgressSeekBar().start()
+                viewModel.player.value?.seekTo(seekBar.progress)
             }
         })
 
-        binding?.videoService?.setOnClickListener {
-            ALog.i("startService")
+        binding.videoService.setOnClickListener {
+            Log.i(TAG, "startService")
             startService(Intent(this, VideoService::class.java).apply {
-                putExtra("video", video)
-                putExtra("currentTime", mediaPlayer?.currentPosition)
+                putExtra("video", viewModel.video.value)
+                putExtra("currentTime", viewModel.player.value?.currentPosition)
             })
             releaseMediaPlayer()
             finish()
         }
 
-        binding?.videoPlay?.setOnClickListener {
-            if (!isPlay) {
-                isPlay = true
-                mediaPlayer?.start()
-            }
+        binding.videoPlay.setOnClickListener {
+            viewModel.isPlay.value = true
         }
 
-        binding?.videoPause?.setOnClickListener {
-            if (isPlay) {
-                isPlay = false
-                mediaPlayer?.pause()
+        binding.videoPause.setOnClickListener {
+            viewModel.isPlay.value = false
+        }
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        Log.i(TAG, "onConfigurationChanged")
+
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            Toast.makeText(this, "landscape", Toast.LENGTH_SHORT).show()
+            viewModel.orientation.value = false
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            Toast.makeText(this, "portrait", Toast.LENGTH_SHORT).show()
+            viewModel.orientation.value = true
+        }
+    }
+
+    private fun resizeSurfaceView(orientation: Boolean) {
+        var newWidth = viewModel.player.value?.videoWidth ?: 0
+        var newHeight = viewModel.player.value?.videoHeight ?: 0
+        var rate = 0.0f
+        var max = if (newWidth > newHeight) {
+            Utils.getDisplayMetrics(this@VideoPlayerActivity).widthPixels
+        } else {
+            Utils.getDisplayMetrics(this@VideoPlayerActivity).heightPixels
+        }.toFloat()
+        if (newWidth == 0 || newHeight == 0) {
+            return
+        }
+        if (newWidth > newHeight) {
+            rate = max / newWidth
+            newHeight = (newHeight * rate).roundToInt()
+            newWidth = max.roundToInt()
+        } else {
+            rate = max / newHeight
+            newWidth = (newWidth * rate).roundToInt()
+            newHeight = max.roundToInt()
+        }
+
+        binding.mainSurfaceView.let { surfaceView ->
+            surfaceView.layoutParams.apply {
+                if (orientation) {
+                    width = newWidth
+                    height = newHeight
+                } else {
+                    width = newWidth
+                    height = newHeight
+                }
             }
         }
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         if (event.action == MotionEvent.ACTION_UP) {
-            binding?.videoInformation?.visibility = View.VISIBLE
-            binding?.playVideoTitle?.visibility = View.VISIBLE
-//            binding?.mDialogBtn?.visibility = View.VISIBLE
-            binding?.videoService?.visibility = View.VISIBLE
-            binding?.videoTime?.text = mediaPlayer?.let { String.format("%s / %s", getStringTime(it.currentPosition), getStringTime(it.duration)) }
+            binding.videoInformation.visibility = View.VISIBLE
+            binding.playVideoTitle.visibility = View.VISIBLE
+//            binding.mDialogBtn?.visibility = View.VISIBLE
+            binding.videoService.visibility = View.VISIBLE
+            binding.videoTime.text = viewModel.player.value?.let { String.format("%s / %s", getStringTime(it.currentPosition), getStringTime(it.duration)) }
 
-            Handler().postDelayed({
-                binding?.videoInformation?.visibility = View.GONE
-                binding?.playVideoTitle?.visibility = View.GONE
-//                binding?.mDialogBtn?.visibility = View.GONE
-                binding?.videoService?.visibility = View.GONE
-            }, 5000)
+            Single.timer(5000, TimeUnit.MILLISECONDS)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                            {
+                                binding.videoInformation.visibility = View.GONE
+                                binding.playVideoTitle.visibility = View.GONE
+//                                binding.mDialogBtn.visibility = View.GONE
+                                binding.videoService.visibility = View.GONE
+                            },
+                            { it.printStackTrace() }
+                    )
 
             return false
         }
@@ -155,9 +192,9 @@ class VideoPlayerActivity : Activity() {
 
     private fun playVideo(path: String) {
         try {
-            mediaPlayer?.apply {
+            viewModel.player.value?.apply {
                 setDataSource(path)
-                setDisplay(binding?.mainSurfaceView?.holder)
+                setDisplay(binding.mainSurfaceView.holder)
                 prepare()
                 start()
             }
@@ -168,24 +205,22 @@ class VideoPlayerActivity : Activity() {
 
     private fun releaseMediaPlayer() {
         window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        seekBarFlag = false
-        mediaPlayer?.release()
+        viewModel.player.value?.release()
     }
 
     override fun onPause() {
         super.onPause()
-        ALog.i("onPause")
+        Log.i(TAG, "onPause")
     }
 
     override fun onResume() {
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         super.onResume()
-        ALog.i("onResume")
+        Log.i(TAG, "onResume")
     }
 
     override fun onStop() {
         super.onStop()
-        releaseMediaPlayer()
     }
 
     override fun onDestroy() {
@@ -199,37 +234,30 @@ class VideoPlayerActivity : Activity() {
         val minute = currentSecond / 60 % 60
         val hour = currentSecond / 3600
 
-        return "$hour:$minute:$second"
-    }
-
-    private inner class ProgressSeekBar : Thread() {
-        override fun run() {
-            while (seekBarFlag) {
-                mediaPlayer?.let { binding?.videoSeekbar?.progress = it.currentPosition }
-            }
-        }
+        return "$hour:${if (minute < 10) "0$minute" else minute}:${if (second < 10) "0${second}" else second}"
     }
 
     private inner class SurfaceViewCallbackClass : SurfaceHolder.Callback {
         override fun surfaceCreated(holder: SurfaceHolder) {
-            ALog.i("surfaceCreated")
-            seekBarFlag = true
-            isPlay = true
-            video?.let {
+            Log.i(TAG, "surfaceCreated")
+            viewModel.isPlay.value = true
+            viewModel.video.value?.let {
                 playVideo(it.path)
             }
-            mediaPlayer?.let { binding?.videoSeekbar?.max = it.duration }
-            ProgressSeekBar().start()
+            viewModel.player.value?.let { binding.videoSeekbar.max = it.duration }
+            viewModel.orientation.value?.let { resizeSurfaceView(it) }
         }
 
         override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
-            ALog.i("surfaceChanged")
-            mediaPlayer?.setDisplay(holder)
-            resizeSurfaceView()
+            Log.i(TAG, "surfaceChanged")
+            viewModel.player.value?.setDisplay(holder)
+            viewModel.orientation.value?.let {
+                resizeSurfaceView(it)
+            }
         }
 
         override fun surfaceDestroyed(holder: SurfaceHolder) {
-            ALog.i("surfaceDestroyed")
+            Log.i(TAG, "surfaceDestroyed")
             releaseMediaPlayer()
         }
     }

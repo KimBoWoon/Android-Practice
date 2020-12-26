@@ -1,5 +1,6 @@
 package com.bowoon.android.android_videoview.services
 
+import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.app.Notification
 import android.app.Service
@@ -7,38 +8,52 @@ import android.content.Intent
 import android.graphics.PixelFormat
 import android.media.MediaPlayer
 import android.os.Build
-import android.os.Handler
 import android.os.IBinder
+import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
-import com.android.logcat.log.ALog
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import com.bowoon.android.android_videoview.R
 import com.bowoon.android.android_videoview.databinding.ServiceLayoutBinding
 import com.bowoon.android.android_videoview.model.Video
 import com.bowoon.android.android_videoview.utils.Utils
+import io.reactivex.rxjava3.core.Single
 import java.io.IOException
-
-
-interface SetOnVideoButtonClickListener {
-    fun onClick()
-}
+import java.util.concurrent.TimeUnit
 
 class VideoService : Service() {
-    private var currentTime: Int = 0
-    private var windowManager: WindowManager? = null
+    private var currentTime = 0
     private var params: WindowManager.LayoutParams? = null
-    private var touchX: Float = 0f
-    private var touchY: Float = 0f
-    private var viewX: Int = 0
-    private var viewY: Int = 0
-    private var mediaPlayer: MediaPlayer? = null
+    private var touchX = 0f
+    private var touchY = 0f
+    private var viewX = 0
+    private var viewY = 0
+    private var mediaPlayer = MediaPlayer()
     private var intent: Intent? = null
     private var item: Video? = null
-    private var isPause: Boolean = false
-    private var scaleGestureDetector: ScaleGestureDetector? = null
-    private var gestureDetector: GestureDetector? = null
-    private var binding: ServiceLayoutBinding? = null
+//    private var isPause = false
+    private val windowManager by lazy {
+        Utils.getWindowManager(this)
+    }
+    private val scaleGestureDetector by lazy {
+        ScaleGestureDetector(this, ServiceGestureDetector())
+    }
+    private val gestureDetector by lazy {
+        GestureDetector(this, CustomGestureDetector())
+    }
+    private val binding by lazy {
+        DataBindingUtil.inflate<ServiceLayoutBinding>(LayoutInflater.from(this), R.layout.service_layout, null, false)
+    }
+    private val isPause = MutableLiveData<Boolean>()
+    private val pauseObserver: Observer<Boolean> = Observer {
+        if (it) {
+            mediaPlayer.pause()
+        } else {
+            mediaPlayer.start()
+        }
+    }
 
     companion object {
         const val MIN_WIDTH = 540
@@ -46,101 +61,78 @@ class VideoService : Service() {
         const val TAG = "VideoService"
     }
 
-    private val play: SetOnVideoButtonClickListener = object : SetOnVideoButtonClickListener {
-        override fun onClick() {
-            isPause = false
-            mediaPlayer?.start()
-        }
-    }
-
-    private val pause: SetOnVideoButtonClickListener = object : SetOnVideoButtonClickListener {
-        override fun onClick() {
-            isPause = true
-            mediaPlayer?.pause()
-        }
-    }
-
-    private val exit: SetOnVideoButtonClickListener = object : SetOnVideoButtonClickListener {
-        override fun onClick() {
-            releaseMediaPlayer()
-            stopForeground(true)
-            stopService(intent)
-        }
-    }
-
-    private val mViewTouchListener = View.OnTouchListener { _, event ->
-        val count = event.pointerCount
-
-        if (count == 1 && event.action == MotionEvent.ACTION_MOVE) {
-            val x = (touchX - event.rawX).toInt()
-            val y = (touchY - event.rawY).toInt()
-
-            params?.x = viewX + x
-            params?.y = viewY + y
-
-            windowManager?.updateViewLayout(binding?.root, params)
-
-            return@OnTouchListener true
-        }
-
-        gestureDetector?.onTouchEvent(event)
-        scaleGestureDetector?.onTouchEvent(event)
-        true
-    }
-
     override fun onCreate() {
         super.onCreate()
 
         initView()
+
+        isPause.removeObserver(pauseObserver)
+        isPause.observeForever(pauseObserver)
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun initView() {
-        windowManager = Utils.getWindowManager(this)
-        scaleGestureDetector = ScaleGestureDetector(this, ServiceGestureDetector())
-        gestureDetector = GestureDetector(this, CustomGestureDetector())
-        binding = DataBindingUtil.inflate(
-                LayoutInflater.from(this),
-                R.layout.service_layout,
-                null,
-                false)
+        binding.root.setOnTouchListener { _, event ->
+            val count = event.pointerCount
 
-        binding?.let { binding ->
-            binding.root.setOnTouchListener(mViewTouchListener)
+            if (count == 1 && event.action == MotionEvent.ACTION_MOVE) {
+                val x = (touchX - event.rawX).toInt()
+                val y = (touchY - event.rawY).toInt()
 
-            binding.play = play
-            binding.pause = pause
-            binding.exit = exit
+                params?.x = viewX + x
+                params?.y = viewY + y
 
-            binding.serviceLayoutVideo.holder.addCallback(SurfaceHolderCallback())
+                windowManager.updateViewLayout(binding.root, params)
 
-            mediaPlayer = MediaPlayer()
-
-            params = (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                WindowManager.LayoutParams(
-                        WindowManager.LayoutParams.WRAP_CONTENT,
-                        WindowManager.LayoutParams.WRAP_CONTENT,
-                        WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-                        WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
-                        PixelFormat.TRANSLUCENT)
-            } else {
-                WindowManager.LayoutParams(
-                        WindowManager.LayoutParams.WRAP_CONTENT,
-                        WindowManager.LayoutParams.WRAP_CONTENT,
-                        WindowManager.LayoutParams.TYPE_PHONE,
-                        WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
-                        PixelFormat.TRANSLUCENT)
-            }).apply {
-                gravity = Gravity.BOTTOM or Gravity.END
-                width = MIN_WIDTH
-                height = MIN_HEIGHT
+                return@setOnTouchListener true
             }
 
-            windowManager?.addView(binding.root, params)
+            gestureDetector.onTouchEvent(event)
+            scaleGestureDetector.onTouchEvent(event)
+            true
         }
+
+        binding.servicePlay.setOnClickListener {
+            isPause.value = false
+        }
+        binding.servicePause.setOnClickListener {
+            isPause.value = true
+        }
+        binding.serviceExit.setOnClickListener {
+            releaseMediaPlayer()
+            stopForeground(true)
+            stopService(intent)
+        }
+
+        binding.serviceLayoutVideo.holder.addCallback(SurfaceHolderCallback())
+
+        mediaPlayer = MediaPlayer()
+
+        params = (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            WindowManager.LayoutParams(
+                    WindowManager.LayoutParams.WRAP_CONTENT,
+                    WindowManager.LayoutParams.WRAP_CONTENT,
+                    WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
+                    PixelFormat.TRANSLUCENT)
+        } else {
+            WindowManager.LayoutParams(
+                    WindowManager.LayoutParams.WRAP_CONTENT,
+                    WindowManager.LayoutParams.WRAP_CONTENT,
+                    WindowManager.LayoutParams.TYPE_PHONE,
+                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
+                    PixelFormat.TRANSLUCENT)
+        }).apply {
+            gravity = Gravity.BOTTOM or Gravity.END
+            width = MIN_WIDTH
+            height = MIN_HEIGHT
+        }
+
+        windowManager.addView(binding.root, params)
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        ALog.i("onStartCommand")
+        Log.i("", "onStartCommand")
         currentTime = intent.getIntExtra("currentTime", -1)
         (intent.getParcelableExtra("video") as Video).let {
             item = it
@@ -157,14 +149,14 @@ class VideoService : Service() {
                 Toast.makeText(this, "it is invalid file", Toast.LENGTH_SHORT).show()
                 return
             }
-            mediaPlayer?.setDataSource(video.path)
-            mediaPlayer?.setDisplay(binding?.serviceLayoutVideo?.holder)
-            mediaPlayer?.prepare()
+            mediaPlayer.setDataSource(video.path)
+            mediaPlayer.setDisplay(binding.serviceLayoutVideo.holder)
+            mediaPlayer.prepare()
             if (currentTime != -1) {
-                ALog.i(currentTime)
-                mediaPlayer?.seekTo(currentTime)
+                Log.i("", "$currentTime")
+                mediaPlayer.seekTo(currentTime)
             }
-            mediaPlayer?.start()
+            mediaPlayer.start()
         } catch (e: IOException) {
             e.printStackTrace()
         }
@@ -173,14 +165,14 @@ class VideoService : Service() {
     @TargetApi(Build.VERSION_CODES.N)
     override fun onDestroy() {
         super.onDestroy()
-        ALog.i("onDestroy")
+        Log.i("", "onDestroy")
         stopSelf()
         stopForeground(true)
-        windowManager?.removeView(binding?.root)
+        windowManager.removeView(binding.root)
     }
 
     override fun onTaskRemoved(rootIntent: Intent) {
-        ALog.i("onTaskRemoved")
+        Log.i("", "onTaskRemoved")
     }
 
     override fun onBind(intent: Intent): IBinder? {
@@ -188,19 +180,22 @@ class VideoService : Service() {
     }
 
     private fun releaseMediaPlayer() {
-        mediaPlayer?.release()
+        mediaPlayer.release()
     }
 
     private inner class CustomGestureDetector : GestureDetector.SimpleOnGestureListener() {
         override fun onSingleTapUp(e: MotionEvent): Boolean {
-            binding?.servicePlay?.visibility = View.VISIBLE
-            binding?.servicePause?.visibility = View.VISIBLE
-            binding?.serviceExit?.visibility = View.VISIBLE
-            Handler().postDelayed({
-                binding?.servicePlay?.visibility = View.GONE
-                binding?.servicePause?.visibility = View.GONE
-                binding?.serviceExit?.visibility = View.GONE
-            }, 3000)
+            binding.servicePlay.visibility = View.VISIBLE
+            binding.servicePause.visibility = View.VISIBLE
+            binding.serviceExit.visibility = View.VISIBLE
+            Single.timer(3000, TimeUnit.MILLISECONDS).subscribe(
+                    {
+                        binding.servicePlay.visibility = View.GONE
+                        binding.servicePause.visibility = View.GONE
+                        binding.serviceExit.visibility = View.GONE
+                    },
+                    { it.printStackTrace() }
+            )
 
             return false
         }
@@ -222,10 +217,10 @@ class VideoService : Service() {
 
                 if (e.x > screenDivision) {
                     Toast.makeText(this@VideoService, "10초 앞으로", Toast.LENGTH_SHORT).show()
-                    mediaPlayer?.let { it.seekTo(it.currentPosition + 10000) }
+                    mediaPlayer.seekTo(mediaPlayer.currentPosition + 10000)
                 } else {
                     Toast.makeText(this@VideoService, "10초 뒤로", Toast.LENGTH_SHORT).show()
-                    mediaPlayer?.let { it.seekTo(it.currentPosition - 10000) }
+                    mediaPlayer.seekTo(mediaPlayer.currentPosition - 10000)
                 }
             }
             return false
@@ -238,12 +233,12 @@ class VideoService : Service() {
         private val displayMetrics = Utils.getDisplayMetrics(this@VideoService)
 
         override fun onScale(detector: ScaleGestureDetector): Boolean {
-            ALog.d("onScale")
+            Log.d("", "onScale")
             if (mW < MIN_WIDTH) {
                 mW = MIN_WIDTH
                 return true
             }
-            displayMetrics?.let {
+            displayMetrics.let {
                 if (mW > it.widthPixels) {
                     mW = it.widthPixels
                     return true
@@ -255,44 +250,44 @@ class VideoService : Service() {
             }
             mW = (mW.toDouble() * detector.scaleFactor.toDouble()).toInt()
             mH = (mW.toDouble() * (9f / 16f)).toInt()
-            ALog.d("mW = $mW, mH = $mH")
-            binding?.serviceLayoutVideo?.holder?.setFixedSize(mW, mH)
+            Log.d("", "mW = $mW, mH = $mH")
+            binding.serviceLayoutVideo.holder?.setFixedSize(mW, mH)
             params?.width = mW
             params?.height = mH
-            windowManager?.updateViewLayout(binding?.root, params)
+            windowManager.updateViewLayout(binding.root, params)
             return true
         }
 
         override fun onScaleBegin(detector: ScaleGestureDetector): Boolean {
-            ALog.d("onScaleBegin")
+            Log.d("","onScaleBegin")
             params?.let {
                 mW = it.width
                 mH = it.height
             }
-            ALog.d("scale=" + detector.scaleFactor + ", w=" + mW + ", h=" + mH)
+            Log.d("", "scale=" + detector.scaleFactor + ", w=" + mW + ", h=" + mH)
             return true
         }
 
         override fun onScaleEnd(detector: ScaleGestureDetector) {
-            ALog.d("onScaleEnd")
-            ALog.d("scale=" + detector.scaleFactor + ", w=" + mW + ", h=" + mH)
+            Log.d("", "onScaleEnd")
+            Log.d("", "scale=" + detector.scaleFactor + ", w=" + mW + ", h=" + mH)
         }
     }
 
     private inner class SurfaceHolderCallback : SurfaceHolder.Callback {
         override fun surfaceCreated(holder: SurfaceHolder) {
-            ALog.i("surfaceCreated")
+            Log.i("", "surfaceCreated")
             item?.let { playVideo(it) }
         }
 
         override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
-            ALog.i("surfaceChanged")
+            Log.i("", "surfaceChanged")
             holder.setFixedSize(width, height)
-            mediaPlayer?.setDisplay(holder)
+            mediaPlayer.setDisplay(holder)
         }
 
         override fun surfaceDestroyed(holder: SurfaceHolder) {
-            ALog.i("surfaceDestroyed")
+            Log.i("", "surfaceDestroyed")
         }
     }
 }

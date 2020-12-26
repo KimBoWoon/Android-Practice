@@ -1,0 +1,66 @@
+{
+  "results": [
+    {
+      "gender": "male",
+      "name": {
+        "title": "Mr",
+        "first": "Onni",
+        "last": "Maijala"
+      },
+      "location": {
+        "street": {
+          "number": 6246,
+          "name": "Tahmelantie"
+        },
+        "city": "Tammela",
+        "state": "Finland Proper",
+        "country": "Finland",
+        "postcode": 83360,
+        "coordinates": {
+          "latitude": "-10.9673",
+          "longitude": "-14.7862"
+        },
+        "timezone": {
+          "offset": "-7:00",
+          "description": "Mountain Time (US & Canada)"
+        }
+      },
+      "email": "onni.maijala@example.com",
+      "login": {
+        "uuid": "b829ed2d-76a8-4098-ae00-c458ac900505",
+        "username": "angrybear815",
+        "password": "unreal",
+        "salt": "DyNFcJFO",
+        "md5": "1a426ca881974d825d0eead482f5d3fb",
+        "sha1": "35c765566611f621f63bc320ac3bacf5f22543c5",
+        "sha256": "ea0dd17c08b648241a34d03a20c1a4ebf5806f267c8f7aec8369ebd5f3147d5d"
+      },
+      "dob": {
+        "date": "1959-09-25T16:25:16.399Z",
+        "age": 61
+      },
+      "registered": {
+        "date": "2008-07-04T10:27:58.027Z",
+        "age": 12
+      },
+      "phone": "07-760-030",
+      "cell": "043-507-46-13",
+      "id": {
+        "name": "HETU",
+        "value": "NaNNA845undefined"
+      },
+      "picture": {
+        "large": "https://randomuser.me/api/portraits/men/54.jpg",
+        "medium": "https://randomuser.me/api/portraits/med/men/54.jpg",
+        "thumbnail": "https://randomuser.me/api/portraits/thumb/men/54.jpg"
+      },
+      "nat": "FI"
+    }
+  ],
+  "info": {
+    "seed": "8a3ce16b27b91dc4",
+    "results": 1,
+    "page": 1,
+    "version": "1.3"
+  }
+}
