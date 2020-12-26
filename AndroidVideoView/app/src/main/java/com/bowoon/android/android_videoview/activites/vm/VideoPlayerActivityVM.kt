@@ -7,8 +7,8 @@ import com.bowoon.android.android_videoview.model.Video
 
 class VideoPlayerActivityVM : ViewModel() {
     val isPlay = MutableLiveData<Boolean>()
-    val playTime = MutableLiveData<Int>()
+    val playTime = MutableLiveData<Int>(0)
     val video = MutableLiveData<Video>()
     val player = MutableLiveData<MediaPlayer>(MediaPlayer())
-    val orientation = MutableLiveData<Boolean>(true)
+    val orientation = MutableLiveData<Unit>(Unit)
 }

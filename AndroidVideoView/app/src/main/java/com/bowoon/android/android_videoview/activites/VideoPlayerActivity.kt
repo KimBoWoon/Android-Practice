@@ -74,7 +74,7 @@ class VideoPlayerActivity : AppCompatActivity() {
             binding.playVideoTitle.text = it.title
         }
         viewModel.orientation.observe(this) {
-            resizeSurfaceView(it)
+            resizeSurfaceView()
         }
     }
 
@@ -122,44 +122,49 @@ class VideoPlayerActivity : AppCompatActivity() {
 
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             Toast.makeText(this, "landscape", Toast.LENGTH_SHORT).show()
-            viewModel.orientation.value = false
+            viewModel.orientation.value = Unit
         } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
             Toast.makeText(this, "portrait", Toast.LENGTH_SHORT).show()
-            viewModel.orientation.value = true
+            viewModel.orientation.value = Unit
         }
     }
 
-    private fun resizeSurfaceView(orientation: Boolean) {
+    private fun resizeSurfaceView() {
         var newWidth = viewModel.player.value?.videoWidth ?: 0
         var newHeight = viewModel.player.value?.videoHeight ?: 0
         var rate = 0.0f
-        var max = if (newWidth > newHeight) {
+        val max = if (newWidth > newHeight) {
             Utils.getDisplayMetrics(this@VideoPlayerActivity).widthPixels
         } else {
             Utils.getDisplayMetrics(this@VideoPlayerActivity).heightPixels
         }.toFloat()
+
         if (newWidth == 0 || newHeight == 0) {
             return
         }
+
         if (newWidth > newHeight) {
             rate = max / newWidth
-            newHeight = (newHeight * rate).roundToInt()
-            newWidth = max.roundToInt()
+            newHeight = (newHeight * rate).toInt()
+            newWidth = max.toInt()
         } else {
             rate = max / newHeight
-            newWidth = (newWidth * rate).roundToInt()
-            newHeight = max.roundToInt()
+            newWidth = (newWidth * rate).toInt()
+            newHeight = max.toInt()
+        }
+
+        if (newHeight > Utils.getDisplayMetrics(this).heightPixels) {
+            newHeight = Utils.getDisplayMetrics(this).heightPixels
+        }
+
+        if (newWidth > Utils.getDisplayMetrics(this).widthPixels) {
+            newWidth = Utils.getDisplayMetrics(this).widthPixels
         }
 
         binding.mainSurfaceView.let { surfaceView ->
             surfaceView.layoutParams.apply {
-                if (orientation) {
-                    width = newWidth
-                    height = newHeight
-                } else {
-                    width = newWidth
-                    height = newHeight
-                }
+                width = newWidth
+                height = newHeight
             }
         }
     }
@@ -245,14 +250,14 @@ class VideoPlayerActivity : AppCompatActivity() {
                 playVideo(it.path)
             }
             viewModel.player.value?.let { binding.videoSeekbar.max = it.duration }
-            viewModel.orientation.value?.let { resizeSurfaceView(it) }
+            viewModel.orientation.value?.let { resizeSurfaceView() }
         }
 
         override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
             Log.i(TAG, "surfaceChanged")
             viewModel.player.value?.setDisplay(holder)
             viewModel.orientation.value?.let {
-                resizeSurfaceView(it)
+                resizeSurfaceView()
             }
         }
 
