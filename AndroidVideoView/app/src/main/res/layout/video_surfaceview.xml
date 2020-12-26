@@ -76,7 +76,8 @@
                 android:id="@+id/videoTimeInfo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true">
+                android:layout_alignParentBottom="true"
+                android:background="#80000000">
 
                 <TextView
                     android:id="@+id/videoTime"
