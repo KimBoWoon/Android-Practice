@@ -19,6 +19,7 @@ import com.bowoon.android.android_videoview.R
 import com.bowoon.android.android_videoview.databinding.ServiceLayoutBinding
 import com.bowoon.android.android_videoview.model.Video
 import com.bowoon.android.android_videoview.utils.Utils
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
 import java.io.IOException
 import java.util.concurrent.TimeUnit
@@ -33,7 +34,7 @@ class VideoService : Service() {
     private var mediaPlayer = MediaPlayer()
     private var intent: Intent? = null
     private var item: Video? = null
-//    private var isPause = false
+    private var hideMenu = false
     private val windowManager by lazy {
         Utils.getWindowManager(this)
     }
@@ -188,14 +189,21 @@ class VideoService : Service() {
             binding.servicePlay.visibility = View.VISIBLE
             binding.servicePause.visibility = View.VISIBLE
             binding.serviceExit.visibility = View.VISIBLE
-            Single.timer(3000, TimeUnit.MILLISECONDS).subscribe(
-                    {
-                        binding.servicePlay.visibility = View.GONE
-                        binding.servicePause.visibility = View.GONE
-                        binding.serviceExit.visibility = View.GONE
-                    },
-                    { it.printStackTrace() }
-            )
+            if (!hideMenu) {
+                hideMenu = true
+
+                Single.timer(5000, TimeUnit.MILLISECONDS)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                {
+                                    binding.servicePlay.visibility = View.GONE
+                                    binding.servicePause.visibility = View.GONE
+                                    binding.serviceExit.visibility = View.GONE
+                                    hideMenu = false
+                                },
+                                { it.printStackTrace() }
+                        )
+            }
 
             return false
         }

@@ -27,6 +27,7 @@ import java.util.concurrent.TimeUnit
 class VideoPlayerActivity : AppCompatActivity() {
     private val player = MediaPlayer()
     private var hideMenu = false
+    private var videoTimeThread: VideoTimeThread? = null
     private val binding by lazy {
         DataBindingUtil.setContentView<VideoSurfaceviewBinding>(this, R.layout.video_surfaceview)
     }
@@ -63,7 +64,7 @@ class VideoPlayerActivity : AppCompatActivity() {
                 player.pause()
             }
         }
-        viewModel.playTime.observe(this) { playTime ->
+        viewModel.seekTime.observe(this) { playTime ->
             viewModel.isPlay.value?.let {
                 if (it) {
                     binding.videoSeekbar.progress = playTime
@@ -76,6 +77,21 @@ class VideoPlayerActivity : AppCompatActivity() {
         }
         viewModel.resize.observe(this) {
             resizeSurfaceView()
+        }
+        viewModel.playTime.observe(this) {
+            if (!this@VideoPlayerActivity.isFinishing) {
+                binding.videoSeekbar.progress = it
+                binding.videoTime.text = String.format("%s / %s", getStringTime(player.currentPosition), getStringTime(player.duration))
+            }
+        }
+        viewModel.seekBarFlag.observe(this) {
+            if (it && videoTimeThread == null) {
+                videoTimeThread = VideoTimeThread()
+                videoTimeThread?.start()
+            } else {
+                videoTimeThread?.interrupt()
+                videoTimeThread = null
+            }
         }
     }
 
@@ -90,13 +106,15 @@ class VideoPlayerActivity : AppCompatActivity() {
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar) {
-                player.pause()
+                viewModel.seekBarFlag.value = false
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar) {
-                player.seekTo(seekBar.progress)
-                player.start()
-                viewModel.playTime.value = seekBar.progress
+                if (!this@VideoPlayerActivity.isFinishing) {
+                    viewModel.seekBarFlag.value = true
+                    player.seekTo(seekBar.progress)
+                    viewModel.seekTime.value = seekBar.progress
+                }
             }
         })
 
@@ -174,9 +192,10 @@ class VideoPlayerActivity : AppCompatActivity() {
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         if (event.action == MotionEvent.ACTION_UP) {
-            binding.videoInformation.visibility = View.VISIBLE
+            binding.videoInformationGroup.visibility = View.VISIBLE
+            binding.videoButtonGroup.visibility = View.VISIBLE
             binding.playVideoTitle.visibility = View.VISIBLE
-//            binding.mDialogBtn?.visibility = View.VISIBLE
+//            binding.mDialogBtn.visibility = View.VISIBLE
             binding.videoService.visibility = View.VISIBLE
             binding.videoTime.text = player.let { String.format("%s / %s", getStringTime(it.currentPosition), getStringTime(it.duration)) }
 
@@ -187,7 +206,8 @@ class VideoPlayerActivity : AppCompatActivity() {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 {
-                                    binding.videoInformation.visibility = View.GONE
+                                    binding.videoInformationGroup.visibility = View.GONE
+                                    binding.videoButtonGroup.visibility = View.GONE
                                     binding.playVideoTitle.visibility = View.GONE
 //                                binding.mDialogBtn.visibility = View.GONE
                                     binding.videoService.visibility = View.GONE
@@ -206,6 +226,7 @@ class VideoPlayerActivity : AppCompatActivity() {
         try {
             player.setOnPreparedListener {
                 it.start()
+                viewModel.seekBarFlag.value = true
             }
             player.setOnErrorListener { mediaPlayer, what, extra ->
                 when (extra) {
@@ -231,6 +252,7 @@ class VideoPlayerActivity : AppCompatActivity() {
     }
 
     private fun releaseMediaPlayer() {
+        viewModel.seekBarFlag.value = false
         window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         player.release()
     }
@@ -255,6 +277,11 @@ class VideoPlayerActivity : AppCompatActivity() {
         releaseMediaPlayer()
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+        releaseMediaPlayer()
+    }
+
     private fun getStringTime(time: Int): String {
         val currentSecond = time / 1000
         val second = currentSecond % 60
@@ -262,6 +289,18 @@ class VideoPlayerActivity : AppCompatActivity() {
         val hour = currentSecond / 3600
 
         return "$hour:${if (minute < 10) "0$minute" else minute}:${if (second < 10) "0${second}" else second}"
+    }
+
+    private inner class VideoTimeThread : Thread() {
+        override fun run() {
+            while (!isInterrupted) {
+                if (!this@VideoPlayerActivity.isFinishing) {
+                    viewModel.playTime.postValue(player.currentPosition)
+                } else {
+                    return
+                }
+            }
+        }
     }
 
     private inner class SurfaceViewCallbackClass : SurfaceHolder.Callback {

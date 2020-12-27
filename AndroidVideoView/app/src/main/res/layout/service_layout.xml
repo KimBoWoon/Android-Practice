@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <FrameLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/service_frame_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -10,43 +11,41 @@
         <SurfaceView
             android:id="@+id/service_layout_video"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center|bottom">
+            android:gravity="center"
+            app:layout_constraintBottom_toBottomOf="parent">
 
-            <Button
+            <ImageView
                 android:id="@+id/service_play"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@android:color/transparent"
-                android:text="@string/play"
-                android:textColor="#ffffff"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@drawable/baseline_play_arrow_white_24"
                 android:visibility="gone" />
 
-            <Button
+            <ImageView
                 android:id="@+id/service_pause"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@android:color/transparent"
-                android:text="@string/pause"
-                android:textColor="#ffffff"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:background="@drawable/baseline_pause_white_24"
                 android:visibility="gone" />
 
-            <Button
+            <ImageView
                 android:id="@+id/service_exit"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@android:color/transparent"
-                android:text="@string/service_exit"
-                android:textColor="#ffffff"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@drawable/baseline_close_white_24"
                 android:visibility="gone" />
 
         </LinearLayout>
-    </FrameLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
