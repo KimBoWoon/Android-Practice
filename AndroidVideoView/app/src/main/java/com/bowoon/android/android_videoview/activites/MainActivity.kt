@@ -1,19 +1,19 @@
 package com.bowoon.android.android_videoview.activites
 
 import android.Manifest
-import android.database.Cursor
+import android.graphics.Rect
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.Log
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.RecyclerView
 import com.bowoon.android.android_videoview.R
 import com.bowoon.android.android_videoview.activites.vm.MainActivityVM
 import com.bowoon.android.android_videoview.adapter.FolderListAdapter
-import com.bowoon.android.android_videoview.adapter.VideoAdapter
 import com.bowoon.android.android_videoview.databinding.ActivityMainBinding
-import com.bowoon.android.android_videoview.model.Video
+import com.bowoon.android.android_videoview.utils.px
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
 
@@ -42,16 +42,25 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         }
 
         viewModel.findVideoFolder(this)
-        viewModel.fetchAllVideos(this)
     }
 
     private fun initLiveData() {
-        viewModel.videoList.observe(this) {
-            binding.recyclerview.setHasFixedSize(true)
-            binding.recyclerview.adapter = VideoAdapter(it)
-        }
-        viewModel.folderList.observe(this) { list ->
-//            binding.recyclerview.adapter = FolderListAdapter(list.also { it.sort() })
+        viewModel.folderMap.observe(this) {
+            binding.recyclerview.adapter = FolderListAdapter(it)
+            if (binding.recyclerview.itemDecorationCount == 0) {
+                binding.recyclerview.addItemDecoration(object : RecyclerView.ItemDecoration() {
+                    override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
+                        val position = parent.getChildAdapterPosition(view)
+                        val itemCount = state.itemCount
+
+                        if (position in 0 .. itemCount) {
+                            outRect.left = 5.px()
+                            outRect.right = 5.px()
+                            outRect.top = 5.px()
+                        }
+                    }
+                })
+            }
         }
     }
 

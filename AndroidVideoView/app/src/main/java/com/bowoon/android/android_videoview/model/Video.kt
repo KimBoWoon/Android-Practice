@@ -3,7 +3,7 @@ package com.bowoon.android.android_videoview.model
 import android.os.Parcel
 import android.os.Parcelable
 
-data class Video(var title: String, var path: String): Parcelable {
+data class Video(val title: String, val path: String): Parcelable {
     constructor(parcel: Parcel) : this(
             parcel.readString() ?: "",
             parcel.readString() ?: ""
