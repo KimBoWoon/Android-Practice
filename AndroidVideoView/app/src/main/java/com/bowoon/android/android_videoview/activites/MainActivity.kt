@@ -10,6 +10,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.bowoon.android.android_videoview.R
 import com.bowoon.android.android_videoview.activites.vm.MainActivityVM
+import com.bowoon.android.android_videoview.adapter.FolderListAdapter
 import com.bowoon.android.android_videoview.adapter.VideoAdapter
 import com.bowoon.android.android_videoview.databinding.ActivityMainBinding
 import com.bowoon.android.android_videoview.model.Video
@@ -40,6 +41,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
             EasyPermissions.requestPermissions(this, "Window Permission", 1001, Manifest.permission.SYSTEM_ALERT_WINDOW)
         }
 
+        viewModel.findVideoFolder(this)
         viewModel.fetchAllVideos(this)
     }
 
@@ -47,6 +49,9 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         viewModel.videoList.observe(this) {
             binding.recyclerview.setHasFixedSize(true)
             binding.recyclerview.adapter = VideoAdapter(it)
+        }
+        viewModel.folderList.observe(this) { list ->
+//            binding.recyclerview.adapter = FolderListAdapter(list.also { it.sort() })
         }
     }
 

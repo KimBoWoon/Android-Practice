@@ -2,7 +2,6 @@ package com.bowoon.android.android_videoview.services
 
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
-import android.app.Notification
 import android.app.Service
 import android.content.Intent
 import android.graphics.PixelFormat
@@ -12,6 +11,7 @@ import android.os.IBinder
 import android.util.Log
 import android.view.*
 import android.widget.Toast
+import androidx.core.app.NotificationCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -31,7 +31,7 @@ class VideoService : Service() {
     private var touchY = 0f
     private var viewX = 0
     private var viewY = 0
-    private var mediaPlayer = MediaPlayer()
+    private var player = MediaPlayer()
     private var intent: Intent? = null
     private var item: Video? = null
     private var hideMenu = false
@@ -47,12 +47,12 @@ class VideoService : Service() {
     private val binding by lazy {
         DataBindingUtil.inflate<ServiceLayoutBinding>(LayoutInflater.from(this), R.layout.service_layout, null, false)
     }
-    private val isPause = MutableLiveData<Boolean>()
+    private val isPause = MutableLiveData<Boolean>(false)
     private val pauseObserver: Observer<Boolean> = Observer {
         if (it) {
-            mediaPlayer.pause()
+            player.pause()
         } else {
-            mediaPlayer.start()
+            player.start()
         }
     }
 
@@ -105,9 +105,9 @@ class VideoService : Service() {
             stopService(intent)
         }
 
-        binding.serviceLayoutVideo.holder.addCallback(SurfaceHolderCallback())
+        binding.surfaceView.holder.addCallback(SurfaceHolderCallback())
 
-        mediaPlayer = MediaPlayer()
+        player = MediaPlayer()
 
         params = (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             WindowManager.LayoutParams(
@@ -139,7 +139,11 @@ class VideoService : Service() {
             item = it
             this.intent = intent
         }
-        startForeground(startId, Notification())
+        startForeground(startId, NotificationCompat
+                .Builder(this@VideoService, startId.toString())
+                .setContentTitle(item?.title)
+                .setContentText(if (isPause.value!!) "일시정지" else "재생중")
+                .build())
 
         return super.onStartCommand(intent, flags, startId)
     }
@@ -150,14 +154,17 @@ class VideoService : Service() {
                 Toast.makeText(this, "it is invalid file", Toast.LENGTH_SHORT).show()
                 return
             }
-            mediaPlayer.setDataSource(video.path)
-            mediaPlayer.setDisplay(binding.serviceLayoutVideo.holder)
-            mediaPlayer.prepare()
+            player.setOnPreparedListener {
+                resizeSurfaceView(binding.surfaceView.width, binding.surfaceView.height)
+                player.start()
+            }
+            player.setDataSource(video.path)
+            player.setDisplay(binding.surfaceView.holder)
+            player.prepare()
             if (currentTime != -1) {
                 Log.i("", "$currentTime")
-                mediaPlayer.seekTo(currentTime)
+                player.seekTo(currentTime)
             }
-            mediaPlayer.start()
         } catch (e: IOException) {
             e.printStackTrace()
         }
@@ -181,7 +188,7 @@ class VideoService : Service() {
     }
 
     private fun releaseMediaPlayer() {
-        mediaPlayer.release()
+        player.release()
     }
 
     private inner class CustomGestureDetector : GestureDetector.SimpleOnGestureListener() {
@@ -225,13 +232,53 @@ class VideoService : Service() {
 
                 if (e.x > screenDivision) {
                     Toast.makeText(this@VideoService, "10초 앞으로", Toast.LENGTH_SHORT).show()
-                    mediaPlayer.seekTo(mediaPlayer.currentPosition + 10000)
+                    player.seekTo(player.currentPosition + 10000)
                 } else {
                     Toast.makeText(this@VideoService, "10초 뒤로", Toast.LENGTH_SHORT).show()
-                    mediaPlayer.seekTo(mediaPlayer.currentPosition - 10000)
+                    player.seekTo(player.currentPosition - 10000)
                 }
             }
             return false
+        }
+    }
+
+    private fun resizeSurfaceView(serviceWidth: Int, serviceHeight: Int) {
+        var newWidth = player.videoWidth
+        var newHeight = player.videoHeight
+        var rate = 0.0f
+        val max = if (newWidth > newHeight) {
+            serviceWidth
+        } else {
+            serviceHeight
+        }.toFloat()
+
+        if (newWidth == 0 || newHeight == 0) {
+            return
+        }
+
+        if (newWidth > newHeight) {
+            rate = max / newWidth
+            newHeight = (newHeight * rate).toInt()
+            newWidth = max.toInt()
+        } else {
+            rate = max / newHeight
+            newWidth = (newWidth * rate).toInt()
+            newHeight = max.toInt()
+        }
+
+        if (newHeight > serviceHeight) {
+            newHeight = serviceHeight
+        }
+
+        if (newWidth > serviceWidth) {
+            newWidth = serviceWidth
+        }
+
+        binding.surfaceView.let { surfaceView ->
+            surfaceView.layoutParams.apply {
+                width = newWidth
+                height = newHeight
+            }
         }
     }
 
@@ -259,9 +306,10 @@ class VideoService : Service() {
             mW = (mW.toDouble() * detector.scaleFactor.toDouble()).toInt()
             mH = (mW.toDouble() * (9f / 16f)).toInt()
             Log.d("", "mW = $mW, mH = $mH")
-            binding.serviceLayoutVideo.holder?.setFixedSize(mW, mH)
+            binding.surfaceView.holder?.setFixedSize(mW, mH)
             params?.width = mW
             params?.height = mH
+            resizeSurfaceView(mW, mH)
             windowManager.updateViewLayout(binding.root, params)
             return true
         }
@@ -291,7 +339,7 @@ class VideoService : Service() {
         override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
             Log.i("", "surfaceChanged")
             holder.setFixedSize(width, height)
-            mediaPlayer.setDisplay(holder)
+            player.setDisplay(holder)
         }
 
         override fun surfaceDestroyed(holder: SurfaceHolder) {

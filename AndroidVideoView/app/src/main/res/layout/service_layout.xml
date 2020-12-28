@@ -9,7 +9,7 @@
         android:background="#000000">
 
         <SurfaceView
-            android:id="@+id/service_layout_video"
+            android:id="@+id/surface_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
