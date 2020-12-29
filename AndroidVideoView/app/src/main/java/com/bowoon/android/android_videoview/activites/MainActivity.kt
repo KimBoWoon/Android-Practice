@@ -54,9 +54,9 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
                         val itemCount = state.itemCount
 
                         if (position in 0 .. itemCount) {
-                            outRect.left = 5.px()
-                            outRect.right = 5.px()
-                            outRect.top = 5.px()
+                            outRect.left = 5.px
+                            outRect.right = 5.px
+                            outRect.top = 5.px
                         }
                     }
                 })

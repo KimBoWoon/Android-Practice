@@ -14,28 +14,47 @@
             type="com.bowoon.android.android_videoview.model.Video" />
     </data>
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/corners_drawable"
-        android:orientation="horizontal">
+        android:layout_height="100dp"
+        android:background="@drawable/corners_drawable">
 
         <ImageView
             android:id="@+id/videoThumbnail"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
+            android:layout_marginStart="5dp"
             android:contentDescription="@string/thumbnail"
             android:scaleType="fitXY"
-            app:bind_image="@{video.path}"
+            app:bindImage="@{video.path}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             tool:background="@mipmap/ic_launcher" />
 
         <TextView
             android:id="@+id/videoTitle"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
             android:text="@{video.title}"
             android:textColor="#000000"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/videoThumbnail"
+            app:layout_constraintTop_toTopOf="parent"
             tool:text="Title" />
-    </LinearLayout>
+
+        <TextView
+            android:id="@+id/videoDuration"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            android:textColor="#000000"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/videoThumbnail"
+            app:layout_constraintTop_toBottomOf="@id/videoTitle"
+            tool:text="36:63" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
