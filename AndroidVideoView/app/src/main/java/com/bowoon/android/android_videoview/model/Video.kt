@@ -1,18 +1,19 @@
 package com.bowoon.android.android_videoview.model
 
+import android.net.Uri
 import android.os.Parcel
 import android.os.Parcelable
 
-data class Video(val title: String, val path: String, val duration: String): Parcelable {
+data class Video(val title: String, val uri: Uri?, val duration: String) : Parcelable {
     constructor(parcel: Parcel) : this(
             parcel.readString() ?: "",
-            parcel.readString() ?: "",
+            parcel.readParcelable<Uri>(Uri::class.java.classLoader),
             parcel.readString() ?: ""
     )
 
     override fun writeToParcel(dest: Parcel?, flags: Int) {
         dest?.writeString(title)
-        dest?.writeString(path)
+        dest?.writeParcelable(uri, flags)
         dest?.writeString(duration)
     }
 

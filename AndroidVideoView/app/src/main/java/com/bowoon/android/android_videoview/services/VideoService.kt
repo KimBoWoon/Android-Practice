@@ -154,16 +154,18 @@ class VideoService : Service() {
                 Toast.makeText(this, "it is invalid file", Toast.LENGTH_SHORT).show()
                 return
             }
-            player.setOnPreparedListener {
-                resizeSurfaceView(binding.surfaceView.width, binding.surfaceView.height)
-                player.start()
-            }
-            player.setDataSource(video.path)
-            player.setDisplay(binding.surfaceView.holder)
-            player.prepare()
-            if (currentTime != -1) {
-                Log.i("", "$currentTime")
-                player.seekTo(currentTime)
+            video.uri?.let { uri ->
+                player.setOnPreparedListener {
+                    resizeSurfaceView(binding.surfaceView.width, binding.surfaceView.height)
+                    player.start()
+                }
+                player.setDataSource(this, uri)
+                player.setDisplay(binding.surfaceView.holder)
+                player.prepare()
+                if (currentTime != -1) {
+                    Log.i("", "$currentTime")
+                    player.seekTo(currentTime)
+                }
             }
         } catch (e: IOException) {
             e.printStackTrace()

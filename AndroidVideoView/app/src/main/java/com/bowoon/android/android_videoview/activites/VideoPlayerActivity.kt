@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.media.MediaPlayer
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -68,7 +69,7 @@ class VideoPlayerActivity : AppCompatActivity() {
             viewModel.isPlay.value?.let {
                 if (it) {
                     binding.videoSeekbar.progress = playTime
-                    binding.videoTime.text = String.format("%s / %s", getStringTime(player.currentPosition), getStringTime(player.duration))
+                    binding.videoTime.text = String.format("%s / %s", Utils.getTimeString(player.currentPosition), Utils.getTimeString(player.duration))
                 }
             }
         }
@@ -81,7 +82,7 @@ class VideoPlayerActivity : AppCompatActivity() {
         viewModel.playTime.observe(this) {
             if (!this@VideoPlayerActivity.isFinishing) {
                 binding.videoSeekbar.progress = it
-                binding.videoTime.text = String.format("%s / %s", getStringTime(player.currentPosition), getStringTime(player.duration))
+                binding.videoTime.text = String.format("%s / %s", Utils.getTimeString(player.currentPosition), Utils.getTimeString(player.duration))
             }
         }
         viewModel.seekBarFlag.observe(this) {
@@ -197,7 +198,7 @@ class VideoPlayerActivity : AppCompatActivity() {
             binding.playVideoTitle.visibility = View.VISIBLE
 //            binding.mDialogBtn.visibility = View.VISIBLE
             binding.videoService.visibility = View.VISIBLE
-            binding.videoTime.text = player.let { String.format("%s / %s", getStringTime(it.currentPosition), getStringTime(it.duration)) }
+            binding.videoTime.text = player.let { String.format("%s / %s", Utils.getTimeString(it.currentPosition), Utils.getTimeString(it.duration)) }
 
             if (!hideMenu) {
                 hideMenu = true
@@ -222,7 +223,7 @@ class VideoPlayerActivity : AppCompatActivity() {
         return super.onTouchEvent(event)
     }
 
-    private fun playVideo(path: String) {
+    private fun playVideo(path: Uri) {
         try {
             player.setOnPreparedListener {
                 it.start()
@@ -243,7 +244,7 @@ class VideoPlayerActivity : AppCompatActivity() {
                 }
                 return@setOnErrorListener true
             }
-            player.setDataSource(path)
+            player.setDataSource(this, path)
             player.setDisplay(binding.mainSurfaceView.holder)
             player.prepare()
         } catch (e: IOException) {
@@ -282,15 +283,6 @@ class VideoPlayerActivity : AppCompatActivity() {
         releaseMediaPlayer()
     }
 
-    private fun getStringTime(time: Int): String {
-        val currentSecond = time / 1000
-        val second = currentSecond % 60
-        val minute = currentSecond / 60 % 60
-        val hour = currentSecond / 3600
-
-        return "$hour:${if (minute < 10) "0$minute" else minute}:${if (second < 10) "0${second}" else second}"
-    }
-
     private inner class VideoTimeThread : Thread() {
         override fun run() {
             while (!isInterrupted) {
@@ -308,7 +300,9 @@ class VideoPlayerActivity : AppCompatActivity() {
             Log.i(TAG, "surfaceCreated")
             viewModel.isPlay.value = true
             viewModel.video.value?.let {
-                playVideo(it.path)
+                it.uri?.let { uri ->
+                    playVideo(uri)
+                }
             }
             binding.videoSeekbar.max = player.duration
             viewModel.resize.value = Unit

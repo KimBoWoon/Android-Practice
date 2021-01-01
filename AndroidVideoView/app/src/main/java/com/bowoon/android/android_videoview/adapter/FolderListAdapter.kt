@@ -1,7 +1,6 @@
 package com.bowoon.android.android_videoview.adapter
 
 import android.content.Intent
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
@@ -11,6 +10,7 @@ import com.bowoon.android.android_videoview.activites.VideoPlayerActivity
 import com.bowoon.android.android_videoview.databinding.FolderViewholderBinding
 import com.bowoon.android.android_videoview.databinding.VideoViewholderBinding
 import com.bowoon.android.android_videoview.model.Video
+import com.bowoon.android.android_videoview.utils.Utils
 
 class FolderListAdapter(private val folderMap: MutableMap<String, MutableList<Video>>?) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val videoList = mutableListOf<Any>()
@@ -18,6 +18,7 @@ class FolderListAdapter(private val folderMap: MutableMap<String, MutableList<Vi
     init {
         folderMap?.toSortedMap()?.map { (key, value) ->
             videoList.add(key)
+            value.sortBy { it.title }
             value.map {
                 videoList.add(it)
             }
@@ -58,7 +59,7 @@ class FolderListAdapter(private val folderMap: MutableMap<String, MutableList<Vi
     inner class VideoViewHolder(private val binding: VideoViewholderBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: Video?) {
             binding.video = item
-            binding.videoDuration.text = convertTime(item?.duration)
+            binding.videoDuration.text = String.format("duration : %s", Utils.getTimeString(item?.duration?.toInt()))
             binding.root.setOnClickListener {
                 binding.root.context.startActivity(
                         Intent(binding.root.context, VideoPlayerActivity::class.java).apply {
@@ -67,39 +68,6 @@ class FolderListAdapter(private val folderMap: MutableMap<String, MutableList<Vi
                         }
                 )
             }
-        }
-
-        fun convertTime(item: String?): String {
-            item?.let {
-                Log.d("convertTime", it)
-                val currentSecond = it.toInt() / 1000
-                val second = currentSecond % 60
-                val minute = currentSecond / 60 % 60
-                val hour = currentSecond / 3600
-                var time = ""
-
-                if (hour > 0) {
-                    time += "$hour:"
-                }
-                if (minute > 0) {
-                    time += if (hour != 0) {
-                        if (minute < 10) "0$minute:" else "$minute:"
-                    } else {
-                        "$minute:"
-                    }
-                }
-                if (second > 0) {
-                    time += if (minute != 0) {
-                        if (second < 10) "0$second" else "$second"
-                    } else {
-                        "$second"
-                    }
-                }
-
-                return time
-            }
-
-            return ""
         }
     }
 
