@@ -1,5 +1,6 @@
 package com.bowoon.android.android_videoview.activites
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
@@ -34,6 +35,9 @@ class VideoPlayerActivity : AppCompatActivity() {
     }
     private val viewModel by lazy {
         ViewModelProvider(this).get(VideoPlayerActivityVM::class.java)
+    }
+    private val gestureDetector by lazy {
+        GestureDetector(this, CustomGestureDetector())
     }
     
     companion object {
@@ -96,8 +100,13 @@ class VideoPlayerActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun initBinding() {
         binding.mainSurfaceView.holder?.addCallback(SurfaceViewCallbackClass())
+        binding.root.setOnTouchListener { view, motionEvent ->
+            gestureDetector.onTouchEvent(motionEvent)
+            true
+        }
         binding.videoSeekbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 if (seekBar.max == progress) {
@@ -191,37 +200,37 @@ class VideoPlayerActivity : AppCompatActivity() {
         }
     }
 
-    override fun onTouchEvent(event: MotionEvent): Boolean {
-        if (event.action == MotionEvent.ACTION_UP) {
-            binding.videoInformationGroup.visibility = View.VISIBLE
-            binding.videoButtonGroup.visibility = View.VISIBLE
-            binding.playVideoTitle.visibility = View.VISIBLE
-//            binding.mDialogBtn.visibility = View.VISIBLE
-            binding.videoService.visibility = View.VISIBLE
-            binding.videoTime.text = player.let { String.format("%s / %s", Utils.getTimeString(it.currentPosition), Utils.getTimeString(it.duration)) }
-
-            if (!hideMenu) {
-                hideMenu = true
-                Single.timer(5000, TimeUnit.MILLISECONDS)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                {
-                                    binding.videoInformationGroup.visibility = View.GONE
-                                    binding.videoButtonGroup.visibility = View.GONE
-                                    binding.playVideoTitle.visibility = View.GONE
-//                                binding.mDialogBtn.visibility = View.GONE
-                                    binding.videoService.visibility = View.GONE
-                                    hideMenu = false
-                                },
-                                { it.printStackTrace() }
-                        )
-            }
-
-            return false
-        }
-        return super.onTouchEvent(event)
-    }
+//    override fun onTouchEvent(event: MotionEvent): Boolean {
+//        if (event.action == MotionEvent.ACTION_UP) {
+//            binding.videoInformationGroup.visibility = View.VISIBLE
+//            binding.videoButtonGroup.visibility = View.VISIBLE
+//            binding.playVideoTitle.visibility = View.VISIBLE
+////            binding.mDialogBtn.visibility = View.VISIBLE
+//            binding.videoService.visibility = View.VISIBLE
+//            binding.videoTime.text = player.let { String.format("%s / %s", Utils.getTimeString(it.currentPosition), Utils.getTimeString(it.duration)) }
+//
+//            if (!hideMenu) {
+//                hideMenu = true
+//                Single.timer(5000, TimeUnit.MILLISECONDS)
+//                        .subscribeOn(Schedulers.io())
+//                        .observeOn(AndroidSchedulers.mainThread())
+//                        .subscribe(
+//                                {
+//                                    binding.videoInformationGroup.visibility = View.GONE
+//                                    binding.videoButtonGroup.visibility = View.GONE
+//                                    binding.playVideoTitle.visibility = View.GONE
+////                                binding.mDialogBtn.visibility = View.GONE
+//                                    binding.videoService.visibility = View.GONE
+//                                    hideMenu = false
+//                                },
+//                                { it.printStackTrace() }
+//                        )
+//            }
+//
+//            return false
+//        }
+//        return super.onTouchEvent(event)
+//    }
 
     private fun playVideo(path: Uri) {
         try {
@@ -292,6 +301,54 @@ class VideoPlayerActivity : AppCompatActivity() {
                     return
                 }
             }
+        }
+    }
+
+    private inner class CustomGestureDetector : GestureDetector.SimpleOnGestureListener() {
+        override fun onSingleTapUp(e: MotionEvent): Boolean {
+            if (e.action == MotionEvent.ACTION_UP) {
+                binding.videoInformationGroup.visibility = View.VISIBLE
+                binding.videoButtonGroup.visibility = View.VISIBLE
+                binding.playVideoTitle.visibility = View.VISIBLE
+//            binding.mDialogBtn.visibility = View.VISIBLE
+                binding.videoService.visibility = View.VISIBLE
+                binding.videoTime.text = player.let { String.format("%s / %s", Utils.getTimeString(it.currentPosition), Utils.getTimeString(it.duration)) }
+
+                if (!hideMenu) {
+                    hideMenu = true
+                    Single.timer(5000, TimeUnit.MILLISECONDS)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(
+                                    {
+                                        binding.videoInformationGroup.visibility = View.GONE
+                                        binding.videoButtonGroup.visibility = View.GONE
+                                        binding.playVideoTitle.visibility = View.GONE
+//                                binding.mDialogBtn.visibility = View.GONE
+                                        binding.videoService.visibility = View.GONE
+                                        hideMenu = false
+                                    },
+                                    { it.printStackTrace() }
+                            )
+                }
+
+                return false
+            }
+
+            return super.onSingleTapUp(e)
+        }
+
+        override fun onDoubleTap(e: MotionEvent): Boolean {
+            val screenDivision = Utils.getDisplayMetrics(this@VideoPlayerActivity).widthPixels / 2
+
+            if (e.x > screenDivision) {
+                Toast.makeText(this@VideoPlayerActivity, "10초 앞으로", Toast.LENGTH_SHORT).show()
+                player.seekTo(player.currentPosition + 10000)
+            } else {
+                Toast.makeText(this@VideoPlayerActivity, "10초 뒤로", Toast.LENGTH_SHORT).show()
+                player.seekTo(player.currentPosition - 10000)
+            }
+            return false
         }
     }
 

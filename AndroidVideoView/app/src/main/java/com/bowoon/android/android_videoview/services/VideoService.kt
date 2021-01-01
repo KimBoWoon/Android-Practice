@@ -139,11 +139,18 @@ class VideoService : Service() {
             item = it
             this.intent = intent
         }
-        startForeground(startId, NotificationCompat
+        val notification = NotificationCompat
                 .Builder(this@VideoService, startId.toString())
                 .setContentTitle(item?.title)
-                .setContentText(if (isPause.value!!) "일시정지" else "재생중")
-                .build())
+                .setContentText(isPause.value?.let {
+                    if (it) {
+                        "일시정지"
+                    } else {
+                        "재생중"
+                    }
+                })
+                .build()
+        startForeground(startId, notification)
 
         return super.onStartCommand(intent, flags, startId)
     }

@@ -3,11 +3,10 @@ package com.bowoon.android.android_videoview.activites.vm
 import android.content.ContentUris
 import android.content.Context
 import android.provider.MediaStore
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import com.bowoon.android.android_videoview.model.Video
 
-class MainActivityVM : ViewModel() {
+class MainActivityVM : ViewModel(), LifecycleObserver {
     val folderMap = MutableLiveData<MutableMap<String, MutableList<Video>>>()
 
     fun findVideoFolder(context: Context) {

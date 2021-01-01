@@ -27,12 +27,15 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        lifecycle.addObserver(viewModel)
 
-        init()
+        permissionCheck()
         initLiveData()
+        viewModel.findVideoFolder(this)
     }
 
-    private fun init() {
+    private fun permissionCheck() {
         if (!hasStoragePermission()) {
             EasyPermissions.requestPermissions(this, "Storage Permission", 1000, Manifest.permission.READ_EXTERNAL_STORAGE)
         }
@@ -40,8 +43,6 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         if (!hasWindowPermission()) {
             EasyPermissions.requestPermissions(this, "Window Permission", 1001, Manifest.permission.SYSTEM_ALERT_WINDOW)
         }
-
-        viewModel.findVideoFolder(this)
     }
 
     private fun initLiveData() {
