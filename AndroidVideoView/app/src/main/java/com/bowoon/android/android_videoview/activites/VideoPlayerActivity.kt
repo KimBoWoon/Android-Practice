@@ -200,38 +200,6 @@ class VideoPlayerActivity : AppCompatActivity() {
         }
     }
 
-//    override fun onTouchEvent(event: MotionEvent): Boolean {
-//        if (event.action == MotionEvent.ACTION_UP) {
-//            binding.videoInformationGroup.visibility = View.VISIBLE
-//            binding.videoButtonGroup.visibility = View.VISIBLE
-//            binding.playVideoTitle.visibility = View.VISIBLE
-////            binding.mDialogBtn.visibility = View.VISIBLE
-//            binding.videoService.visibility = View.VISIBLE
-//            binding.videoTime.text = player.let { String.format("%s / %s", Utils.getTimeString(it.currentPosition), Utils.getTimeString(it.duration)) }
-//
-//            if (!hideMenu) {
-//                hideMenu = true
-//                Single.timer(5000, TimeUnit.MILLISECONDS)
-//                        .subscribeOn(Schedulers.io())
-//                        .observeOn(AndroidSchedulers.mainThread())
-//                        .subscribe(
-//                                {
-//                                    binding.videoInformationGroup.visibility = View.GONE
-//                                    binding.videoButtonGroup.visibility = View.GONE
-//                                    binding.playVideoTitle.visibility = View.GONE
-////                                binding.mDialogBtn.visibility = View.GONE
-//                                    binding.videoService.visibility = View.GONE
-//                                    hideMenu = false
-//                                },
-//                                { it.printStackTrace() }
-//                        )
-//            }
-//
-//            return false
-//        }
-//        return super.onTouchEvent(event)
-//    }
-
     private fun playVideo(path: Uri) {
         try {
             player.setOnPreparedListener {

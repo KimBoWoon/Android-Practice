@@ -35,6 +35,7 @@ class VideoService : Service() {
     private var intent: Intent? = null
     private var item: Video? = null
     private var hideMenu = false
+    private var videoTimeThread: VideoTimeThread? = null
     private val windowManager by lazy {
         Utils.getWindowManager(this)
     }
@@ -48,17 +49,21 @@ class VideoService : Service() {
         DataBindingUtil.inflate<ServiceLayoutBinding>(LayoutInflater.from(this), R.layout.service_layout, null, false)
     }
     private val isPause = MutableLiveData<Boolean>(false)
-    private val pauseObserver: Observer<Boolean> = Observer {
+    private val pauseObserver = Observer<Boolean> {
         if (it) {
             player.pause()
         } else {
             player.start()
         }
     }
+    private val videoTime = MutableLiveData<Unit>()
+    private val videoTimeObserver = Observer<Unit> {
+        binding.videoTime.text = String.format("%s / %s", Utils.getTimeString(player.currentPosition), Utils.getTimeString(player.duration))
+    }
 
     companion object {
         const val MIN_WIDTH = 540
-        const val MIN_HEIGHT = 304
+        const val MIN_HEIGHT = ((9f / 16f) * MIN_WIDTH.toFloat()).toInt()
         const val TAG = "VideoService"
     }
 
@@ -69,6 +74,8 @@ class VideoService : Service() {
 
         isPause.removeObserver(pauseObserver)
         isPause.observeForever(pauseObserver)
+        videoTime.removeObserver(videoTimeObserver)
+        videoTime.observeForever(videoTimeObserver)
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -107,8 +114,6 @@ class VideoService : Service() {
 
         binding.surfaceView.holder.addCallback(SurfaceHolderCallback())
 
-        player = MediaPlayer()
-
         params = (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             WindowManager.LayoutParams(
                     WindowManager.LayoutParams.WRAP_CONTENT,
@@ -133,9 +138,9 @@ class VideoService : Service() {
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        Log.i("", "onStartCommand")
+        Log.i(TAG, "onStartCommand")
         currentTime = intent.getIntExtra("currentTime", -1)
-        (intent.getParcelableExtra("video") as Video).let {
+        (intent.getParcelableExtra("video") as? Video)?.let {
             item = it
             this.intent = intent
         }
@@ -164,13 +169,15 @@ class VideoService : Service() {
             video.uri?.let { uri ->
                 player.setOnPreparedListener {
                     resizeSurfaceView(binding.surfaceView.width, binding.surfaceView.height)
+                    videoTimeThread = VideoTimeThread()
+                    videoTimeThread?.start()
                     player.start()
                 }
                 player.setDataSource(this, uri)
                 player.setDisplay(binding.surfaceView.holder)
                 player.prepare()
                 if (currentTime != -1) {
-                    Log.i("", "$currentTime")
+                    Log.i(TAG, "$currentTime")
                     player.seekTo(currentTime)
                 }
             }
@@ -182,14 +189,15 @@ class VideoService : Service() {
     @TargetApi(Build.VERSION_CODES.N)
     override fun onDestroy() {
         super.onDestroy()
-        Log.i("", "onDestroy")
+        Log.i(TAG, "onDestroy")
+        releaseMediaPlayer()
         stopSelf()
         stopForeground(true)
         windowManager.removeView(binding.root)
     }
 
     override fun onTaskRemoved(rootIntent: Intent) {
-        Log.i("", "onTaskRemoved")
+        Log.i(TAG, "onTaskRemoved")
     }
 
     override fun onBind(intent: Intent): IBinder? {
@@ -197,6 +205,8 @@ class VideoService : Service() {
     }
 
     private fun releaseMediaPlayer() {
+        videoTimeThread?.interrupt()
+        videoTimeThread = null
         player.release()
     }
 
@@ -205,6 +215,7 @@ class VideoService : Service() {
             binding.servicePlay.visibility = View.VISIBLE
             binding.servicePause.visibility = View.VISIBLE
             binding.serviceExit.visibility = View.VISIBLE
+            binding.videoTime.visibility = View.VISIBLE
             if (!hideMenu) {
                 hideMenu = true
 
@@ -215,6 +226,7 @@ class VideoService : Service() {
                                     binding.servicePlay.visibility = View.GONE
                                     binding.servicePause.visibility = View.GONE
                                     binding.serviceExit.visibility = View.GONE
+                                    binding.videoTime.visibility = View.GONE
                                     hideMenu = false
                                 },
                                 { it.printStackTrace() }
@@ -291,13 +303,21 @@ class VideoService : Service() {
         }
     }
 
+    private inner class VideoTimeThread : Thread() {
+        override fun run() {
+            while (!isInterrupted) {
+                videoTime.postValue(Unit)
+            }
+        }
+    }
+
     private inner class ServiceGestureDetector : ScaleGestureDetector.SimpleOnScaleGestureListener() {
         private var mW: Int = 0
         private var mH: Int = 0
         private val displayMetrics = Utils.getDisplayMetrics(this@VideoService)
 
         override fun onScale(detector: ScaleGestureDetector): Boolean {
-            Log.d("", "onScale")
+            Log.d(TAG, "onScale")
             if (mW < MIN_WIDTH) {
                 mW = MIN_WIDTH
                 return true
@@ -314,7 +334,7 @@ class VideoService : Service() {
             }
             mW = (mW.toDouble() * detector.scaleFactor.toDouble()).toInt()
             mH = (mW.toDouble() * (9f / 16f)).toInt()
-            Log.d("", "mW = $mW, mH = $mH")
+            Log.d(TAG, "mW = $mW, mH = $mH")
             binding.surfaceView.holder?.setFixedSize(mW, mH)
             params?.width = mW
             params?.height = mH
@@ -324,35 +344,35 @@ class VideoService : Service() {
         }
 
         override fun onScaleBegin(detector: ScaleGestureDetector): Boolean {
-            Log.d("","onScaleBegin")
+            Log.d(TAG,"onScaleBegin")
             params?.let {
                 mW = it.width
                 mH = it.height
             }
-            Log.d("", "scale=" + detector.scaleFactor + ", w=" + mW + ", h=" + mH)
+            Log.d(TAG, "scale=" + detector.scaleFactor + ", w=" + mW + ", h=" + mH)
             return true
         }
 
         override fun onScaleEnd(detector: ScaleGestureDetector) {
-            Log.d("", "onScaleEnd")
-            Log.d("", "scale=" + detector.scaleFactor + ", w=" + mW + ", h=" + mH)
+            Log.d(TAG, "onScaleEnd")
+            Log.d(TAG, "scale=" + detector.scaleFactor + ", w=" + mW + ", h=" + mH)
         }
     }
 
     private inner class SurfaceHolderCallback : SurfaceHolder.Callback {
         override fun surfaceCreated(holder: SurfaceHolder) {
-            Log.i("", "surfaceCreated")
+            Log.i(TAG, "surfaceCreated")
             item?.let { playVideo(it) }
         }
 
         override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
-            Log.i("", "surfaceChanged")
+            Log.i(TAG, "surfaceChanged")
             holder.setFixedSize(width, height)
             player.setDisplay(holder)
         }
 
         override fun surfaceDestroyed(holder: SurfaceHolder) {
-            Log.i("", "surfaceDestroyed")
+            Log.i(TAG, "surfaceDestroyed")
         }
     }
 }
