@@ -146,6 +146,7 @@ class VideoService : Service() {
         }
         val notification = NotificationCompat
                 .Builder(this@VideoService, startId.toString())
+                .setSmallIcon(R.drawable.ic_launcher_background)
                 .setContentTitle(item?.title)
                 .setContentText(isPause.value?.let {
                     if (it) {
@@ -306,7 +307,11 @@ class VideoService : Service() {
     private inner class VideoTimeThread : Thread() {
         override fun run() {
             while (!isInterrupted) {
-                videoTime.postValue(Unit)
+                if (this.isAlive) {
+                    videoTime.postValue(Unit)
+                } else {
+                    return
+                }
             }
         }
     }

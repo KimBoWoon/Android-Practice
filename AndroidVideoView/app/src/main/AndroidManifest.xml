@@ -27,7 +27,8 @@
         <activity
             android:name=".activites.VideoPlayerActivity"
             android:configChanges="keyboard|orientation|screenSize"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+            android:screenOrientation="sensor"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />
 
         <service
             android:name=".services.VideoService"

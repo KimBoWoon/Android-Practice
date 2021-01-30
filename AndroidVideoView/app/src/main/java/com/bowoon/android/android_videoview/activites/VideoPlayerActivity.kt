@@ -49,12 +49,6 @@ class VideoPlayerActivity : AppCompatActivity() {
 
         Log.i(TAG, "VideoPlayerActivity")
 
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR
-        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-
-        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
-        actionBar?.hide()
-
         viewModel.video.value = intent.getParcelableExtra("videoContent") as Video
 
         initLiveData()
