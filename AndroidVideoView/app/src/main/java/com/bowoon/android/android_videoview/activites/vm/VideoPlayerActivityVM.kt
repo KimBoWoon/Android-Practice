@@ -10,5 +10,4 @@ class VideoPlayerActivityVM : ViewModel() {
     val video = MutableLiveData<Video>()
     val resize = MutableLiveData<Unit>(Unit)
     val playTime = MutableLiveData<Int>(0)
-    val seekBarFlag = MutableLiveData<Boolean>(false)
 }

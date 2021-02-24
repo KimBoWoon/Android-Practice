@@ -2,6 +2,7 @@ package com.bowoon.android.android_videoview.services
 
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
+import android.app.Notification
 import android.app.Service
 import android.content.Intent
 import android.graphics.PixelFormat
@@ -12,6 +13,7 @@ import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -21,6 +23,9 @@ import com.bowoon.android.android_videoview.model.Video
 import com.bowoon.android.android_videoview.utils.Utils
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
@@ -35,7 +40,6 @@ class VideoService : Service() {
     private var intent: Intent? = null
     private var item: Video? = null
     private var hideMenu = false
-    private var videoTimeThread: VideoTimeThread? = null
     private val windowManager by lazy {
         Utils.getWindowManager(this)
     }
@@ -49,11 +53,16 @@ class VideoService : Service() {
         DataBindingUtil.inflate<ServiceLayoutBinding>(LayoutInflater.from(this), R.layout.service_layout, null, false)
     }
     private val isPause = MutableLiveData<Boolean>(false)
+    private var notification: Notification? = null
     private val pauseObserver = Observer<Boolean> {
         if (it) {
             player.pause()
         } else {
             player.start()
+        }
+        notification = makeNotification()
+        notification?.let { notification ->
+            NotificationManagerCompat.from(binding.root.context).notify(NOTIFICATION_ID, notification)
         }
     }
     private val videoTime = MutableLiveData<Unit>()
@@ -62,6 +71,7 @@ class VideoService : Service() {
     }
 
     companion object {
+        const val NOTIFICATION_ID = 1
         const val MIN_WIDTH = 540
         const val MIN_HEIGHT = ((9f / 16f) * MIN_WIDTH.toFloat()).toInt()
         const val TAG = "VideoService"
@@ -135,6 +145,10 @@ class VideoService : Service() {
         }
 
         windowManager.addView(binding.root, params)
+
+        CoroutineScope(Dispatchers.Main).launch {
+            binding.videoTime.text = String.format("%s / %s", Utils.getTimeString(player.currentPosition), Utils.getTimeString(player.duration))
+        }
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
@@ -144,22 +158,24 @@ class VideoService : Service() {
             item = it
             this.intent = intent
         }
-        val notification = NotificationCompat
-                .Builder(this@VideoService, startId.toString())
-                .setSmallIcon(R.drawable.ic_launcher_background)
-                .setContentTitle(item?.title)
-                .setContentText(isPause.value?.let {
-                    if (it) {
-                        "일시정지"
-                    } else {
-                        "재생중"
-                    }
-                })
-                .build()
-        startForeground(startId, notification)
+        notification = makeNotification()
+        startForeground(NOTIFICATION_ID, notification)
 
         return super.onStartCommand(intent, flags, startId)
     }
+
+    private fun makeNotification() = NotificationCompat
+            .Builder(this@VideoService, NOTIFICATION_ID.toString())
+            .setSmallIcon(R.drawable.ic_launcher_background)
+            .setContentTitle(item?.title)
+            .setContentText(isPause.value?.let {
+                if (it) {
+                    "일시정지"
+                } else {
+                    "재생중"
+                }
+            })
+            .build()
 
     private fun playVideo(video: Video?) {
         try {
@@ -170,8 +186,6 @@ class VideoService : Service() {
             video.uri?.let { uri ->
                 player.setOnPreparedListener {
                     resizeSurfaceView(binding.surfaceView.width, binding.surfaceView.height)
-                    videoTimeThread = VideoTimeThread()
-                    videoTimeThread?.start()
                     player.start()
                 }
                 player.setDataSource(this, uri)
@@ -206,8 +220,6 @@ class VideoService : Service() {
     }
 
     private fun releaseMediaPlayer() {
-        videoTimeThread?.interrupt()
-        videoTimeThread = null
         player.release()
     }
 
@@ -300,18 +312,6 @@ class VideoService : Service() {
             surfaceView.layoutParams.apply {
                 width = newWidth
                 height = newHeight
-            }
-        }
-    }
-
-    private inner class VideoTimeThread : Thread() {
-        override fun run() {
-            while (!isInterrupted) {
-                if (this.isAlive) {
-                    videoTime.postValue(Unit)
-                } else {
-                    return
-                }
             }
         }
     }

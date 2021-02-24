@@ -2,7 +2,6 @@ package com.bowoon.android.android_videoview.activites
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.media.MediaPlayer
 import android.net.Uri
@@ -23,13 +22,15 @@ import com.bowoon.android.android_videoview.utils.Utils
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
 class VideoPlayerActivity : AppCompatActivity() {
     private val player = MediaPlayer()
     private var hideMenu = false
-    private var videoTimeThread: VideoTimeThread? = null
     private val binding by lazy {
         DataBindingUtil.setContentView<VideoSurfaceviewBinding>(this, R.layout.video_surfaceview)
     }
@@ -83,15 +84,6 @@ class VideoPlayerActivity : AppCompatActivity() {
                 binding.videoTime.text = String.format("%s / %s", Utils.getTimeString(player.currentPosition), Utils.getTimeString(player.duration))
             }
         }
-        viewModel.seekBarFlag.observe(this) {
-            if (it && videoTimeThread == null) {
-                videoTimeThread = VideoTimeThread()
-                videoTimeThread?.start()
-            } else {
-                videoTimeThread?.interrupt()
-                videoTimeThread = null
-            }
-        }
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -106,16 +98,17 @@ class VideoPlayerActivity : AppCompatActivity() {
                 if (seekBar.max == progress) {
                     player.stop()
                     finish()
+                } else {
+                    player.seekTo(seekBar.progress)
+                    viewModel.seekTime.value = seekBar.progress
                 }
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar) {
-                viewModel.seekBarFlag.value = false
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar) {
                 if (!this@VideoPlayerActivity.isFinishing) {
-                    viewModel.seekBarFlag.value = true
                     player.seekTo(seekBar.progress)
                     viewModel.seekTime.value = seekBar.progress
                 }
@@ -138,6 +131,9 @@ class VideoPlayerActivity : AppCompatActivity() {
 
         binding.videoPause.setOnClickListener {
             viewModel.isPlay.value = false
+        }
+        CoroutineScope(Dispatchers.Main).launch {
+            binding.videoTime.text = String.format("%s / %s", Utils.getTimeString(player.currentPosition), Utils.getTimeString(player.duration))
         }
     }
 
@@ -198,7 +194,6 @@ class VideoPlayerActivity : AppCompatActivity() {
         try {
             player.setOnPreparedListener {
                 it.start()
-                viewModel.seekBarFlag.value = true
             }
             player.setOnErrorListener { mediaPlayer, what, extra ->
                 when (extra) {
@@ -224,7 +219,6 @@ class VideoPlayerActivity : AppCompatActivity() {
     }
 
     private fun releaseMediaPlayer() {
-        viewModel.seekBarFlag.value = false
         window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         player.release()
     }
@@ -252,18 +246,6 @@ class VideoPlayerActivity : AppCompatActivity() {
     override fun onBackPressed() {
         super.onBackPressed()
         releaseMediaPlayer()
-    }
-
-    private inner class VideoTimeThread : Thread() {
-        override fun run() {
-            while (!isInterrupted) {
-                if (!this@VideoPlayerActivity.isFinishing) {
-                    viewModel.playTime.postValue(player.currentPosition)
-                } else {
-                    return
-                }
-            }
-        }
     }
 
     private inner class CustomGestureDetector : GestureDetector.SimpleOnGestureListener() {
