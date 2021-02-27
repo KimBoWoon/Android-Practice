@@ -145,10 +145,6 @@ class VideoService : Service() {
         }
 
         windowManager.addView(binding.root, params)
-
-        CoroutineScope(Dispatchers.Main).launch {
-            binding.videoTime.text = String.format("%s / %s", Utils.getTimeString(player.currentPosition), Utils.getTimeString(player.duration))
-        }
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
@@ -225,6 +221,8 @@ class VideoService : Service() {
 
     private inner class CustomGestureDetector : GestureDetector.SimpleOnGestureListener() {
         override fun onSingleTapUp(e: MotionEvent): Boolean {
+            binding.videoTime.text = String.format("%s / %s", Utils.getTimeString(player.currentPosition), Utils.getTimeString(player.duration))
+
             binding.servicePlay.visibility = View.VISIBLE
             binding.servicePause.visibility = View.VISIBLE
             binding.serviceExit.visibility = View.VISIBLE

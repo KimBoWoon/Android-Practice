@@ -8,7 +8,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.widget.SeekBar
+import android.widget.MediaController
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -22,14 +22,12 @@ import com.bowoon.android.android_videoview.utils.Utils
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
 class VideoPlayerActivity : AppCompatActivity() {
-    private val player = MediaPlayer()
+    private var player = MediaPlayer()
+    private var controller: MediaController? = null
     private var hideMenu = false
     private val binding by lazy {
         DataBindingUtil.setContentView<VideoSurfaceviewBinding>(this, R.layout.video_surfaceview)
@@ -64,24 +62,15 @@ class VideoPlayerActivity : AppCompatActivity() {
                 player.pause()
             }
         }
-        viewModel.seekTime.observe(this) { playTime ->
-            viewModel.isPlay.value?.let {
-                if (it) {
-                    binding.videoSeekbar.progress = playTime
-                    binding.videoTime.text = String.format("%s / %s", Utils.getTimeString(player.currentPosition), Utils.getTimeString(player.duration))
-                }
-            }
-        }
         viewModel.video.observe(this) {
             binding.playVideoTitle.text = it.title
         }
         viewModel.resize.observe(this) {
-            resizeSurfaceView()
-        }
-        viewModel.playTime.observe(this) {
-            if (!this@VideoPlayerActivity.isFinishing) {
-                binding.videoSeekbar.progress = it
-                binding.videoTime.text = String.format("%s / %s", Utils.getTimeString(player.currentPosition), Utils.getTimeString(player.duration))
+            binding.mainSurfaceView.let { surfaceView ->
+                surfaceView.layoutParams.apply {
+                    width = it.first
+                    height = it.second
+                }
             }
         }
     }
@@ -93,27 +82,6 @@ class VideoPlayerActivity : AppCompatActivity() {
             gestureDetector.onTouchEvent(motionEvent)
             true
         }
-        binding.videoSeekbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-                if (seekBar.max == progress) {
-                    player.stop()
-                    finish()
-                } else {
-                    player.seekTo(seekBar.progress)
-                    viewModel.seekTime.value = seekBar.progress
-                }
-            }
-
-            override fun onStartTrackingTouch(seekBar: SeekBar) {
-            }
-
-            override fun onStopTrackingTouch(seekBar: SeekBar) {
-                if (!this@VideoPlayerActivity.isFinishing) {
-                    player.seekTo(seekBar.progress)
-                    viewModel.seekTime.value = seekBar.progress
-                }
-            }
-        })
 
         binding.videoService.setOnClickListener {
             Log.i(TAG, "startService")
@@ -121,19 +89,7 @@ class VideoPlayerActivity : AppCompatActivity() {
                 putExtra("video", viewModel.video.value)
                 putExtra("currentTime", player.currentPosition)
             })
-            releaseMediaPlayer()
             finish()
-        }
-
-        binding.videoPlay.setOnClickListener {
-            viewModel.isPlay.value = true
-        }
-
-        binding.videoPause.setOnClickListener {
-            viewModel.isPlay.value = false
-        }
-        CoroutineScope(Dispatchers.Main).launch {
-            binding.videoTime.text = String.format("%s / %s", Utils.getTimeString(player.currentPosition), Utils.getTimeString(player.duration))
         }
     }
 
@@ -143,50 +99,10 @@ class VideoPlayerActivity : AppCompatActivity() {
 
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             Toast.makeText(this, "landscape", Toast.LENGTH_SHORT).show()
-            viewModel.resize.value = Unit
+            viewModel.resizeSurfaceView(this, player)
         } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
             Toast.makeText(this, "portrait", Toast.LENGTH_SHORT).show()
-            viewModel.resize.value = Unit
-        }
-    }
-
-    private fun resizeSurfaceView() {
-        var newWidth = player.videoWidth
-        var newHeight = player.videoHeight
-        var rate = 0.0f
-        val max = if (newWidth > newHeight) {
-            Utils.getDisplayMetrics(this@VideoPlayerActivity).widthPixels
-        } else {
-            Utils.getDisplayMetrics(this@VideoPlayerActivity).heightPixels
-        }.toFloat()
-
-        if (newWidth == 0 || newHeight == 0) {
-            return
-        }
-
-        if (newWidth > newHeight) {
-            rate = max / newWidth
-            newHeight = (newHeight * rate).toInt()
-            newWidth = max.toInt()
-        } else {
-            rate = max / newHeight
-            newWidth = (newWidth * rate).toInt()
-            newHeight = max.toInt()
-        }
-
-        if (newHeight > Utils.getDisplayMetrics(this).heightPixels) {
-            newHeight = Utils.getDisplayMetrics(this).heightPixels
-        }
-
-        if (newWidth > Utils.getDisplayMetrics(this).widthPixels) {
-            newWidth = Utils.getDisplayMetrics(this).widthPixels
-        }
-
-        binding.mainSurfaceView.let { surfaceView ->
-            surfaceView.layoutParams.apply {
-                width = newWidth
-                height = newHeight
-            }
+            viewModel.resizeSurfaceView(this, player)
         }
     }
 
@@ -251,12 +167,9 @@ class VideoPlayerActivity : AppCompatActivity() {
     private inner class CustomGestureDetector : GestureDetector.SimpleOnGestureListener() {
         override fun onSingleTapUp(e: MotionEvent): Boolean {
             if (e.action == MotionEvent.ACTION_UP) {
-                binding.videoInformationGroup.visibility = View.VISIBLE
-                binding.videoButtonGroup.visibility = View.VISIBLE
                 binding.playVideoTitle.visibility = View.VISIBLE
-//            binding.mDialogBtn.visibility = View.VISIBLE
                 binding.videoService.visibility = View.VISIBLE
-                binding.videoTime.text = player.let { String.format("%s / %s", Utils.getTimeString(it.currentPosition), Utils.getTimeString(it.duration)) }
+                controller?.show()
 
                 if (!hideMenu) {
                     hideMenu = true
@@ -265,11 +178,9 @@ class VideoPlayerActivity : AppCompatActivity() {
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
                                     {
-                                        binding.videoInformationGroup.visibility = View.GONE
-                                        binding.videoButtonGroup.visibility = View.GONE
                                         binding.playVideoTitle.visibility = View.GONE
-//                                binding.mDialogBtn.visibility = View.GONE
                                         binding.videoService.visibility = View.GONE
+                                        controller?.hide()
                                         hideMenu = false
                                     },
                                     { it.printStackTrace() }
@@ -303,21 +214,56 @@ class VideoPlayerActivity : AppCompatActivity() {
             viewModel.video.value?.let {
                 it.uri?.let { uri ->
                     playVideo(uri)
+                    controller = MediaController(this@VideoPlayerActivity).apply {
+                        setMediaPlayer(Controller())
+                        setAnchorView(binding.mainSurfaceView)
+                        isEnabled = true
+                    }
                 }
             }
-            binding.videoSeekbar.max = player.duration
-            viewModel.resize.value = Unit
+            viewModel.resizeSurfaceView(this@VideoPlayerActivity, player)
         }
 
         override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
             Log.i(TAG, "surfaceChanged")
             player.setDisplay(holder)
-            viewModel.resize.value = Unit
+            viewModel.resizeSurfaceView(this@VideoPlayerActivity, player)
         }
 
         override fun surfaceDestroyed(holder: SurfaceHolder) {
             Log.i(TAG, "surfaceDestroyed")
-            releaseMediaPlayer()
         }
+    }
+
+    private inner class Controller : MediaController.MediaPlayerControl {
+        override fun start() {
+            player.start()
+        }
+
+        override fun pause() {
+            player.pause()
+        }
+
+        override fun getDuration(): Int = player.duration
+
+        override fun getCurrentPosition(): Int {
+            return player.currentPosition
+        }
+
+        override fun seekTo(position: Int) {
+            player.seekTo(position)
+        }
+
+        override fun isPlaying(): Boolean = player.isPlaying
+
+        override fun getBufferPercentage(): Int = 0
+
+        override fun canPause(): Boolean = true
+
+        override fun canSeekBackward(): Boolean = true
+
+        override fun canSeekForward(): Boolean = true
+
+        override fun getAudioSessionId(): Int = 0
     }
 }
