@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.res.Configuration
 import android.media.MediaPlayer
+import android.media.PlaybackParams
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -125,6 +126,10 @@ class VideoPlayerActivity : AppCompatActivity() {
                     }
                 }
                 return@setOnErrorListener true
+            }
+            player.setOnCompletionListener {
+                releaseMediaPlayer()
+                this@VideoPlayerActivity.finish()
             }
             player.setDataSource(this, path)
             player.setDisplay(binding.mainSurfaceView.holder)
@@ -248,9 +253,6 @@ class VideoPlayerActivity : AppCompatActivity() {
         override fun getDuration(): Int = player.duration
 
         override fun getCurrentPosition(): Int {
-            if (player.currentPosition == player.duration) {
-                finish()
-            }
             return player.currentPosition
         }
 
