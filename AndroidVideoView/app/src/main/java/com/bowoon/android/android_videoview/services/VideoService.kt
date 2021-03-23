@@ -3,6 +3,8 @@ package com.bowoon.android.android_videoview.services
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.app.Service
 import android.content.Intent
 import android.graphics.PixelFormat
@@ -72,6 +74,8 @@ class VideoService : Service() {
 
     companion object {
         const val NOTIFICATION_ID = 1
+        const val CHANNEL_ID = "com.bowoon.android.android_videoview"
+        const val CHANNEL_NAME = "com.bowoon.android.android_videoview"
         const val MIN_WIDTH = 540
         const val MIN_HEIGHT = ((9f / 16f) * MIN_WIDTH.toFloat()).toInt()
         const val TAG = "VideoService"
@@ -154,10 +158,23 @@ class VideoService : Service() {
             item = it
             this.intent = intent
         }
+        createNotificationChannel()
         notification = makeNotification()
         startForeground(NOTIFICATION_ID, notification)
 
         return super.onStartCommand(intent, flags, startId)
+    }
+
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            (getSystemService(NOTIFICATION_SERVICE) as NotificationManager).let {
+                it.createNotificationChannel(
+                        NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT).apply {
+                            description = "descriptionText"
+                        }
+                )
+            }
+        }
     }
 
     private fun makeNotification() = NotificationCompat

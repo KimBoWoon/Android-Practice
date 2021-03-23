@@ -2,9 +2,11 @@ package com.bowoon.android.android_videoview.activites
 
 import android.Manifest
 import android.graphics.Rect
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
@@ -43,6 +45,12 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         if (!hasWindowPermission()) {
             EasyPermissions.requestPermissions(this, "Window Permission", 1001, Manifest.permission.SYSTEM_ALERT_WINDOW)
         }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            if (!hasForegroundService()) {
+                EasyPermissions.requestPermissions(this, "Window Permission", 1001, Manifest.permission.FOREGROUND_SERVICE)
+            }
+        }
     }
 
     private fun initLiveData() {
@@ -71,6 +79,11 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
     private fun hasWindowPermission(): Boolean {
         return EasyPermissions.hasPermissions(this, Manifest.permission.SYSTEM_ALERT_WINDOW)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.P)
+    private fun hasForegroundService(): Boolean {
+        return EasyPermissions.hasPermissions(this, Manifest.permission.FOREGROUND_SERVICE)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {

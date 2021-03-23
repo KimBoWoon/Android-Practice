@@ -136,6 +136,7 @@ class VideoPlayerActivity : AppCompatActivity() {
 
     private fun releaseMediaPlayer() {
         window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        controller?.hide()
         player.release()
     }
 
@@ -169,7 +170,7 @@ class VideoPlayerActivity : AppCompatActivity() {
             if (e.action == MotionEvent.ACTION_UP) {
                 binding.playVideoTitle.visibility = View.VISIBLE
                 binding.videoService.visibility = View.VISIBLE
-                controller?.show()
+                controller?.show(5000)
 
                 if (!hideMenu) {
                     hideMenu = true
@@ -247,6 +248,9 @@ class VideoPlayerActivity : AppCompatActivity() {
         override fun getDuration(): Int = player.duration
 
         override fun getCurrentPosition(): Int {
+            if (player.currentPosition == player.duration) {
+                finish()
+            }
             return player.currentPosition
         }
 
