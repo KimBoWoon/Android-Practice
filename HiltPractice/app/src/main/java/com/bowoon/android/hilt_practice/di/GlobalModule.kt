@@ -22,5 +22,5 @@ class GlobalModule {
 
     @Provides
     @Singleton
-    fun providePersonApiImpl() = ApiHelperImpl(providePersonApi())
+    fun providePersonApiImpl() = ApiHelperImpl(provideRetrofit())
 }
