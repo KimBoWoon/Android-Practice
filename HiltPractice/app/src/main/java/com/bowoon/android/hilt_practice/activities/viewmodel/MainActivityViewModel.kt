@@ -1,14 +1,14 @@
 package com.bowoon.android.hilt_practice.activities.viewmodel
 
 import android.util.Log
-import androidx.lifecycle.*
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.OnLifecycleEvent
 import com.bowoon.android.hilt_practice.api.ApiHelperImpl
-import com.bowoon.android.hilt_practice.api.PersonApi
 import com.bowoon.android.hilt_practice.base.BaseViewModel
 import com.bowoon.android.hilt_practice.model.Person
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.schedulers.Schedulers
 import javax.inject.Inject
 
 @HiltViewModel

@@ -6,27 +6,13 @@ import com.bowoon.android.hilt_practice.activities.viewmodel.MainActivityViewMod
 import com.bowoon.android.hilt_practice.adapter.PersonAdapter
 import com.bowoon.android.hilt_practice.base.DataBindingActivityWithViewModel
 import com.bowoon.android.hilt_practice.databinding.ActivityMainBinding
-import com.bowoon.android.hilt_practice.repository.Repository
 import dagger.hilt.android.AndroidEntryPoint
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.kotlin.addTo
 
 @AndroidEntryPoint
 class MainActivity : DataBindingActivityWithViewModel<ActivityMainBinding, MainActivityViewModel>
     (R.layout.activity_main, MainActivityViewModel::class.java) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-//        Repository
-//            .useRx()
-//            .observeOn(AndroidSchedulers.mainThread())
-//            .subscribe(
-//                {
-//                    activityVM.personList.value = it.persons
-//                },
-//                { e -> e.printStackTrace() }
-//            ).addTo(CompositeDisposable())
 
         binding.apply {
             lifecycleOwner = this@MainActivity
