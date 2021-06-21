@@ -1,6 +1,7 @@
 package com.bowoon.android.hilt_practice.di
 
 import com.bowoon.android.hilt_practice.api.ApiHelperImpl
+import com.bowoon.android.hilt_practice.api.PersonApi
 import com.bowoon.android.hilt_practice.api.providePersonApi
 import dagger.Module
 import dagger.Provides
@@ -17,5 +18,5 @@ class ApiModule {
 
     @Provides
     @Singleton
-    fun providePersonApiImpl() = ApiHelperImpl(provideRetrofit())
+    fun providePersonApiImpl(personApi: PersonApi) = ApiHelperImpl(personApi)
 }
