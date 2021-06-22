@@ -9,4 +9,7 @@ import retrofit2.http.QueryMap
 interface PersonApi {
     @GET("/api/")
     fun getUsers(@QueryMap params: Map<String, String>): Single<Persons>
+
+    @GET("/api/")
+    suspend fun getUsersUsingCoroutines(@QueryMap params: Map<String, String>): Persons
 }
