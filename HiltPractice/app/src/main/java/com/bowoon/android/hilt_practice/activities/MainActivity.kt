@@ -1,6 +1,7 @@
 package com.bowoon.android.hilt_practice.activities
 
 import android.os.Bundle
+import androidx.core.view.isVisible
 import com.bowoon.android.hilt_practice.R
 import com.bowoon.android.hilt_practice.activities.viewmodel.MainActivityViewModel
 import com.bowoon.android.hilt_practice.adapter.PersonAdapter
@@ -19,6 +20,12 @@ class MainActivity : DataBindingActivityWithViewModel<ActivityMainBinding, MainA
         }
         lifecycle.addObserver(activityVM)
 
+        activityVM.loadUserData(
+            {
+                binding.pbLoadUser.isVisible = false
+            },
+            {}
+        )
         initBinding()
         initLiveData()
     }

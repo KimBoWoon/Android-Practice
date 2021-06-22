@@ -8,6 +8,7 @@ import androidx.lifecycle.OnLifecycleEvent
 import com.bowoon.android.hilt_practice.api.ApiHelperImpl
 import com.bowoon.android.hilt_practice.base.BaseViewModel
 import com.bowoon.android.hilt_practice.model.Person
+import com.bowoon.android.hilt_practice.model.Persons
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -19,11 +20,21 @@ class MainActivityViewModel @Inject constructor(
 
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
     fun onCreate() {
+
+    }
+
+    fun loadUserData(success: ((Persons) -> Unit)? = null, error: ((Throwable) -> Unit)? = null) {
         apiHelperImpl.getPersons(
             compositeDisposable,
             mapOf("results" to "10"),
-            { personList.value = it.persons },
-            { Log.e("MainActivityViewModel", it.message ?: "something wrong") }
+            {
+                personList.value = it.persons
+                success?.invoke(it)
+            },
+            {
+                Log.e("MainActivityViewModel", it.message ?: "something wrong")
+                error?.invoke(it)
+            }
         )
     }
 }
